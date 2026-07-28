@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Primetek Activity Tracker",
+  "version": "1.0.0",
+  "description": "Silent background activity tracker and attendance sync for Primetek Global Solutions",
+  "permissions": [
+    "storage",
+    "idle",
+    "activeTab",
+    "alarms",
+    "tabs",
+    "scripting",
+    "cookies"
+  ],
+  "host_permissions": [
+    "https://primetekglobalsolutions.com/*",
+    "https://*.primetekglobalsolutions.com/*",
+    "https://*.vercel.app/*",
+    "http://localhost/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}

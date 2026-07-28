@@ -1,0 +1,78 @@
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { env } from './env';
+
+/**
+ * Admin Supabase client (bypasses RLS).
+ * 
+ * Lazily initialized to prevent crashes during `next build`
+ * when env vars are not yet available. The client is created
+ * on first property access.
+ */
+let _client: SupabaseClient | null = null;
+
+function getAdminClient(): SupabaseClient | null {
+  if (!_client) {
+    const url = env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = env.SUPABASE_SERVICE_ROLE_KEY;
+    const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+    const isPlaceholder = (url && url.includes('placeholder')) || (key && key.includes('placeholder'));
+
+    if (!url || !key || isBuildPhase || isPlaceholder) {
+      if (isBuildPhase || isPlaceholder) {
+        console.warn('⚠️ Supabase Admin credentials missing or using placeholders during build phase. Returning mock client.');
+        return null;
+      }
+      throw new Error(
+        `Cannot create Supabase Admin client: NEXT_PUBLIC_SUPABASE_URL (${url ? 'present' : 'missing'}) or SUPABASE_SERVICE_ROLE_KEY (${key ? 'present' : 'missing'}) is missing.`
+      );
+    }
+
+    _client = createClient(url, key, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
+  }
+  return _client;
+}
+
+interface MockProxy {
+  (...args: unknown[]): MockProxy;
+  [key: string]: MockProxy | ((resolve: (val: { data: unknown[]; error: null }) => void) => void) | undefined;
+  then?: (resolve: (val: { data: unknown[]; error: null }) => void) => void;
+}
+
+// A chainable recursive proxy that resolves to empty results.
+// This prevents crashes during `next build` static page generation.
+const createMockClient = (): MockProxy => {
+  const mock = new Proxy(() => {}, {
+    get(_target, prop: string) {
+      if (prop === 'then') {
+        return (resolve: (val: { data: unknown[]; error: null }) => void) => resolve({ data: [], error: null });
+      }
+      return createMockClient();
+    },
+    apply() {
+      return createMockClient();
+    }
+  }) as unknown as MockProxy;
+  return mock;
+};
+
+const mockClient = createMockClient();
+
+// Proxy so callers can use `supabaseAdmin.from(...)` without changing syntax
+export const supabaseAdmin: SupabaseClient = new Proxy({} as SupabaseClient, {
+  get(_target, prop: string) {
+    const client = getAdminClient();
+    if (!client) {
+      return mockClient[prop];
+    }
+    const value = (client as unknown as Record<string, unknown>)[prop];
+    if (typeof value === 'function') {
+      return value.bind(client);
+    }
+    return value;
+  },
+});
