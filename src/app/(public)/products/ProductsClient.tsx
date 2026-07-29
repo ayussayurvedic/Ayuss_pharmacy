@@ -1,0 +1,190 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { products, type Product } from '@/data/products';
+import { useCart } from '@/context/CartContext';
+import { createClient } from '@/lib/supabase/client';
+import { ShoppingBag, Search, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
+
+export default function ProductsClient() {
+  const { handleAddToCart } = useCart();
+  const [productList, setProductList] = useState<Product[]>(products);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .order('name', { ascending: true });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const mapped: Product[] = data.map((dbP: any) => {
+            const staticP = products.find(p => p.id === dbP.id);
+            return {
+              id: dbP.id,
+              name: dbP.name || '',
+              category: dbP.category || '',
+              composition: dbP.composition || staticP?.composition || '',
+              benefits: dbP.benefits || staticP?.benefits || [],
+              usage: dbP.usage || staticP?.usage || '',
+              shelfLife: dbP.shelf_life || staticP?.shelfLife || '3 Years',
+              safetyNote: dbP.safety_note || staticP?.safetyNote || 'Ayurvedic formulation',
+              packSize: dbP.pack_size || staticP?.packSize || '',
+              mrp: Number(dbP.mrp || staticP?.mrp || 0),
+              sellingPrice: Number(dbP.selling_price || staticP?.sellingPrice || 0),
+              image: dbP.image || staticP?.image || '',
+              transparentImage: dbP.transparent_image || staticP?.transparentImage || '',
+              galleryImages: dbP.gallery_images || staticP?.galleryImages || []
+            };
+          });
+          setProductList(mapped);
+        }
+      } catch (err) {
+        console.error('Error loading products from Supabase, loading local fallbacks:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
+
+  const categories = [
+    { id: 'all', label: 'All Formulations' },
+    { id: 'musculoskeletal', label: 'Pain Relief' },
+    { id: 'skincare', label: 'Skin Care' },
+  ];
+
+  const filtered = productList.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.category.toLowerCase().includes(search.toLowerCase()) ||
+      p.composition.toLowerCase().includes(search.toLowerCase());
+    
+    if (selectedCategory === 'all') return matchesSearch;
+    if (selectedCategory === 'musculoskeletal') return matchesSearch && p.category.toLowerCase().includes('pain');
+    if (selectedCategory === 'skincare') return matchesSearch && p.category.toLowerCase().includes('skin');
+    return matchesSearch;
+  });
+
+  return (
+    <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-screen font-sans">
+      <div className="max-w-[1200px] mx-auto px-6 space-y-10">
+        
+        {/* Header Block */}
+        <div className="text-center max-w-2xl mx-auto space-y-3">
+          <div className="flex items-center justify-center gap-2 text-[11px] text-[#2A7B7E] font-medium uppercase tracking-wider mb-2">
+            <Link href="/" className="hover:text-[#1A5C5E] transition-colors">Home</Link>
+            <span>•</span>
+            <span className="text-slate-400">Products</span>
+          </div>
+
+          <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block">Ayurvedic Formulations</span>
+          <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-serif text-[#1A5C5E] font-semibold uppercase leading-snug">
+            Ayurvedic Products
+          </h1>
+          <p className="text-sm text-slate-600 leading-relaxed font-light">
+            Government-licensed proprietary formulations (License No. R-1970/Ayur) crafted using pure botanical extracts.
+          </p>
+
+          {/* Search Input */}
+          <div className="relative max-w-md mx-auto pt-2">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-5" />
+            <input
+              type="text"
+              placeholder="Search formulations, ingredients..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full border border-[#C9D5D5] pl-10 pr-4 py-2.5 rounded-xl text-xs outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-white shadow-sm font-sans"
+            />
+          </div>
+
+          {/* Category Filter Pills */}
+          <div className="flex justify-center gap-2 pt-2">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer border ${
+                  selectedCategory === cat.id
+                    ? 'bg-[#1A5C5E] text-white border-[#1A5C5E] shadow-sm'
+                    : 'bg-white text-slate-600 border-[#C9D5D5] hover:border-[#C9943E]'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Product Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filtered.map((p) => (
+            <div 
+              key={p.id} 
+              className="bg-white border border-[#C9D5D5] rounded-2xl overflow-hidden shadow-sm flex flex-col p-6 hover:shadow-md hover:border-[#C9943E] transition-all duration-300 group"
+            >
+              <Link href={`/products/${p.id}`} className="block relative aspect-square mb-6 bg-slate-50 rounded-xl p-4 overflow-hidden border border-slate-100">
+                <img 
+                  src={p.image} 
+                  alt={p.name} 
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
+                />
+                <span className="absolute top-3 left-3 bg-[#1A5C5E]/90 text-[#FDF8F0] text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-sm">
+                  {p.packSize}
+                </span>
+              </Link>
+
+              <div className="space-y-2 mb-4">
+                <span className="text-[9px] font-bold text-[#C9943E] uppercase tracking-wider block">
+                  {p.category}
+                </span>
+                <Link href={`/products/${p.id}`}>
+                  <h3 className="font-serif font-bold text-lg text-[#1A5C5E] hover:text-[#134547] transition-colors uppercase">
+                    {p.name}
+                  </h3>
+                </Link>
+                <p className="text-slate-500 text-xs leading-relaxed font-light line-clamp-2">
+                  {p.composition}
+                </p>
+              </div>
+
+              {/* Benefits list preview */}
+              <div className="space-y-1 mb-6 pt-2 border-t border-slate-100">
+                {p.benefits.slice(0, 2).map((benefit, i) => (
+                  <div key={i} className="flex items-center gap-1.5 text-[10px] text-slate-500 font-light">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C9943E] shrink-0" />
+                    <span>{benefit}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-auto flex justify-between items-center pt-4 border-t border-slate-100">
+                <div>
+                  <span className="text-[9px] text-slate-400 block uppercase font-bold tracking-wider">Price</span>
+                  <span className="font-bold text-lg text-[#1A5C5E]">₹{p.sellingPrice || p.mrp}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleAddToCart(p, 1)}
+                  className="bg-[#1A5C5E] hover:bg-[#134547] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer border-0 uppercase tracking-wider shadow-sm transition-all"
+                >
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>Add to Bag</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
