@@ -1,5 +1,5 @@
 -- ====================================================================
--- Primetek Global Solutions - Atomic Rate Limiting Stored Procedure
+-- S.S. Pharmacy - Atomic Rate Limiting Stored Procedure
 -- ====================================================================
 
 CREATE OR REPLACE FUNCTION public.consume_rate_limit(

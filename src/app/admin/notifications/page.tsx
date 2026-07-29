@@ -33,10 +33,13 @@ export default async function AdminNotificationsPage() {
   const initialNotifications = notificationsRes.success ? notificationsRes.notifications : [];
 
   return (
-    <div className="space-y-6 pb-10">
-      <div>
-        <h1 className="text-xl md:text-2xl font-bold tracking-tight text-navy-900">Notification Dispatcher</h1>
-        <p className="text-zinc-550 text-sm">Send announcements or targeted alerts to employees.</p>
+    <div className="space-y-6 pb-12 font-sans">
+      <div className="bg-[#134547] text-white p-6 rounded-2xl border border-[#1A5C5E] shadow-md">
+        <div className="space-y-1">
+          <span className="text-[10px] font-bold text-[#C9943E] uppercase tracking-wider block">System Alerts</span>
+          <h1 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-wide">Notification Dispatcher</h1>
+          <p className="text-slate-300 text-xs font-light">Send announcements or targeted alerts to employees and staff</p>
+        </div>
       </div>
       <AdminNotificationsClient
         employees={employees}

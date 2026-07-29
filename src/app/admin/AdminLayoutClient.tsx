@@ -42,8 +42,8 @@ export default function AdminLayoutClient({
 
     const fetchPendingCount = async () => {
       try {
-        const { getPendingCountOnly } = await import('@/app/admin/approvals/actions');
-        const count = await getPendingCountOnly();
+        // Pending counts mock for pharmacy admin (can fetch orders/returns counts in future waves)
+        const count = 0;
         setPendingCount(count);
       } catch (err) {
         console.warn('Failed to fetch pending counts for layout', err);
@@ -76,9 +76,9 @@ export default function AdminLayoutClient({
  
       // If default (never prompted), prompt once
       if (permission === 'default') {
-        const hasPrompted = localStorage.getItem('primetek-admin-notif-prompted');
+        const hasPrompted = localStorage.getItem('sspharmacy-admin-notif-prompted');
         if (!hasPrompted) {
-          localStorage.setItem('primetek-admin-notif-prompted', 'true');
+          localStorage.setItem('sspharmacy-admin-notif-prompted', 'true');
           try {
             const { subscribeUserToPush } = await import('@/lib/notifications/push-helper');
             await subscribeUserToPush();
@@ -124,15 +124,15 @@ export default function AdminLayoutClient({
       // Try to load session from sessionStorage first, then fallback to localStorage
       let currentSession = null;
       try {
-        const savedSession = sessionStorage.getItem('primetek-admin-session');
+        const savedSession = sessionStorage.getItem('sspharmacy-admin-session');
         if (savedSession) {
           currentSession = JSON.parse(savedSession);
         } else {
-          const fallbackSession = localStorage.getItem('primetek-admin-session');
+          const fallbackSession = localStorage.getItem('sspharmacy-admin-session');
           if (fallbackSession) {
             currentSession = JSON.parse(fallbackSession);
             // Sync fallback session back to sessionStorage
-            sessionStorage.setItem('primetek-admin-session', fallbackSession);
+            sessionStorage.setItem('sspharmacy-admin-session', fallbackSession);
           }
         }
 
@@ -188,17 +188,17 @@ export default function AdminLayoutClient({
           if (data.user?.role === 'admin') {
             setSession(data.user);
             try {
-              sessionStorage.setItem('primetek-admin-session', JSON.stringify(data.user));
-              localStorage.setItem('primetek-admin-session', JSON.stringify(data.user));
+              sessionStorage.setItem('sspharmacy-admin-session', JSON.stringify(data.user));
+              localStorage.setItem('sspharmacy-admin-session', JSON.stringify(data.user));
             } catch {}
           } else if (data.user?.role === 'employee' || data.user?.role === 'hr') {
             router.replace('/employee/dashboard');
             return;
           } else {
             try {
-              sessionStorage.removeItem('primetek-admin-session');
-              localStorage.removeItem('primetek-admin-session');
-              localStorage.removeItem('primetek-admin-token');
+              sessionStorage.removeItem('sspharmacy-admin-session');
+              localStorage.removeItem('sspharmacy-admin-session');
+              localStorage.removeItem('sspharmacy-admin-token');
             } catch {}
             setSession(null);
             router.replace('/admin/login');
@@ -207,9 +207,9 @@ export default function AdminLayoutClient({
         } else if (res.status === 401 || res.status === 403 || res.status === 404) {
           // Genuine unauthenticated response
           try {
-            sessionStorage.removeItem('primetek-admin-session');
-            localStorage.removeItem('primetek-admin-session');
-            localStorage.removeItem('primetek-admin-token');
+            sessionStorage.removeItem('sspharmacy-admin-session');
+            localStorage.removeItem('sspharmacy-admin-session');
+            localStorage.removeItem('sspharmacy-admin-token');
           } catch {}
           setSession(null);
           router.replace('/admin/login');

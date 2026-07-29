@@ -1,5 +1,5 @@
 -- ====================================================================
--- Primetek Global Solutions - Admin Notifications & Reads Schema
+-- S.S. Pharmacy - Admin Notifications & Reads Schema
 -- ====================================================================
 
 -- 1. Add columns to public.notifications

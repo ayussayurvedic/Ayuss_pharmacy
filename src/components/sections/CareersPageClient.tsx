@@ -58,7 +58,7 @@ export default function CareersPageClient({ initialJobs }: { initialJobs: Public
             Join the Team That Builds Teams
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Explore exciting opportunities at Primetek Global Solutions and our client organizations.
+            Explore exciting opportunities at S.S. Pharmacy and join our mission for authentic Ayurvedic healthcare.
           </p>
         </div>
       </section>

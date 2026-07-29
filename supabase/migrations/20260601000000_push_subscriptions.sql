@@ -1,5 +1,5 @@
 -- ====================================================================
--- Primetek Global Solutions - Push Notifications & Subscriptions Schema
+-- S.S. Pharmacy - Push Notifications & Subscriptions Schema
 -- ====================================================================
 
 -- 1. Create Push Subscriptions Table

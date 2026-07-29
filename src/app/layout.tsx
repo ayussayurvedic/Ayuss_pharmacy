@@ -7,6 +7,7 @@ import PWAStandaloneGuard from '@/components/pwa/PWAStandaloneGuard';
 import PWAInstallPrompt from '@/components/pwa/PWAInstallPrompt';
 import PushPermissionPrompt from '@/components/pwa/PushPermissionPrompt';
 import { ToastProvider } from '@/components/ui/Toast';
+import { CartProvider } from '@/context/CartContext';
 import SchemaMarkup from '@/components/layout/SchemaMarkup';
 
 const inter = Inter({
@@ -183,10 +184,12 @@ export default function RootLayout({
 
         <SchemaMarkup schema={orgSchema} />
         <ToastProvider>
-          {children}
-          <PWAStandaloneGuard />
-          <PWAInstallPrompt />
-          <PushPermissionPrompt />
+          <CartProvider>
+            {children}
+            <PWAStandaloneGuard />
+            <PWAInstallPrompt />
+            <PushPermissionPrompt />
+          </CartProvider>
         </ToastProvider>
       </body>
     </html>

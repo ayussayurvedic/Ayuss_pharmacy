@@ -226,10 +226,10 @@ export default function AdminNotificationsClient({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch font-sans text-slate-700">
       {/* Sent History Column */}
       <div className="lg:col-span-8 flex flex-col space-y-6">
-        <Card hover={false} className="p-6 border border-[#E2E8F0] shadow-xs bg-white flex-1 flex flex-col">
+        <Card hover={false} className="p-6 border border-[#C9D5D5]/60 shadow-xs bg-white flex-1 flex flex-col rounded-2xl">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               {isSelectMode && notifications.length > 0 && (
@@ -243,11 +243,11 @@ export default function AdminNotificationsClient({
                       setSelectedIds(new Set());
                     }
                   }}
-                  className="w-4 h-4 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                  className="w-4 h-4 rounded border-zinc-300 text-[#1A5C5E] focus:ring-[#1A5C5E]/30 cursor-pointer"
                   title="Select all notifications"
                 />
               )}
-              <h2 className="font-extrabold text-navy-900 text-base tracking-tight font-sans">Sent Notifications</h2>
+              <h2 className="font-bold text-[#134547] text-base tracking-tight font-sans uppercase">Sent Notifications</h2>
             </div>
             <div className="flex items-center gap-2">
               {isSelectMode && selectedIds.size > 0 && (
@@ -272,20 +272,20 @@ export default function AdminNotificationsClient({
                   {isSelectMode ? 'Cancel' : 'Select'}
                 </button>
               )}
-              <span className="bg-primary-50 text-primary-600 text-[10px] font-bold px-2.5 py-1 rounded-full font-sans">
+              <span className="bg-[#1A5C5E]/10 text-[#1A5C5E] text-[10px] font-bold px-2.5 py-1 rounded-full font-sans">
                 {notifications.length} dispatched
               </span>
             </div>
           </div>
 
           {notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 border border-dashed border-[#E2E8F0] rounded-xl text-zinc-455 flex-1">
-              <Megaphone className="w-8 h-8 stroke-[1.5] mb-2 text-zinc-400" />
-              <p className="text-xs font-bold uppercase tracking-wider">No Active Dispatches</p>
-              <p className="text-[10px] text-zinc-400 mt-1 max-w-[250px] text-center font-medium">Broadcasts or targeted alerts you dispatch will be listed here.</p>
+            <div className="flex flex-col items-center justify-center py-16 border border-dashed border-[#C9D5D5]/60 rounded-2xl text-slate-400 flex-1 bg-[#FDF8F0]/30">
+              <Megaphone className="w-8 h-8 stroke-[1.5] mb-2 text-[#1A5C5E]" />
+              <p className="text-xs font-bold uppercase tracking-wider text-[#134547]">No Active Dispatches</p>
+              <p className="text-[10px] text-slate-500 mt-1 max-w-[250px] text-center font-medium">Broadcasts or targeted alerts you dispatch will be listed here.</p>
             </div>
           ) : (
-            <div className="divide-y divide-zinc-150">
+            <div className="divide-y divide-[#C9D5D5]/40">
               {notifications.map((notif) => {
                 const dateStr = new Date(notif.created_at).toLocaleDateString('en-IN', {
                   day: 'numeric',
@@ -297,7 +297,7 @@ export default function AdminNotificationsClient({
 
                  const iconConfig = {
                   announcement: {
-                    icon: <Megaphone className="w-4 h-4 text-[#F59E0B]" />,
+                    icon: <Megaphone className="w-4 h-4 text-[#C9943E]" />,
                     bg: 'bg-[#FFF7EB] border-[#FFF7EB]/10'
                   },
                   alert: {
@@ -305,12 +305,12 @@ export default function AdminNotificationsClient({
                     bg: 'bg-[#FEF2F2] border-[#FEF2F2]/10'
                   },
                   personal: {
-                    icon: <Info className="w-4 h-4 text-[#3B82F6]" />,
-                    bg: 'bg-[#EFF6FF] border-[#EFF6FF]/10'
+                    icon: <Info className="w-4 h-4 text-[#1A5C5E]" />,
+                    bg: 'bg-indigo-50 border-indigo-100'
                   }
                 }[notif.type || 'announcement'] || {
-                  icon: <Info className="w-4 h-4 text-[#3B82F6]" />,
-                  bg: 'bg-[#EFF6FF] border-[#EFF6FF]/10'
+                  icon: <Info className="w-4 h-4 text-[#1A5C5E]" />,
+                  bg: 'bg-indigo-50 border-indigo-100'
                 };
 
                 const isBroadcast = notif.employee_id === null;
@@ -320,8 +320,8 @@ export default function AdminNotificationsClient({
                     key={notif.id}
                     className={cn(
                       "py-4 flex gap-3.5 relative overflow-hidden transition-all duration-200",
-                      notif.is_pinned && "bg-amber-50/10",
-                      selectedIds.has(notif.id) && "bg-primary-50/5"
+                      notif.is_pinned && "bg-amber-50/5",
+                      selectedIds.has(notif.id) && "bg-[#1A5C5E]/5"
                     )}
                   >
                     {/* Checkbox (Only visible in select mode) */}
@@ -339,20 +339,20 @@ export default function AdminNotificationsClient({
                             }
                             setSelectedIds(newSelected);
                           }}
-                          className="w-4 h-4 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                          className="w-4 h-4 rounded border-zinc-300 text-[#1A5C5E] focus:ring-[#1A5C5E]/30 cursor-pointer"
                         />
                       </div>
                     )}
 
                     {/* Type Icon */}
-                    <div className={cn("w-9 h-9 rounded-full flex items-center justify-center shrink-0 border", iconConfig.bg)}>
+                    <div className={cn("w-9 h-9 rounded-full flex items-center justify-center shrink-0 border border-[#C9D5D5]/60", iconConfig.bg)}>
                       {iconConfig.icon}
                     </div>
 
                     {/* Text Content */}
                     <div className="flex-1 space-y-1">
                       <div className="flex justify-between items-start">
-                        <h4 className="text-[12px] leading-tight font-extrabold text-navy-900">
+                        <h4 className="text-[12px] leading-tight font-extrabold text-[#134547]">
                           {notif.title}
                         </h4>
                         <span className="text-[8px] font-bold text-[#94A3B8] flex items-center gap-1 font-mono">
@@ -370,7 +370,7 @@ export default function AdminNotificationsClient({
                           {isBroadcast ? (
                             <><Users className="w-2.5 h-2.5 text-zinc-400" /> Broadcast</>
                           ) : (
-                            <><User className="w-2.5 h-2.5 text-primary-600" /> {notif.employees?.name || 'Selected Employee'}</>
+                            <><User className="w-2.5 h-2.5 text-[#1A5C5E]" /> {notif.employees?.name || 'Selected Employee'}</>
                           )}
                         </span>
                         
@@ -406,7 +406,7 @@ export default function AdminNotificationsClient({
                             "p-1 rounded active:scale-95 transition-all cursor-pointer border-0 bg-transparent",
                             notif.is_pinned
                               ? "text-amber-500 hover:text-amber-700 hover:bg-amber-50"
-                              : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100"
+                              : "text-zinc-400 hover:text-zinc-650 hover:bg-zinc-100"
                           )}
                           title={notif.is_pinned ? "Unpin Notification" : "Pin Notification"}
                         >
@@ -416,7 +416,7 @@ export default function AdminNotificationsClient({
                         <button
                           type="button"
                           onClick={() => handleStartEdit(notif)}
-                          className="px-2 py-0.5 bg-zinc-100 hover:bg-zinc-200 text-[#64748B] hover:text-navy-900 rounded text-[9px] font-bold transition-all border-0 cursor-pointer active:scale-95"
+                          className="px-2 py-0.5 bg-zinc-100 hover:bg-[#1A5C5E]/10 text-slate-600 hover:text-[#1A5C5E] rounded text-[9px] font-bold transition-all border-0 cursor-pointer active:scale-95"
                           title="Edit Notification"
                         >
                           Edit
@@ -442,8 +442,8 @@ export default function AdminNotificationsClient({
 
       {/* Control Form Column */}
       <div className="lg:col-span-4">
-        <Card hover={false} className="p-6 border border-[#E2E8F0] shadow-xs bg-white">
-          <h3 className="text-sm font-extrabold text-navy-900 uppercase tracking-wider mb-4">
+        <Card hover={false} className="p-6 border border-[#C9D5D5]/60 shadow-xs bg-white rounded-2xl">
+          <h3 className="text-sm font-bold text-[#134547] uppercase tracking-wider mb-4">
             {editingNotification ? 'Edit Alert' : 'Compose Alert'}
           </h3>
           <form onSubmit={handleSendNotification} className="space-y-4">
@@ -467,14 +467,12 @@ export default function AdminNotificationsClient({
                 required
                 rows={4}
               />
-            </div>
-
-            <div className="space-y-1">
+            </div>             <div className="space-y-1">
               <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block font-mono">Alert Severity</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 border border-zinc-200 rounded-lg text-xs text-navy-900 focus:outline-none focus:ring-1 focus:ring-primary-600 bg-white cursor-pointer"
+                className="w-full px-3.5 py-2.5 border border-[#C9D5D5] rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#1A5C5E] bg-white cursor-pointer font-semibold"
               >
                 <option value="announcement">Announcement (General Broadcast)</option>
                 <option value="alert">Alert (High Priority Alert)</option>
@@ -491,8 +489,8 @@ export default function AdminNotificationsClient({
                   className={cn(
                     "py-2 px-3 border rounded-lg font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all",
                     audience === 'broadcast'
-                      ? "bg-navy-900 border-navy-900 text-white"
-                      : "bg-white border-zinc-200 text-navy-900 hover:bg-zinc-50"
+                      ? "bg-[#1A5C5E] border-[#1A5C5E] text-white"
+                      : "bg-white border-zinc-200 text-[#1A5C5E] hover:bg-zinc-50"
                   )}
                 >
                   <Users className="w-3.5 h-3.5" />
@@ -504,8 +502,8 @@ export default function AdminNotificationsClient({
                   className={cn(
                     "py-2 px-3 border rounded-lg font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all",
                     audience === 'targeted'
-                      ? "bg-navy-900 border-navy-900 text-white"
-                      : "bg-white border-zinc-200 text-navy-900 hover:bg-zinc-50"
+                      ? "bg-[#1A5C5E] border-[#1A5C5E] text-white"
+                      : "bg-white border-zinc-200 text-[#1A5C5E] hover:bg-zinc-50"
                   )}
                 >
                   <User className="w-3.5 h-3.5" />
@@ -520,7 +518,7 @@ export default function AdminNotificationsClient({
                 <select
                   value={selectedEmployeeId}
                   onChange={(e) => setSelectedEmployeeId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border border-zinc-200 rounded-lg text-xs text-navy-900 focus:outline-none focus:ring-1 focus:ring-primary-600 bg-white cursor-pointer"
+                  className="w-full px-3.5 py-2.5 border border-[#C9D5D5] rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#1A5C5E] bg-white cursor-pointer font-semibold"
                   required
                 >
                   <option value="">Select Employee...</option>
@@ -537,7 +535,7 @@ export default function AdminNotificationsClient({
               <Button
                 type="submit"
                 disabled={isPending}
-                className="w-full bg-primary-600 hover:bg-[#0d6460] text-white text-xs font-bold uppercase tracking-wider py-3 flex items-center justify-center gap-1.5 shadow-md active:scale-98 transition-all cursor-pointer border-0"
+                className="w-full bg-[#1A5C5E] hover:bg-[#134547] text-white text-xs font-bold uppercase tracking-wider py-3 flex items-center justify-center gap-1.5 shadow-md active:scale-98 transition-all cursor-pointer border-0"
               >
                 {isPending ? (
                   <>
@@ -557,7 +555,7 @@ export default function AdminNotificationsClient({
                   type="button"
                   variant="secondary"
                   onClick={handleCancelEdit}
-                  className="w-full text-xs font-bold uppercase tracking-wider py-2.5 border text-[#64748B]"
+                  className="w-full text-xs font-bold uppercase tracking-wider py-2.5 border border-[#C9D5D5] text-slate-500 hover:bg-slate-50"
                 >
                   Cancel Edit
                 </Button>
@@ -599,7 +597,7 @@ export default function AdminNotificationsClient({
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 50, opacity: 0 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-navy-900 border border-navy-800 text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-6 z-50"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#134547] border border-[#1A5C5E] text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-6 z-50"
         >
           <span className="text-xs font-bold font-sans">
             {selectedIds.size} {selectedIds.size === 1 ? 'notification' : 'notifications'} selected
@@ -608,7 +606,7 @@ export default function AdminNotificationsClient({
             <button
               type="button"
               onClick={() => setIsBulkDeleteConfirmOpen(true)}
-              className="bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold px-4 py-2 rounded-full flex items-center gap-1.5 cursor-pointer border-0 active:scale-95 transition-all shadow-md font-sans"
+              className="bg-red-650 hover:bg-red-750 text-white text-xs font-extrabold px-4 py-2 rounded-full flex items-center gap-1.5 cursor-pointer border-0 active:scale-95 transition-all shadow-md font-sans"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Delete Selected
@@ -616,7 +614,7 @@ export default function AdminNotificationsClient({
             <button
               type="button"
               onClick={() => setSelectedIds(new Set())}
-              className="text-xs font-semibold text-zinc-300 hover:text-white px-3 py-2 cursor-pointer bg-transparent border-0 font-sans"
+              className="text-xs font-semibold text-slate-300 hover:text-white px-3 py-2 cursor-pointer bg-transparent border-0 font-sans"
             >
               Cancel
             </button>

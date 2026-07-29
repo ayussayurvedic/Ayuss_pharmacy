@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps) {
   
   return {
     title: job.title,
-    description: `Apply for ${job.title} at Primetek Global Solutions. ${job.department} | ${job.location}`,
+    description: `Apply for ${job.title} at S.S. Pharmacy. ${job.department} | ${job.location}`,
   };
 }
 

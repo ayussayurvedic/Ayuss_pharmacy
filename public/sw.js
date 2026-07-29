@@ -1,4 +1,4 @@
-const CACHE_NAME = 'primetek-app-13727d8b-19fe-4dfb-9f83-225d587431a2';
+const CACHE_NAME = 'sspharmacy-app-cbe920a6-2972-429a-92fa-2a7a2a24313a';
 const SCOPES = ['/employee', '/admin'];
 
 // Utility to bound dynamic caches to prevent storage exhaustion
@@ -189,7 +189,7 @@ self.addEventListener('push', (event) => {
 
   try {
     const payload = event.data.json();
-    const title = payload.title || 'Primetek Portal';
+    const title = payload.title || 'S.S. Pharmacy';
     const options = {
       body: payload.message,
       icon: payload.icon || '/icons/icon-192.png',
@@ -200,7 +200,7 @@ self.addEventListener('push', (event) => {
         url: payload.clickActionUrl || '/employee/dashboard',
         actions: payload.actions || []
       },
-      tag: payload.tag || 'primetek-notification',
+      tag: payload.tag || 'sspharmacy-notification',
       renotify: true,
       actions: payload.actions || [] // Action buttons inside notification drawer
     };

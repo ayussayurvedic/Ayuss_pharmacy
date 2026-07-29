@@ -14,7 +14,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Logo from '@/components/ui/Logo';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
-import { getPendingCountOnly } from '@/app/admin/approvals/actions';
 
 interface AppSidebarProps {
   role: 'admin' | 'employee' | 'hr';
@@ -57,7 +56,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
 
     const fetchPendingCount = async () => {
       try {
-        const count = await getPendingCountOnly();
+        const count = 0;
         setPendingCount(count);
       } catch (err) {
         console.warn('Failed to fetch pending counts for sidebar', err);
@@ -72,30 +71,25 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
   const desktopAdminItems: NavItem[] = [
     // ─── Operations ───
     { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Overview', section: 'Operations' },
-    { href: '/admin/attendance', icon: Clock, label: 'Attendance', section: 'Operations' },
-    { href: '/admin/approvals', icon: CheckSquare, label: 'Approvals', section: 'Operations' },
-    { href: '/admin/holidays', icon: Calendar, label: 'Holidays', section: 'Operations' },
-    { href: '/admin/wfh', icon: Home, label: 'WFH Overrides', section: 'Operations' },
-    { href: '/admin/notifications', icon: Bell, label: 'Notifications', section: 'Operations' },
+    { href: '/admin/orders', icon: ClipboardList, label: 'Orders', section: 'Operations' },
+    { href: '/admin/returns', icon: Clock, label: 'Returns', section: 'Operations' },
     
-    // ─── Workforce ───
-    { href: '/admin/presence', icon: Activity, label: 'Live Presence', section: 'Workforce' },
-    { href: '/admin/employees', icon: Users, label: 'Employees', section: 'Workforce' },
-    { href: '/admin/daily-reports', icon: ClipboardList, label: 'Daily Reports', section: 'Workforce' },
+    // ─── Catalogue & Supply ───
+    { href: '/admin/products', icon: Briefcase, label: 'Products', section: 'Catalogue & Supply' },
+    { href: '/admin/inventory', icon: Activity, label: 'Inventory Control', section: 'Catalogue & Supply' },
+    { href: '/admin/suppliers', icon: Users, label: 'Suppliers', section: 'Catalogue & Supply' },
+    { href: '/admin/procurement', icon: CheckSquare, label: 'Procurement POs', section: 'Catalogue & Supply' },
+    { href: '/admin/distributors', icon: Building2, label: 'Distributors', section: 'Catalogue & Supply' },
+
+    // ─── Quality & Compliance ───
+    { href: '/admin/expirations', icon: Clock, label: 'Batch Expirations', section: 'Quality & Compliance' },
+    { href: '/admin/recalls', icon: Shield, label: 'Quality Recalls', section: 'Quality & Compliance' },
+    { href: '/admin/audit', icon: FileText, label: 'Audit Logs', section: 'Quality & Compliance' },
     
-    // ─── Recruitment & Clients ───
-    { href: '/admin/client-profiles', icon: Building2, label: 'Client Management', section: 'Recruitment & Clients' },
-    { href: '/admin/interview-requests', icon: Calendar, label: 'Interview Requests', section: 'Recruitment & Clients' },
-    { href: '/admin/applications', icon: FileText, label: 'Candidate Pipeline', section: 'Recruitment & Clients' },
-    { href: '/admin/job-tracker', icon: Briefcase, label: 'Job Tracker', section: 'Recruitment & Clients' },
-    { href: '/admin/inquiries', icon: MessageSquare, label: 'Contact Inquiries', section: 'Recruitment & Clients' },
-    
-    // ─── Security & Compliance ───
-    { href: '/admin/audit', icon: Shield, label: 'Audit Logs', section: 'Security & Compliance' },
-    
-    // ─── System Management ───
-    { href: '/admin/settings', icon: Settings, label: 'Settings', section: 'System Management' },
-    { href: '/admin/profile', icon: UserCircle, label: 'My Profile', section: 'System Management' },
+    // ─── Finance & System ───
+    { href: '/admin/invoices', icon: FileText, label: 'Invoices & GST', section: 'Finance & System' },
+    { href: '/admin/settings', icon: Settings, label: 'Settings', section: 'Finance & System' },
+    { href: '/admin/profile', icon: UserCircle, label: 'My Profile', section: 'Finance & System' },
   ];
 
   const desktopEmployeeItems: NavItem[] = [
@@ -113,25 +107,21 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
   // Mobile navigation arrays
   const mobileAdminBottom = [
     { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { href: '/admin/attendance', icon: Clock, label: 'Attendance' },
-    { href: '/admin/approvals', icon: CheckSquare, label: 'Approvals' },
-    { href: '/admin/employees', icon: Users, label: 'Employees' },
+    { href: '/admin/orders', icon: ClipboardList, label: 'Orders' },
+    { href: '/admin/returns', icon: Clock, label: 'Returns' },
+    { href: '/admin/products', icon: Briefcase, label: 'Products' },
   ];
 
   const mobileAdminMore = [
-    { href: '/admin/holidays', icon: Calendar, label: 'Holidays', section: 'Operations' },
-    { href: '/admin/wfh', icon: Home, label: 'WFH Overrides', section: 'Operations' },
-    { href: '/admin/notifications', icon: Bell, label: 'Notifications', section: 'Operations' },
-    { href: '/admin/presence', icon: Activity, label: 'Live Presence', section: 'Workforce' },
-    { href: '/admin/daily-reports', icon: ClipboardList, label: 'Daily Reports', section: 'Workforce' },
-    { href: '/admin/client-profiles', icon: Building2, label: 'Clients', section: 'Recruitment & Clients' },
-    { href: '/admin/interview-requests', icon: Calendar, label: 'Interviews', section: 'Recruitment & Clients' },
-    { href: '/admin/applications', icon: FileText, label: 'Pipeline', section: 'Recruitment & Clients' },
-    { href: '/admin/job-tracker', icon: Briefcase, label: 'Job Tracker', section: 'Recruitment & Clients' },
-    { href: '/admin/inquiries', icon: MessageSquare, label: 'Inquiries', section: 'Recruitment & Clients' },
-    { href: '/admin/audit', icon: Shield, label: 'Audit Logs', section: 'Security & Compliance' },
-    { href: '/admin/settings', icon: Settings, label: 'Settings', section: 'System Management' },
-    { href: '/admin/profile', icon: UserCircle, label: 'Profile', section: 'System Management' },
+    { href: '/admin/inventory', icon: Activity, label: 'Inventory', section: 'Catalogue & Supply' },
+    { href: '/admin/suppliers', icon: Users, label: 'Suppliers', section: 'Catalogue & Supply' },
+    { href: '/admin/procurement', icon: CheckSquare, label: 'Procurement', section: 'Catalogue & Supply' },
+    { href: '/admin/distributors', icon: Building2, label: 'Distributors', section: 'Catalogue & Supply' },
+    { href: '/admin/expirations', icon: Clock, label: 'Expirations', section: 'Quality & Compliance' },
+    { href: '/admin/recalls', icon: Shield, label: 'Recalls', section: 'Quality & Compliance' },
+    { href: '/admin/invoices', icon: FileText, label: 'Invoices', section: 'Finance & System' },
+    { href: '/admin/settings', icon: Settings, label: 'Settings', section: 'Finance & System' },
+    { href: '/admin/profile', icon: UserCircle, label: 'Profile', section: 'Finance & System' },
   ];
 
   const mobileEmployeeBottom = [
@@ -165,14 +155,14 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
   const executeLogout = async () => {
     setConfirmLogout(false);
     try {
-      sessionStorage.removeItem('primetek-admin-session');
-      localStorage.removeItem('primetek-admin-session');
-      localStorage.removeItem('primetek-admin-token');
-      sessionStorage.removeItem('primetek-employee-session');
-      localStorage.removeItem('primetek-employee-session');
-      localStorage.removeItem('primetek-employee-token');
-      localStorage.removeItem('primetek-session');
-      localStorage.removeItem('primetek-token');
+      sessionStorage.removeItem('sspharmacy-admin-session');
+      localStorage.removeItem('sspharmacy-admin-session');
+      localStorage.removeItem('sspharmacy-admin-token');
+      sessionStorage.removeItem('sspharmacy-employee-session');
+      localStorage.removeItem('sspharmacy-employee-session');
+      localStorage.removeItem('sspharmacy-employee-token');
+      localStorage.removeItem('sspharmacy-session');
+      localStorage.removeItem('sspharmacy-token');
     } catch {}
     await fetch('/api/auth/logout', { method: 'POST' });
     router.replace(role === 'admin' ? '/admin/login' : '/employee/login');
@@ -183,11 +173,11 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
     <>
       {/* ─── Desktop Sidebar (hidden on mobile) ─── */}
       <aside className={cn(
-        'hidden md:flex flex-col bg-navy-900 text-white transition-[width] duration-300 ease-in-out h-full border-r border-white/5 overflow-hidden',
+        'hidden md:flex flex-col bg-[#134547] text-white transition-[width] duration-300 ease-in-out h-full border-r border-[#1A5C5E]/50 overflow-hidden',
         collapsed ? 'w-[68px]' : 'w-60'
       )}>
         {/* Brand */}
-        <div className="flex items-center justify-between p-4 border-b border-white/10 h-16">
+        <div className="flex items-center justify-between p-4 border-b border-[#1A5C5E]/60 h-16">
           {!collapsed ? (
             <>
               <Link href={role === 'admin' ? '/admin/dashboard' : '/employee/dashboard'} className="flex items-center gap-2.5">
@@ -195,7 +185,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
               </Link>
               <button 
                 onClick={() => setCollapsed(true)} 
-                className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-white transition-colors"
+                className="p-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition-colors"
                 aria-label="Collapse sidebar"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -207,8 +197,8 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
               className="mx-auto p-1.5 rounded-lg hover:bg-white/10 transition-all active:scale-95"
               aria-label="Expand sidebar"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/20">
-                <span className="text-white font-black text-sm">P</span>
+              <div className="w-8 h-8 rounded-lg bg-[#C9943E] flex items-center justify-center shadow-lg shadow-[#C9943E]/20">
+                <span className="text-white font-black text-sm">SS</span>
               </div>
             </button>
           )}
@@ -227,7 +217,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
               return (
                 <div key={item.href} className="space-y-1">
                   {showSectionHeader && !collapsed && (
-                    <div className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] px-3 pt-4 pb-1.5">
+                    <div className="text-[9px] font-black text-[#E8C87A] uppercase tracking-[0.18em] px-3 pt-4 pb-1.5">
                       {item.section}
                     </div>
                   )}
@@ -236,28 +226,15 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
                     className={cn(
                       'flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 relative group',
                       isActive 
-                        ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/25' 
-                        : 'text-gray-400 hover:text-white hover:bg-white/[0.06]'
+                        ? 'bg-[#C9943E] text-white shadow-lg shadow-[#C9943E]/30 font-bold' 
+                        : 'text-slate-200 hover:text-white hover:bg-[#1A5C5E]/60'
                     )}
                     title={collapsed ? item.label : undefined}
                   >
                     <div className="relative shrink-0 flex items-center justify-center">
                       <item.icon className="w-[18px] h-[18px] transition-transform duration-200 group-hover:scale-110" />
-                      {collapsed && item.label === 'Approvals' && pendingCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-navy-900 animate-pulse" />
-                      )}
                     </div>
                     {!collapsed && <span>{item.label}</span>}
-                    {!collapsed && item.label === 'Approvals' && pendingCount > 0 && (
-                      <span className={cn(
-                        "ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none",
-                        isActive 
-                          ? "bg-white text-primary-600" 
-                          : "bg-red-500/25 text-red-400 border border-red-500/30"
-                      )}>
-                        {pendingCount}
-                      </span>
-                    )}
                   </Link>
                 </div>
               );

@@ -6,11 +6,11 @@ import SchemaMarkup from '@/components/layout/SchemaMarkup';
 import { generateBreadcrumbSchema } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Industries We Serve | IT, Healthcare, Finance | Primetek Global Solutions',
+  title: 'Industries We Serve | IT, Healthcare, Finance | S.S. Pharmacy',
   description:
-    'Primetek Global Solutions delivers IT staffing across Information Technology, Healthcare, and Banking & Finance industries in the United States.',
+    'S.S. Pharmacy delivers IT staffing across Information Technology, Healthcare, and Banking & Finance industries in the United States.',
   alternates: {
-    canonical: 'https://www.primetekglobalsolutions.com/industries',
+    canonical: 'https://www.sspharmacy.in/industries',
   },
 };
 
@@ -44,7 +44,7 @@ export default function IndustriesPage() {
   const industriesListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: 'Industries Served by Primetek Global Solutions',
+    name: 'Industries Served by S.S. Pharmacy',
     numberOfItems: industries.length,
     itemListElement: industries.map((industry, index) => ({
       '@type': 'ListItem',

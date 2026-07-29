@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Primetek Global Solutions',
-  description: 'Privacy Policy for Primetek Global Solutions LLC. Learn how we collect, use, and protect your information.',
+  title: 'Privacy Policy | S.S. Pharmacy',
+  description: 'Privacy Policy for S.S. Pharmacy. Learn how we collect, use, and protect your information.',
   alternates: {
-    canonical: 'https://www.primetekglobalsolutions.com/privacy',
+    canonical: 'https://www.sspharmacy.in/privacy',
   },
 };
 
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
         {/* Content */}
         <div className="space-y-6 text-sm text-body-text leading-relaxed">
           <p>
-            At Primetek Global Solutions LLC, we value your privacy and are committed to protecting your personal information. This Privacy Policy details how we handle the data you provide when interacting with our public website.
+            At S.S. Pharmacy, we value your privacy and are committed to protecting your personal information. This Privacy Policy details how we handle the data you provide when interacting with our public website.
           </p>
 
           <h2 className="text-xl font-semibold text-ink pt-4 border-t border-hairline">
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
             3. Sharing and Selling Information
           </h2>
           <p>
-            <strong>We do not sell, rent, or trade your personal information to third parties.</strong> Your data is accessed only by authorized Primetek Global Solutions personnel for the purpose of fulfilling your recruitment and placement needs.
+            <strong>We do not sell, rent, or trade your personal information to third parties.</strong> Your data is accessed only by authorized S.S. Pharmacy personnel for the purpose of fulfilling your recruitment and placement needs.
           </p>
 
           <h2 className="text-xl font-semibold text-ink pt-4 border-t border-hairline">
@@ -81,8 +81,8 @@ export default function PrivacyPage() {
             If you have questions or concerns about this policy, please reach out to us at:
           </p>
           <p className="font-semibold text-ink">
-            Primetek Global Solutions LLC<br />
-            Email: <a href="mailto:hr@primetekglobalsolutions.com" className="text-teal-primary hover:underline">hr@primetekglobalsolutions.com</a><br />
+            S.S. Pharmacy<br />
+            Email: <a href="mailto:hr@sspharmacy.in" className="text-teal-primary hover:underline">hr@sspharmacy.in</a><br />
             Address: 1680, Unit 2G, 14th Ave S, Birmingham, AL 35205
           </p>
         </div>

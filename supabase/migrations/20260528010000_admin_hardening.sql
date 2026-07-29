@@ -1,5 +1,5 @@
 -- ============================================================
--- Primetek HR Portal - Migration: Admin Operational Hardening
+-- S.S. Pharmacy Portal - Migration: Admin Operational Hardening
 -- ============================================================
 
 -- 1. Setup Custom Types & Enums

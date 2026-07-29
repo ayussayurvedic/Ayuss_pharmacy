@@ -1,5 +1,5 @@
 -- ====================================================================
--- Primetek Global Solutions - RLS Hardening Script
+-- S.S. Pharmacy - RLS Hardening Script
 -- Run this in your Supabase SQL Editor to secure all tables.
 -- ====================================================================
 

@@ -27,11 +27,11 @@ export default function Sidebar({ userName = 'Admin' }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
-      sessionStorage.removeItem('primetek-admin-session');
-      localStorage.removeItem('primetek-admin-session');
-      localStorage.removeItem('primetek-admin-token');
-      localStorage.removeItem('primetek-session');
-      localStorage.removeItem('primetek-token');
+      sessionStorage.removeItem('sspharmacy-admin-session');
+      localStorage.removeItem('sspharmacy-admin-session');
+      localStorage.removeItem('sspharmacy-admin-token');
+      localStorage.removeItem('sspharmacy-session');
+      localStorage.removeItem('sspharmacy-token');
     } catch {}
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/admin/login');
@@ -49,11 +49,11 @@ export default function Sidebar({ userName = 'Admin' }: SidebarProps) {
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         {!collapsed && (
           <Link href="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm">
-              P
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1A5C5E] to-[#134547] flex items-center justify-center text-white font-bold text-[10px] border border-[#C9943E]/30">
+              SS
             </div>
             <span className="font-bold text-sm">
-              Primetek<span className="text-primary-400">.</span>
+              S.S. Pharmacy<span className="text-[#C9943E]">.</span>
             </span>
           </Link>
         )}

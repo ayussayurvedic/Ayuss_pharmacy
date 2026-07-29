@@ -1,5 +1,5 @@
 /**
- * Centralized Design System Tokens for Primetek Global Solutions
+ * Centralized Design System Tokens for S.S. Pharmacy
  * Targets compact, high-density, premium SaaS aesthetics (inspired by Vercel, Linear, Stripe).
  */
 

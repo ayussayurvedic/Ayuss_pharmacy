@@ -5,11 +5,11 @@ import SchemaMarkup from '@/components/layout/SchemaMarkup';
 import { generateBreadcrumbSchema } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'IT Staffing Services | Contract, C2C, Full-Time | Primetek Global Solutions',
+  title: 'IT Staffing Services | Contract, C2C, Full-Time | S.S. Pharmacy',
   description:
     'Contract Staffing, C2C, Contract-to-Hire, and Full-Time IT recruitment for US-based companies. Covering Software Dev, Cloud/DevOps, Data Science, Cybersecurity, QA, and ERP.',
   alternates: {
-    canonical: 'https://www.primetekglobalsolutions.com/services',
+    canonical: 'https://www.sspharmacy.in/services',
   },
 };
 
@@ -83,8 +83,8 @@ export default function ServicesPage() {
         name: 'IT Staffing & Talent Solutions',
         provider: {
           '@type': 'Organization',
-          name: 'Primetek Global Solutions',
-          url: 'https://www.primetekglobalsolutions.com',
+          name: 'S.S. Pharmacy',
+          url: 'https://www.sspharmacy.in',
         },
         description:
           'Short-to-mid term IT professionals for project-based needs, direct C2C placement, contract-to-hire, and full-time permanent recruitment in the US.',

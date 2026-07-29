@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
           },
         });
         await dummyClient.auth.signInWithPassword({
-          email: 'nonexistent-admin-trigger-dummy@primetekglobalsolutions.com',
+          email: 'nonexistent-admin-trigger-dummy@sspharmacy.in',
           password: 'dummy-password-that-will-fail-and-simulate-supabase-latency',
         }).catch(() => null);
 

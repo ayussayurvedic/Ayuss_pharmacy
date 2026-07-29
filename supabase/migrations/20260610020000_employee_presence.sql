@@ -1,5 +1,5 @@
 -- ====================================================================
--- Primetek Global Solutions - Real-Time Employee Presence Schema
+-- S.S. Pharmacy - Real-Time Employee Presence Schema
 -- ====================================================================
 
 CREATE TABLE IF NOT EXISTS public.employee_presence (

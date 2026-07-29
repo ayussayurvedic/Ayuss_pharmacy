@@ -1,8 +1,8 @@
-// Primetek Global — Hyderabad office (demo coordinates)
+// S.S. Pharmacy — Office location (demo coordinates)
 export const OFFICE_LOCATION = {
   lat: 17.44569123225756,
   lng: 78.38649648531063,
-  name: 'Primetek HQ, Hyderabad',
+  name: 'S.S. Pharmacy Office',
   radiusMeters: 500,
 };
 

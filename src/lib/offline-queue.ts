@@ -21,8 +21,8 @@ export interface OfflineAttendanceEntry {
   errorMessage?: string;
 }
 
-const QUEUE_KEY = 'primetek_offline_attendance_queue';
-const ARCHIVE_KEY = 'primetek_failed_attendance_history';
+const QUEUE_KEY = 'sspharmacy_offline_attendance_queue';
+const ARCHIVE_KEY = 'sspharmacy_failed_attendance_history';
 
 export interface ArchivedOfflineEntry {
   entry: OfflineAttendanceEntry;

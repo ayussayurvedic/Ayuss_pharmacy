@@ -16,12 +16,11 @@ export default function PWAStandaloneGuard() {
     if (isStandalone) {
       document.body.classList.add('pwa-standalone');
       
-      // If user tries to access website pages while in standalone app, redirect to appropriate login portal
-      const isPortalRoute = pathname.startsWith('/admin') || pathname.startsWith('/employee');
+      // If user tries to access website pages while in standalone app, allow public storefront, only guard admin paths
+      const isPortalRoute = pathname.startsWith('/admin');
       
-      if (!isPortalRoute) {
-        const isUrlAdmin = window.location.pathname.startsWith('/admin');
-        router.replace(isUrlAdmin ? '/admin/login' : '/employee/login');
+      if (!isPortalRoute && pathname.startsWith('/employee')) {
+        router.replace('/admin/login');
       }
     } else {
       document.body.classList.remove('pwa-standalone');

@@ -1,5 +1,5 @@
 -- ====================================================================
--- Primetek Global Solutions - Fix Inquiries Status Check Constraint
+-- S.S. Pharmacy - Fix Inquiries Status Check Constraint
 -- ====================================================================
 
 -- 1. Drop existing status check constraint if it exists

@@ -1,5 +1,5 @@
 -- ====================================================================
--- Primetek Global Solutions - Notification Lifecycle Management Schema
+-- S.S. Pharmacy - Notification Lifecycle Management Schema
 -- ====================================================================
 
 -- 1. Add is_pinned column to notifications table

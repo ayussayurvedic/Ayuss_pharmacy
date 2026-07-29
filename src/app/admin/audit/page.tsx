@@ -87,72 +87,75 @@ export default async function AuditLogsPage(props: PageProps) {
   });
 
   return (
-    <div className="space-y-6 pb-12 font-sans text-zinc-650">
+    <div className="space-y-6 pb-12 font-sans text-slate-700">
       {/* Premium Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-lg border border-zinc-200 shadow-2xs">
+      <div className="bg-[#134547] text-white p-6 rounded-2xl border border-[#1A5C5E] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-primary-500" />
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-navy-900">System Audit Logs</h1>
+            <ShieldCheck className="w-5 h-5 text-[#C9943E]" />
+            <h1 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-wide">
+              System Audit Logs
+            </h1>
           </div>
-          <p className="text-xs text-zinc-450">
+          <p className="text-slate-300 text-xs font-light">
             Immutable record of all critical administrative actions.
           </p>
         </div>
 
         <form method="GET" action="/admin/audit" className="relative group w-full sm:w-auto">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-450 focus:text-primary-500 transition-colors" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-white transition-colors" />
           <input 
             type="text" 
             name="q"
             defaultValue={q}
             placeholder="Search logs..." 
-            className="w-full sm:w-64 pl-10 pr-4 py-2 rounded-lg border border-zinc-200 bg-white text-xs text-navy-900 placeholder:text-zinc-450 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/20 transition-all shadow-sm font-semibold"
+            className="w-full sm:w-64 pl-10 pr-4 py-2 rounded-xl border border-[#1A5C5E] bg-[#1A5C5E]/30 text-xs text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all font-bold"
           />
         </form>
       </div>
+
       {/* Mobile view */}
       <div className="block md:hidden space-y-3">
         {(!logs || logs.length === 0) ? (
-          <div className="p-8 text-center bg-white rounded-lg border border-zinc-200">
-            <div className="w-10 h-10 rounded-full bg-zinc-50 border border-zinc-200 flex items-center justify-center mx-auto mb-2 text-zinc-400">
+          <div className="p-8 text-center bg-white rounded-xl border border-[#C9D5D5]/60 shadow-xs">
+            <div className="w-10 h-10 rounded-full bg-slate-50 border border-[#C9D5D5]/40 flex items-center justify-center mx-auto mb-2 text-slate-400">
               <History className="w-5 h-5" />
             </div>
-            <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider font-mono">No logs matching query</p>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider font-mono">No logs matching query</p>
           </div>
         ) : (
           logs.map((log) => {
             return (
-              <div key={log.id} className="bg-white rounded-lg border border-zinc-200 shadow-2xs p-5 space-y-4 text-zinc-650">
-                <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-                  <div className="flex items-center gap-1.5 text-[9px] font-mono font-semibold text-zinc-400 uppercase tracking-wider">
-                    <Clock className="w-3.5 h-3.5 text-zinc-350" />
+              <div key={log.id} className="bg-white rounded-xl border border-[#C9D5D5]/60 shadow-xs p-5 space-y-4 text-slate-700">
+                <div className="flex items-center justify-between border-b border-[#C9D5D5]/40 pb-3">
+                  <div className="flex items-center gap-1.5 text-[9px] font-mono font-bold text-slate-400 uppercase tracking-wider">
+                    <Clock className="w-3.5 h-3.5 text-slate-300" />
                     <span>{formatSafeDateTime(log.created_at)}</span>
                   </div>
                   <StatusBadge status={log.action} />
                 </div>
-                <div className="grid grid-cols-2 gap-4 bg-zinc-50/50 p-3 rounded-lg border border-zinc-200/60 text-[10px]">
+                <div className="grid grid-cols-2 gap-4 bg-[#FDF8F0] p-3 rounded-lg border border-[#C9D5D5]/40 text-[10px]">
                   <div>
-                    <span className="text-zinc-400 block mb-0.5 font-bold uppercase tracking-wider text-[8px]">Actor</span>
-                    <span className="font-bold text-navy-900">
+                    <span className="text-slate-400 block mb-0.5 font-bold uppercase tracking-wider text-[8px]">Actor</span>
+                    <span className="font-bold text-[#134547]">
                       {actorMap[log.user_id]?.name || log.user_role.toUpperCase()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-zinc-400 block mb-0.5 font-bold uppercase tracking-wider text-[8px]">Module / Entity</span>
-                    <span className="font-bold text-navy-900 uppercase">{log.entity_type} {log.entity_id ? `(${log.entity_id.substring(0, 8)})` : ''}</span>
+                    <span className="text-slate-400 block mb-0.5 font-bold uppercase tracking-wider text-[8px]">Module / Entity</span>
+                    <span className="font-bold text-[#134547] uppercase">{log.entity_type} {log.entity_id ? `(${log.entity_id.substring(0, 8)})` : ''}</span>
                   </div>
                 </div>
 
                 {log.entity_type === 'attendance' && log.entity_id && (
-                  <div className="mt-2.5 pt-2.5 border-t border-zinc-100 flex items-center justify-between">
+                  <div className="mt-2.5 pt-2.5 border-t border-[#C9D5D5]/40 flex items-center justify-between">
                     <div className="flex items-center gap-1">
                       <Layers className="w-3.5 h-3.5 text-violet-650" />
-                      <span className="text-[8px] font-mono font-semibold text-violet-750 uppercase tracking-wider">
+                      <span className="text-[8px] font-mono font-bold text-violet-750 uppercase tracking-wider">
                         Traceable Replay Stream
                       </span>
                     </div>
-                    <span className="text-[8px] font-mono font-semibold text-zinc-500 bg-zinc-50 border border-zinc-200 px-1.5 py-0.5 rounded">
+                    <span className="text-[8px] font-mono font-bold text-zinc-500 bg-zinc-50 border border-zinc-200 px-1.5 py-0.5 rounded">
                       Session: #{log.entity_id.substring(0, 8).toUpperCase()}
                     </span>
                   </div>
@@ -164,47 +167,47 @@ export default async function AuditLogsPage(props: PageProps) {
       </div>
 
       {/* Desktop view */}
-      <div className="hidden md:block bg-white rounded-lg border border-zinc-200 shadow-2xs overflow-hidden">
+      <div className="hidden md:block bg-white rounded-2xl border border-[#C9D5D5]/60 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-zinc-50 text-zinc-650 border-b border-zinc-200">
-                <th className="p-3 font-mono font-semibold uppercase tracking-wider text-[9px]">Event Timeline</th>
-                <th className="p-3 font-mono font-semibold uppercase tracking-wider text-[9px]">Actor</th>
-                <th className="p-3 font-mono font-semibold uppercase tracking-wider text-[9px]">Operation</th>
-                <th className="p-3 font-mono font-semibold uppercase tracking-wider text-[9px]">Module</th>
-                <th className="p-3 font-mono font-semibold uppercase tracking-wider text-[9px]">Entity Context</th>
-                <th className="p-3 font-mono font-semibold uppercase tracking-wider text-[9px] text-center">Trace Replay</th>
+              <tr className="bg-[#FDF8F0] text-[#1A5C5E] border-b border-[#C9D5D5]/60 font-bold">
+                <th className="p-4 uppercase tracking-wider text-[9px]">Event Timeline</th>
+                <th className="p-4 uppercase tracking-wider text-[9px]">Actor</th>
+                <th className="p-4 uppercase tracking-wider text-[9px]">Operation</th>
+                <th className="p-4 uppercase tracking-wider text-[9px]">Module</th>
+                <th className="p-4 uppercase tracking-wider text-[9px]">Entity Context</th>
+                <th className="p-4 uppercase tracking-wider text-[9px] text-center">Trace Replay</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-150">
+            <tbody className="divide-y divide-[#C9D5D5]/40">
               {logs?.map((log) => {
                 const isDelete = log.action.includes('DELETE');
                 const isOverride = log.action.includes('OVERRIDE') || log.action.includes('REVERSE') || log.action.includes('CORRECT') || log.action.includes('REBUILD');
                 
                 return (
                   <tr key={log.id} className={cn(
-                    "hover:bg-zinc-50/50 transition-colors group text-zinc-600",
+                    "hover:bg-[#FDF8F0]/30 transition-colors group text-slate-700 font-medium",
                     isOverride && "bg-violet-50/30 border-l-2 border-l-violet-400",
                     isDelete && "bg-red-50/20 border-l-2 border-l-red-400"
                   )}>
                     <td className="p-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold text-zinc-400 uppercase tracking-wider">
-                        <Clock className="w-3.5 h-3.5 text-zinc-350" />
+                      <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-slate-450 uppercase tracking-wider">
+                        <Clock className="w-3.5 h-3.5 text-slate-300" />
                         {formatSafeDateTime(log.created_at)}
                       </div>
                     </td>
                     <td className="p-4 whitespace-nowrap">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-6 h-6 rounded bg-zinc-50 border border-zinc-200 flex items-center justify-center text-zinc-550 group-hover:bg-primary-500/10 group-hover:text-primary-650 group-hover:border-primary-500/20 transition-all">
+                        <div className="w-6 h-6 rounded bg-[#1A5C5E]/10 border border-[#1A5C5E]/20 flex items-center justify-center text-[#1A5C5E] group-hover:bg-[#1A5C5E]/20 transition-all">
                           <User className="w-3.5 h-3.5" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-navy-900 tracking-tight font-sans">
+                          <span className="text-xs font-bold text-[#134547] tracking-tight font-sans">
                             {actorMap[log.user_id]?.name || log.user_role.toUpperCase()}
                           </span>
                           {actorMap[log.user_id]?.email && (
-                            <span className="text-[9px] text-zinc-450 lowercase">
+                            <span className="text-[9px] text-slate-400 lowercase font-medium">
                               {actorMap[log.user_id].email}
                             </span>
                           )}
@@ -214,10 +217,10 @@ export default async function AuditLogsPage(props: PageProps) {
                     <td className="p-4 whitespace-nowrap">
                       <StatusBadge status={log.action} />
                     </td>
-                    <td className="p-4 whitespace-nowrap text-[9px] font-mono font-semibold text-zinc-500 uppercase tracking-wider">
+                    <td className="p-4 whitespace-nowrap text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider">
                       {log.entity_type}
                     </td>
-                    <td className="p-4 text-[10px] text-zinc-400 font-semibold font-mono">
+                    <td className="p-4 text-[10px] text-slate-400 font-bold font-mono">
                       {log.entity_id ? `${log.entity_id.substring(0, 8)}...` : 'N/A'}
                     </td>
                     <td className="p-4 text-center whitespace-nowrap">
@@ -227,7 +230,7 @@ export default async function AuditLogsPage(props: PageProps) {
                           <span>SESSION #{log.entity_id.substring(0, 8).toUpperCase()}</span>
                         </div>
                       ) : (
-                        <span className="text-zinc-400 font-bold font-mono">—</span>
+                        <span className="text-slate-400 font-bold font-mono">—</span>
                       )}
                     </td>
                   </tr>
@@ -236,10 +239,10 @@ export default async function AuditLogsPage(props: PageProps) {
               {(!logs || logs.length === 0) && (
                 <tr>
                   <td colSpan={6} className="p-12 text-center font-sans">
-                    <div className="w-10 h-10 rounded-full bg-zinc-50 border border-zinc-200 flex items-center justify-center mx-auto mb-3 text-zinc-450">
+                    <div className="w-10 h-10 rounded-full bg-slate-50 border border-[#C9D5D5]/40 flex items-center justify-center mx-auto mb-3 text-slate-400">
                       <History className="w-5 h-5" />
                     </div>
-                    <p className="text-xs font-semibold text-navy-900 uppercase tracking-wider font-mono">No Logs Found</p>
+                    <p className="text-xs font-bold text-[#134547] uppercase tracking-wider font-mono">No Logs Found</p>
                   </td>
                 </tr>
               )}

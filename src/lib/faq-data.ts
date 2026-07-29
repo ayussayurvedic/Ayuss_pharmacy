@@ -32,6 +32,6 @@ export const faqs: FAQItem[] = [
   {
     question: 'How do I submit a staffing requirement?',
     answer:
-      'Use the contact form on our Contact page, email us at hr@primetekglobalsolutions.com, or call +1 (219) 345-6559. We respond within 24 hours with a tailored proposal.',
+      'Use the contact form on our Contact page, email us at contact@sspharmacy.in, or call us directly. We respond within 24 hours with a tailored proposal.',
   },
 ];

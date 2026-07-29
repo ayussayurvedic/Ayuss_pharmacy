@@ -1,5 +1,5 @@
 -- ============================================================
--- Primetek Global Solutions — Database Audit Remediation Migration
+-- S.S. Pharmacy — Database Audit Remediation Migration
 -- Date: May 29, 2026
 -- ============================================================
 

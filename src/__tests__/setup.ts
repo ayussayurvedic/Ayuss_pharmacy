@@ -64,7 +64,7 @@ vi.mock('next/cache', () => ({
 
 vi.mock('@/lib/cache/office-location', () => ({
   getCachedActiveOfficeLocation: vi.fn(async () => ({
-    name: 'Primetek HQ, Hyderabad',
+    name: 'S.S. Pharmacy Office',
     lat: 17.44569123225756,
     lng: 78.38649648531063,
     radius_meters: 500,
@@ -163,7 +163,7 @@ export async function createTestEmployee() {
 }
 
 export async function createTestAdmin() {
-  const email = 'test_admin@primetek.com';
+  const email = 'test_admin@sspharmacy.in';
   let userId: string;
 
   // Provision Admin in Supabase Auth

@@ -24,7 +24,7 @@ function initVapid() {
 
   const publicKey = env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const privateKey = env.VAPID_PRIVATE_KEY;
-  const subject = env.VAPID_SUBJECT || 'mailto:admin@primetekglobalsolutions.com';
+  const subject = env.VAPID_SUBJECT || 'mailto:admin@sspharmacy.in';
 
   if (!publicKey || !privateKey) {
     console.warn('⚠️ Web Push VAPID keys are missing. Push notifications will be logged to console in mock mode.');

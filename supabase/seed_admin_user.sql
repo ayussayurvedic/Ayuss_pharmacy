@@ -1,5 +1,5 @@
 -- ====================================================================
--- PRIMETEK HR PORTAL — Seed Admin User
+-- S.S. Pharmacy Portal — Seed Admin User
 -- Run this block in the Supabase SQL Editor to seed the admin account.
 -- ====================================================================
 

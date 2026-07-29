@@ -1,5 +1,5 @@
 -- ====================================================================
--- PRIMETEK HR PORTAL — All Pending Migrations (Safe to re-run)
+-- S.S. Pharmacy Portal — All Pending Migrations (Safe to re-run)
 -- Run this entire block in Supabase SQL Editor
 -- ====================================================================
 

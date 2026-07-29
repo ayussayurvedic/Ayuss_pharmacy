@@ -5,7 +5,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 export const metadata: Metadata = {
   title: 'Careers',
   description:
-    'Explore job openings at Primetek Global Solutions. Find roles in IT, Healthcare, Finance, Manufacturing, and more.',
+    'Explore job openings at S.S. Pharmacy. Find roles in IT, Healthcare, Finance, Manufacturing, and more.',
 };
 
 export const revalidate = 60; // Revalidate every 60 seconds

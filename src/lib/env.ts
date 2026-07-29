@@ -18,7 +18,7 @@ const serverSchema = publicSchema.extend({
   GOOGLE_SHEET_WEBHOOK_URL: z.string().min(1).optional(),
 }).superRefine((data, ctx) => {
   if (process.env.NODE_ENV === 'production') {
-    if (!data.JWT_SECRET || data.JWT_SECRET === 'primetek-fallback-secret-key-2026') {
+    if (!data.JWT_SECRET || data.JWT_SECRET === 'sspharmacy-fallback-secret-key-2026') {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'In production, JWT_SECRET must be explicitly set and cannot be the default fallback key.',

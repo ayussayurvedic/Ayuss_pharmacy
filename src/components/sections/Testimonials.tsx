@@ -8,24 +8,24 @@ import SectionHeading from '@/components/ui/SectionHeading';
 const testimonials = [
   {
     quote:
-      'Primetek transformed our hiring process. They consistently deliver exceptional candidates who integrate seamlessly into our teams.',
-    name: 'Rajesh Kumar',
-    role: 'VP of Engineering',
-    company: 'TechVista Solutions',
+      'S.S. Pharmacy products have become a staple in our household. The quality and purity of their Ayurvedic formulations are unmatched.',
+    name: 'Dr. Ramesh Verma',
+    role: 'Ayurvedic Practitioner',
+    company: 'Wellness Clinic',
   },
   {
     quote:
-      'Their consulting team helped us save 35% in operational costs while improving our delivery timelines. Outstanding results.',
-    name: 'Priya Sharma',
-    role: 'COO',
-    company: 'MedCore Healthcare',
+      'As a distributor, I appreciate their consistent product quality and reliable supply chain. S.S. Pharmacy is a trusted partner.',
+    name: 'Sunil Agarwal',
+    role: 'Wholesale Distributor',
+    company: 'Agarwal Medical Stores',
   },
   {
     quote:
-      'We partnered with Primetek for IT outsourcing and the quality of their managed services exceeded all our expectations.',
-    name: 'Arun Patel',
-    role: 'CTO',
-    company: 'FinServe Global',
+      'The herbal remedies from S.S. Pharmacy have helped our patients achieve genuine relief. Traditional wisdom meets modern quality.',
+    name: 'Dr. Meena Iyer',
+    role: 'Senior Physician',
+    company: 'Ayurveda Health Centre',
   },
 ];
 
@@ -54,7 +54,7 @@ export default function Testimonials() {
         <SectionHeading
           label="Testimonials"
           title="What Our Clients Say"
-          description="Hear from industry leaders who trust Primetek for their workforce needs."
+          description="Hear from practitioners and partners who trust S.S. Pharmacy for authentic Ayurvedic remedies."
           light
         />
 

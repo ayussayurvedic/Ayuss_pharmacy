@@ -2,14 +2,14 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rebrand layout shells, set up Supabase backend environments, clean up old Primetek folders, and update sidebar/PWA standalone guards for the S.S. Pharmacy Admin App.
+**Goal:** Rebrand layout shells, set up Supabase backend environments, clean up old S.S. Pharmacy folders, and update sidebar/PWA standalone guards for the S.S. Pharmacy Admin App.
 
 **Architecture:** Connect Next.js App Router to the authoritative Supabase backend using the environment configuration. Rebrand sidebar links in `AppSidebar.tsx` and disable redirects to `/employee` inside `PWAStandaloneGuard.tsx`.
 
 **Tech Stack:** Next.js 16 (App Router), TypeScript, Supabase SSR, Vitest, Tailwind CSS.
 
 ## Global Constraints
-* Re-use the existing visual design layouts and collapsible sidebar of the Primetek template.
+* Re-use the existing visual design layouts and collapsible sidebar of the S.S. Pharmacy template.
 * Domain base URL: `https://sspharmacy.com`.
 * Disable or remove employee portals and routes (`/employee`).
 
@@ -221,7 +221,7 @@
 ### Task 4: Obsolete Directories Relocation
 
 **Files:**
-* Move: `src/app/admin/jobs/`, `src/app/admin/employees/`, `src/app/admin/attendance/`, `src/app/admin/presence/`, `src/app/admin/wfh/`, `src/app/admin/daily-reports/`, `src/app/admin/interview-requests/`, `src/app/admin/applications/`, `src/app/admin/approvals/`, `src/app/admin/holidays/` to `old-primetek-code/` backup directory.
+* Move: `src/app/admin/jobs/`, `src/app/admin/employees/`, `src/app/admin/attendance/`, `src/app/admin/presence/`, `src/app/admin/wfh/`, `src/app/admin/daily-reports/`, `src/app/admin/interview-requests/`, `src/app/admin/applications/`, `src/app/admin/approvals/`, `src/app/admin/holidays/` to `old-S.S. Pharmacy-code/` backup directory.
 
 **Interfaces:**
 * Consumes: None
@@ -230,8 +230,8 @@
 - [ ] **Step 1: Move folders to backup directory**
   Run in terminal:
   ```bash
-  mkdir -p old-primetek-code
-  mv src/app/admin/jobs src/app/admin/employees src/app/admin/attendance src/app/admin/presence src/app/admin/wfh src/app/admin/daily-reports src/app/admin/interview-requests src/app/admin/applications src/app/admin/approvals src/app/admin/holidays old-primetek-code/
+  mkdir -p old-S.S. Pharmacy-code
+  mv src/app/admin/jobs src/app/admin/employees src/app/admin/attendance src/app/admin/presence src/app/admin/wfh src/app/admin/daily-reports src/app/admin/interview-requests src/app/admin/applications src/app/admin/approvals src/app/admin/holidays old-S.S. Pharmacy-code/
   ```
 
 - [ ] **Step 2: Verify compile and build passes**
@@ -241,5 +241,5 @@
 - [ ] **Step 3: Commit**
   ```bash
   git add .
-  git commit -m "cleanup: move obsolete primetek hr portal admin directories to old-primetek-code backup"
+  git commit -m "cleanup: move obsolete S.S. Pharmacy Portal admin directories to old-S.S. Pharmacy-code backup"
   ```

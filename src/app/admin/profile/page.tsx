@@ -17,7 +17,7 @@ export default async function AdminProfilePage() {
   // Admin user data comes from the session/JWT
   const admin = {
     name: session.name || 'Administrator',
-    email: session.email || 'admin@primetek.com',
+    email: session.email || 'admin@sspharmacy.in',
     role: session.role
   };
 
@@ -31,27 +31,29 @@ export default async function AdminProfilePage() {
   const preferences = dbAdmin?.notification_preferences || undefined;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12 font-sans text-slate-700">
       {/* Premium Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-lg border border-zinc-200 shadow-2xs">
+      <div className="bg-[#134547] text-white p-6 rounded-2xl border border-[#1A5C5E] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <User className="w-5 h-5 text-primary-500" />
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-navy-900">Admin Profile</h1>
+            <User className="w-5 h-5 text-[#C9943E]" />
+            <h1 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-wide">
+              Admin Profile
+            </h1>
           </div>
-          <p className="text-xs text-zinc-450">
+          <p className="text-slate-300 text-xs font-light">
             Manage your account and security settings.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card hover={false} className="p-6 rounded-lg border border-zinc-200 shadow-2xs bg-white">
+        <Card hover={false} className="p-6 rounded-2xl border border-[#C9D5D5]/60 shadow-xs bg-white">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 rounded-md bg-primary-500/10 text-primary-650 border border-primary-500/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#1A5C5E]/10 text-[#1A5C5E] border border-[#1A5C5E]/20 flex items-center justify-center">
               <User className="w-4.5 h-4.5" />
             </div>
-            <h2 className="text-sm font-semibold text-navy-900">Account Details</h2>
+            <h2 className="text-sm font-bold text-[#134547] uppercase tracking-wide">Account Details</h2>
           </div>
 
           <AdminProfileForm 
@@ -62,12 +64,12 @@ export default async function AdminProfilePage() {
         </Card>
 
         {/* Password Change */}
-        <Card hover={false} className="p-6 rounded-lg border border-zinc-200 shadow-2xs bg-white">
+        <Card hover={false} className="p-6 rounded-2xl border border-[#C9D5D5]/60 shadow-xs bg-white">
           <PasswordChangeForm />
         </Card>
 
         {/* Notification Alerts Settings */}
-        <Card hover={false} className="p-6 rounded-lg border border-zinc-200 shadow-2xs bg-white">
+        <Card hover={false} className="p-6 rounded-2xl border border-[#C9D5D5]/60 shadow-xs bg-white">
           <AdminNotificationPreferences initialPreferences={preferences} />
         </Card>
       </div>

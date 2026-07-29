@@ -1,0 +1,96 @@
+export interface Product {
+  id: string;
+  name: string;
+  category: string;
+  composition: string;
+  benefits: string[];
+  usage: string;
+  packSize?: string;
+  mrp?: number;
+  sellingPrice?: number;
+  isActive?: boolean;
+  shelfLife: string;
+  safetyNote: string;
+  image?: string; // Image path reference
+  transparentImage?: string; // Transparent image path reference
+  galleryImages?: string[]; // Multiple gallery images for thumbnail row
+}
+
+export const products: Product[] = [
+  {
+    id: "dr-lion-pain-cream",
+    name: "Dr. Lion Pain Cream",
+    category: "Ayurvedic External Pain Relief Cream",
+    composition: "Sarsapa Thila (30 ml), Thymol (10 ml), Menthol (10 ml), Camphor (10 ml), Bees Wax (40 g) per 100 gms as shown on label",
+    benefits: [
+      "Supports joint comfort",
+      "Helps soothe muscle discomfort",
+      "Cooling herbal formulation",
+      "Easy external application"
+    ],
+    usage: "Apply an adequate amount to the affected area and gently massage until absorbed. Use as directed on label or by a qualified healthcare professional.",
+    shelfLife: "3 Years",
+    safetyNote: "Ayurvedic cream for external use only",
+    packSize: "100g Jar",
+    mrp: 249,
+    sellingPrice: 199,
+    image: "/products/Dr lion pain cream/Pain cream front view.webp",
+    transparentImage: "/products/Dr lion pain cream/Pain cream front view.webp",
+    galleryImages: [
+      "/products/Dr lion pain cream/Pain cream front view.webp",
+      "/products/Dr lion pain cream/Pain cream transparent image.webp",
+      "/products/Hero%20section/hero-pain-cream-mobile.webp"
+    ]
+  },
+  {
+    id: "dr-lion-pain-pills",
+    name: "Dr. Lion Pain Pills",
+    category: "Ayurvedic Proprietary Medicine",
+    composition: "Hingula Shuddha/Purified, Triphala Churna, Amalaki, Haritaki, Vibhitaki, Krishna Jeeraka, Kuberakshi, Sonti, Akarakarabha, Jambeera Swarasa (as shown on label)",
+    benefits: [
+      "Supports joint comfort",
+      "Supports musculoskeletal wellness",
+      "Traditionally used for Vata-related discomfort",
+      "Supports skeletal muscle wellness"
+    ],
+    usage: "1–2 pills daily or as directed by a qualified healthcare professional.",
+    shelfLife: "2 Years",
+    safetyNote: "Use only as directed. Consult a qualified healthcare professional for individual conditions.",
+    packSize: "60 Pills Container",
+    mrp: 299,
+    sellingPrice: 249,
+    image: "/products/Dr lion Pain pills/Pain_pills.webp",
+    transparentImage: "/products/Dr lion Pain pills/Pain_pills.webp",
+    galleryImages: [
+      "/products/Dr lion Pain pills/Pain_pills.webp",
+      "/products/Dr lion Pain pills/pain pills transparent.webp",
+      "/products/Hero%20section/hero-pain-pills-mobile.webp"
+    ]
+  },
+  {
+    id: "moon-light-cream",
+    name: "Moon Light Cream",
+    category: "Ayurvedic Skin Care Cream",
+    composition: "Manjishta Churna (1 gm), Chandana Churna (1 gm), Bahlika Flower / Kumkuma Puvvu (1 gm), Japhal Churna (1 gm), Chandana Oil (2 ml), Bees Wax (4 gms) per 10 gms as shown on label",
+    benefits: [
+      "Supports healthy-looking skin",
+      "Supports even-looking tone",
+      "May help improve appearance of dark spots with regular skincare use",
+      "Suitable for daily skincare"
+    ],
+    usage: "Clean the skin and apply a small amount evenly. Use regularly as directed.",
+    shelfLife: "3 Years",
+    safetyNote: "Ayurvedic cream for external use only",
+    packSize: "100g Jar",
+    mrp: 349,
+    sellingPrice: 299,
+    image: "/products/Moon-light/Moon cream front view.webp",
+    transparentImage: "/products/Moon-light/Moon cream front view.webp",
+    galleryImages: [
+      "/products/Moon-light/Moon cream front view.webp",
+      "/products/Moon-light/Moon cream Hero_section.webp",
+      "/products/Moon-light/Moon cream transparent.webp",
+      "/products/Hero%20section/hero-moon-mobile.webp"
+    ]
+  }
+];

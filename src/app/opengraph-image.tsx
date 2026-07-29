@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Primetek Global Solutions — US-Based IT Staffing & Consulting';
+export const alt = 'S.S. Pharmacy — US-Based IT Staffing & Consulting';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -50,7 +50,7 @@ export default async function Image() {
             marginBottom: '20px',
           }}
         >
-          <span>Primetek Global</span>
+          <span>S.S. Pharmacy</span>
           <span style={{ color: '#60a5fa' }}>Solutions</span>
         </div>
 
@@ -110,7 +110,7 @@ export default async function Image() {
             fontSize: 16,
           }}
         >
-          📍 Birmingham, Alabama, USA • primetekglobalsolutions.com
+          📍 Birmingham, Alabama, USA • sspharmacy.in
         </div>
       </div>
     ),

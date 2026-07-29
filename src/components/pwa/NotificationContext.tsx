@@ -5,12 +5,21 @@ import { Bell, X, Megaphone, AlertTriangle, Info, Clock, CheckSquare, Loader2 } 
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/Toast';
-import { 
-  getNotificationsForEmployee, 
-  markNotificationRead, 
-  markAllNotificationsRead,
-  AppNotification 
-} from '@/app/employee/notifications/actions';
+export interface AppNotification {
+  id: string;
+  employee_id: string;
+  title: string;
+  message: string;
+  type: 'personal' | 'announcement' | 'alert';
+  is_read: boolean;
+  created_at: string;
+  sender_name: string;
+}
+
+const getNotificationsForEmployee = async (empId: string): Promise<{ success: boolean; notifications?: AppNotification[]; error?: string }> => ({ success: true, notifications: [] });
+const markNotificationRead = async (id: string, empId: string): Promise<{ success: boolean; error?: string }> => ({ success: true });
+const markAllNotificationsRead = async (empId: string): Promise<{ success: boolean; error?: string }> => ({ success: true });
+
 import { getNotificationsForAdmin, markAllAdminNotificationsRead } from '@/app/admin/notifications/actions';
 
 interface NotificationContextType {

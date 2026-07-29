@@ -1,5 +1,5 @@
 -- ====================================================================
--- Primetek Global Solutions - Supabase Database Schema
+-- S.S. Pharmacy - Supabase Database Schema
 -- ====================================================================
 
 -- Enable UUID extension
@@ -194,7 +194,7 @@ CREATE POLICY "Public can insert inquiries" ON public.inquiries
 CREATE POLICY "Public can insert applications" ON public.applications 
     FOR INSERT WITH CHECK (true);
 
--- NOTE: Since Primetek uses custom JWT auth (Next.js server-side) instead of Supabase Auth,
+-- NOTE: Since S.S. Pharmacy uses custom JWT auth (Next.js server-side) instead of Supabase Auth,
 -- server API routes should use the SUPABASE_SERVICE_ROLE_KEY to bypass RLS for admin operations 
 -- and employee operations. RLS policies here are primarily to restrict direct client-side (anon key) access.
 

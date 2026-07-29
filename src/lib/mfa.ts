@@ -16,7 +16,7 @@ function getEncryptionKey(): Buffer {
     if (!env.MFA_ENCRYPTION_SECRET) {
       console.warn('⚠️ Warning: MFA_ENCRYPTION_SECRET is not set. Falling back to JWT_SECRET for MFA encryption. It is highly recommended to isolate these keys in production.');
     }
-    _encryptionKey = crypto.scryptSync(secret, 'primetek-mfa-salt', 32);
+    _encryptionKey = crypto.scryptSync(secret, 'sspharmacy-mfa-salt', 32);
   }
   return _encryptionKey;
 }
@@ -56,7 +56,7 @@ export function generateMFASecret(email: string) {
   const otpauth = generateURI({
     secret,
     label: email,
-    issuer: 'Primetek Global',
+    issuer: 'S.S. Pharmacy',
   });
   return { secret, otpauth };
 }

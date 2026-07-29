@@ -1,5 +1,5 @@
 -- ============================================================
--- Primetek HR Portal: Event-Sourcing & Materialized Projections Schema
+-- S.S. Pharmacy Portal: Event-Sourcing & Materialized Projections Schema
 -- ============================================================
 
 -- 1. Setup Custom Enum types

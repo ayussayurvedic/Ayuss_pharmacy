@@ -36,7 +36,7 @@ export default function PushPermissionPrompt() {
       return;
     }
 
-    const isDismissed = localStorage.getItem('primetek_push_prompt_dismissed_v2') === 'true';
+    const isDismissed = localStorage.getItem('sspharmacy_push_prompt_dismissed_v2') === 'true';
 
     // Show if permission is 'default' and not dismissed recently
     if (state === 'default' && !isDismissed) {
@@ -54,7 +54,7 @@ export default function PushPermissionPrompt() {
     setIsSubscribing(false);
 
     // Save choice to localStorage to prevent spamming prompt on failure/reloads
-    localStorage.setItem('primetek_push_prompt_dismissed_v2', 'true');
+    localStorage.setItem('sspharmacy_push_prompt_dismissed_v2', 'true');
 
     if (res.success) {
       toast.success('Push notifications enabled successfully.');
@@ -66,7 +66,7 @@ export default function PushPermissionPrompt() {
   };
 
   const handleDismiss = () => {
-    localStorage.setItem('primetek_push_prompt_dismissed_v2', 'true');
+    localStorage.setItem('sspharmacy_push_prompt_dismissed_v2', 'true');
     setIsVisible(false);
   };
 

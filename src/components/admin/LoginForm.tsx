@@ -175,7 +175,7 @@ export default function LoginForm() {
             id="login-email"
             type="email"
             autoComplete="email"
-            placeholder="name@primetek.com"
+            placeholder="admin@sspharmacy.in"
             disabled={lockout}
             {...register('email')}
             className={cn(

@@ -1,5 +1,5 @@
 -- ============================================================
--- Primetek Global Solutions — Attendance Accuracy Hardening Migration
+-- S.S. Pharmacy — Attendance Accuracy Hardening Migration
 -- Date: May 30, 2026
 -- ============================================================
 

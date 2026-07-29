@@ -3,7 +3,7 @@
  * Enforces canonical configurations and builds structured JSON-LD schemas
  */
 
-export const CANONICAL_DOMAIN = 'https://www.primetekglobalsolutions.com';
+export const CANONICAL_DOMAIN = 'https://www.sspharmacy.in';
 
 export interface BreadcrumbItem {
   name: string;

@@ -1,5 +1,5 @@
 -- ====================================================================
--- Primetek Global Solutions - Holidays & In-App Notifications Migration
+-- S.S. Pharmacy - Holidays & In-App Notifications Migration
 -- ====================================================================
 
 -- 1. Create Holidays Table

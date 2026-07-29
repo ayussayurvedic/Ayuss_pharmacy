@@ -74,7 +74,7 @@ describe('Offline Attendance Queue — offline-queue.ts', () => {
       // Make entry 2 be 73 hours old
       queue[1].timestamp = new Date(now - 73 * 60 * 60 * 1000).toISOString();
       
-      localStorage.setItem('primetek_offline_attendance_queue', JSON.stringify(queue));
+      localStorage.setItem('sspharmacy_offline_attendance_queue', JSON.stringify(queue));
       
       const updatedQueue = getOfflineQueue();
       expect(updatedQueue.length).toBe(1);

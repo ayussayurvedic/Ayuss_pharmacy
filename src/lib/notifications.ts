@@ -21,7 +21,7 @@ export async function sendNotificationEmail(
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Primetek Portal <notifications@primetek.com>',
+      from: 'S.S. Pharmacy <notifications@sspharmacy.in>',
       to,
       subject,
       html,
@@ -50,7 +50,7 @@ function getAppUrl(): string {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
-  return 'https://primetek-portal.vercel.app';
+  return 'https://sspharmacy.in';
 }
 
 /**
@@ -68,7 +68,7 @@ export function getAssignmentTemplate(employeeName: string, clientName: string) 
           View Assignment
         </a>
       </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>Primetek Global Solutions</p>
+      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
     </div>
   `;
 }
@@ -86,7 +86,7 @@ export function getLeaveStatusTemplate(employeeName: string, type: string, statu
           View Leave Status
         </a>
       </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>Primetek Global Solutions</p>
+      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
     </div>
   `;
 }
@@ -105,7 +105,7 @@ export function getWFHStatusTemplate(employeeName: string, date: string, status:
           Check Attendance
         </a>
       </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>Primetek Global Solutions</p>
+      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
     </div>
   `;
 }
@@ -152,7 +152,7 @@ export function getAdminLeaveRequestTemplate(employeeName: string, type: string,
           Go to Approval Queue
         </a>
       </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>Primetek Portal</p>
+      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
     </div>
   `;
 }
@@ -172,7 +172,7 @@ export function getAdminWFHRequestTemplate(employeeName: string, date: string) {
           Go to Approval Queue
         </a>
       </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>Primetek Portal</p>
+      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
     </div>
   `;
 }
@@ -196,7 +196,7 @@ export function getAdminInquiryTemplate(name: string, email: string, phone: stri
           View Inquiries
         </a>
       </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>Primetek Portal</p>
+      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
     </div>
   `;
 }
