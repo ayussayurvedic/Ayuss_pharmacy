@@ -1,150 +1,105 @@
-import Link from 'next/link';
-import { Mail, Phone, MapPin } from 'lucide-react';
-import Logo from '@/components/ui/Logo';
+'use client';
 
-function LinkedInIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  );
-}
+import Link from 'next/link';
+import { 
+  Phone, 
+  Mail, 
+  MapPin, 
+  ShieldCheck, 
+  ExternalLink 
+} from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-surface-dark text-text-on-dark public-footer" itemScope itemType="https://schema.org/WPFooter">
-      <div className="max-w-[1200px] mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-          
-          {/* Col 1 - Brand */}
-          <div>
-            <Link href="/" className="inline-block mb-4">
-              <Logo className="w-48 h-auto" dark={true} />
+    <footer className="bg-[#134547] text-[#FDF8F0] border-t-2 border-[#C9943E] font-sans pt-12 pb-6">
+      <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 text-xs">
+        
+        {/* Brand column */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2.5">
+            <img 
+              src="/products/logo/logo.webp" 
+              alt="S.S. Pharmacy Logo" 
+              className="h-9 w-auto" 
+            />
+            <span className="font-bold text-white tracking-widest text-sm font-serif">S.S. PHARMACY</span>
+          </div>
+          <p className="text-[#FDF8F0]/80 leading-relaxed font-light">
+            Government-licensed Ayurvedic manufacturer located in Yerraguntla, Kadapa District, Andhra Pradesh. We formulate authentic preparations using potent botanical bio-extracts.
+          </p>
+        </div>
+
+        {/* Formulations / Navigation */}
+        <div className="space-y-4">
+          <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Formulations</h4>
+          <div className="flex flex-col gap-2.5">
+            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors flex items-center gap-1">
+              <span>Products</span>
             </Link>
-            <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-              US-Based IT Staffing.<br />
-              Contract, C2C, Full-Time.
+            <Link href="/order-tracking" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
+              Order Tracking
+            </Link>
+            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
+              Skin Care Creams
+            </Link>
+            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
+              Pain Relief Creams & Pills
+            </Link>
+            <Link href="/why-choose-us" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
+              Quality Assurance
+            </Link>
+          </div>
+        </div>
+
+        {/* Compliance Registry */}
+        <div className="space-y-4">
+          <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Compliance Registry</h4>
+          <div className="space-y-3 text-[#FDF8F0]/80 font-light">
+            <div className="flex items-start gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#C9943E] shrink-0 mt-0.5" />
+              <p>
+                Mfg Lic No: <strong className="text-white font-semibold">R-1970/Ayur</strong><br />
+                <span className="text-[10px] text-[#FDF8F0]/60">AYUSH Dept. Govt of Andhra Pradesh</span>
+              </p>
+            </div>
+            <p className="leading-relaxed">
+              Formulated under strict Schedule T GMP guidelines with zero added synthetic steroids.
             </p>
-            <div className="flex gap-3">
-              <a
-                href="https://www.linkedin.com/company/primetek-global-solutions-llc"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Follow us on LinkedIn"
-                className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-zinc-400 hover:text-[#0A66C2] hover:bg-white/10 transition-all"
-              >
-                <LinkedInIcon className="w-4 h-4" />
-              </a>
-              <a
-                href="mailto:hr@primetekglobalsolutions.com"
-                aria-label="Send us an email"
-                className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-zinc-400 hover:text-teal-accent hover:bg-white/10 transition-all"
-              >
-                <Mail className="w-4 h-4" />
-              </a>
+          </div>
+        </div>
+
+        {/* Direct Connect */}
+        <div className="space-y-4">
+          <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Direct Connect</h4>
+          <div className="space-y-3 text-[#FDF8F0]/80 font-light">
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-[#C9943E] shrink-0" />
+              <a href="tel:+919848523295" className="hover:text-[#E8C87A] transition-colors">+91 98485 23295</a>
+            </div>
+            <div className="flex items-center gap-2">
+              <Mail className="w-4 h-4 text-[#C9943E] shrink-0" />
+              <a href="mailto:info@sspharmacy.co.in" className="hover:text-[#E8C87A] transition-colors">info@sspharmacy.co.in</a>
+            </div>
+            <div className="flex items-start gap-2">
+              <MapPin className="w-4 h-4 text-[#C9943E] shrink-0 mt-0.5" />
+              <address className="not-italic leading-relaxed">
+                Prakash Nagar, Yerraguntla,<br />
+                YSR Kadapa Dist., A.P. - 516309
+              </address>
             </div>
           </div>
-
-          {/* Col 2 - Company */}
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-5">Company</h3>
-            <ul className="space-y-3 list-none p-0 m-0">
-              <li>
-                <Link href="/about" className="text-zinc-400 hover:text-white text-sm transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/services" className="text-zinc-400 hover:text-white text-sm transition-colors">
-                  Services
-                </Link>
-              </li>
-              <li>
-                <Link href="/industries" className="text-zinc-400 hover:text-white text-sm transition-colors">
-                  Industries
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-zinc-400 hover:text-white text-sm transition-colors">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3 - Services */}
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-5">Services</h3>
-            <ul className="space-y-3 list-none p-0 m-0">
-              <li>
-                <Link href="/services#staffing" className="text-zinc-400 hover:text-white text-sm transition-colors">
-                  Contract Staffing
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#staffing" className="text-zinc-400 hover:text-white text-sm transition-colors">
-                  C2C Placements
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#staffing" className="text-zinc-400 hover:text-white text-sm transition-colors">
-                  Contract-to-Hire
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#staffing" className="text-zinc-400 hover:text-white text-sm transition-colors">
-                  Full-Time Recruitment
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 4 - Contact */}
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-5">Contact</h3>
-            <ul className="space-y-4 list-none p-0 m-0">
-              <li>
-                <a href="mailto:hr@primetekglobalsolutions.com" className="flex items-start gap-3 group">
-                  <Mail className="w-4 h-4 text-teal-accent mt-1 shrink-0" />
-                  <span className="text-zinc-400 group-hover:text-white text-sm transition-colors break-all">
-                    hr@primetekglobalsolutions.com
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a href="tel:+12193456559" className="flex items-start gap-3 group">
-                  <Phone className="w-4 h-4 text-teal-accent mt-1 shrink-0" />
-                  <span className="text-zinc-400 group-hover:text-white text-sm transition-colors">
-                    +1 (219) 345-6559
-                  </span>
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-teal-accent mt-1 shrink-0" />
-                <span className="text-zinc-400 text-sm">
-                  1680, Unit 2G, 14th Ave S<br />
-                  Birmingham, AL 35205, USA
-                </span>
-              </li>
-            </ul>
-          </div>
-
         </div>
+
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-white/5 py-6">
-        <div className="max-w-[1200px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-zinc-500 text-sm">
-            © 2024 Primetek Global Solutions. All rights reserved.
-          </p>
-          <div className="flex gap-6 text-sm">
-            <Link href="/privacy" className="text-zinc-500 hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="text-zinc-500 hover:text-white transition-colors">
-              Terms of Service
-            </Link>
+      {/* Sub Footer */}
+      <div className="border-t border-[#1A5C5E] mt-10 pt-6">
+        <div className="max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-[#FDF8F0]/60">
+          <p>© {new Date().getFullYear()} S.S. PHARMACY. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="hover:text-[#E8C87A] transition-colors">Privacy Policy</Link>
+            <span>•</span>
+            <Link href="/terms" className="hover:text-[#E8C87A] transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>
