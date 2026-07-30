@@ -16,7 +16,7 @@ import Logo from '@/components/ui/Logo';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
 interface AppSidebarProps {
-  role: 'admin' | 'employee' | 'hr';
+  role?: string;
   userName?: string;
   initialPendingCount?: number;
   pendingCount?: number;
@@ -92,17 +92,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
     { href: '/admin/profile', icon: UserCircle, label: 'My Profile', section: 'Finance & System' },
   ];
 
-  const desktopEmployeeItems: NavItem[] = [
-    { href: '/employee/dashboard', icon: LayoutDashboard, label: 'Overview', section: 'Operations' },
-    { href: '/employee/attendance', icon: Clock, label: 'Attendance', section: 'Workforce' },
-    { href: '/employee/leaves', icon: Calendar, label: 'Leaves', section: 'Workforce' },
-    { href: '/employee/daily-report', icon: ClipboardList, label: 'Daily Report', section: 'Workforce' },
-    { href: '/employee/assigned-profiles', icon: FileUser, label: 'Profiles', section: 'Workforce' },
-    { href: '/employee/reports', icon: BarChart2, label: 'My Reports', section: 'Reports' },
-    { href: '/employee/profile', icon: UserCircle, label: 'My Profile', section: 'System Management' },
-  ];
-
-  const navItems = role === 'admin' ? desktopAdminItems : desktopEmployeeItems;
+  const navItems = desktopAdminItems;
 
   // Mobile navigation arrays
   const mobileAdminBottom = [
@@ -124,21 +114,8 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
     { href: '/admin/profile', icon: UserCircle, label: 'Profile', section: 'Finance & System' },
   ];
 
-  const mobileEmployeeBottom = [
-    { href: '/employee/dashboard', icon: LayoutDashboard, label: 'Home' },
-    { href: '/employee/attendance', icon: Clock, label: 'Attendance' },
-    { href: '/employee/daily-report', icon: ClipboardList, label: 'Daily Report' },
-    { href: '/employee/assigned-profiles', icon: FileUser, label: 'Profiles' },
-  ];
-
-  const mobileEmployeeMore = [
-    { href: '/employee/leaves', icon: Calendar, label: 'Leaves', section: 'Workforce' },
-    { href: '/employee/reports', icon: BarChart2, label: 'My Reports', section: 'Reports' },
-    { href: '/employee/profile', icon: UserCircle, label: 'My Profile', section: 'System Management' },
-  ];
-
-  const bottomBarItems = role === 'admin' ? mobileAdminBottom : mobileEmployeeBottom;
-  const overflowItems = role === 'admin' ? mobileAdminMore : mobileEmployeeMore;
+  const bottomBarItems = mobileAdminBottom;
+  const overflowItems = mobileAdminMore;
   const hasOverflow = overflowItems.length > 0;
 
   // Check if any overflow item is currently active (to highlight the "More" button)
@@ -165,7 +142,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
       localStorage.removeItem('sspharmacy-token');
     } catch {}
     await fetch('/api/auth/logout', { method: 'POST' });
-    router.replace(role === 'admin' ? '/admin/login' : '/employee/login');
+    router.replace('/admin/login');
     router.refresh();
   };
 
@@ -180,7 +157,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
         <div className="flex items-center justify-between p-4 border-b border-[#1A5C5E]/60 h-16">
           {!collapsed ? (
             <>
-              <Link href={role === 'admin' ? '/admin/dashboard' : '/employee/dashboard'} className="flex items-center gap-2.5 min-w-0">
+              <Link href="/admin/dashboard" className="flex items-center gap-2.5 min-w-0">
                 <Logo className="w-10 h-10 object-contain shrink-0" />
                 <div className="flex flex-col min-w-0">
                   <span className="font-serif font-black text-white text-sm tracking-wider leading-none uppercase truncate">

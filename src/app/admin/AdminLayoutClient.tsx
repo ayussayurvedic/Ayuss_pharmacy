@@ -5,7 +5,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import AppSidebar from '@/components/pwa/AppSidebar';
 import AppHeader from '@/components/pwa/AppHeader';
 import { Loader2 } from 'lucide-react';
-import OfflineSyncBanner from '@/components/pwa/OfflineSyncBanner';
 import { NotificationProvider } from '@/components/pwa/NotificationContext';
 
 function PendingCountResolver({
@@ -31,7 +30,7 @@ export default function AdminLayoutClient({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [session, setSession] = useState<{ id: string; role: 'admin' | 'employee' | 'hr'; name: string } | null>(null);
+  const [session, setSession] = useState<{ id: string; role: 'admin'; name: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
 
@@ -154,9 +153,6 @@ export default function AdminLayoutClient({
             if (data.user?.role === 'admin') {
               router.replace('/admin/dashboard');
               return;
-            } else if (data.user?.role === 'employee' || data.user?.role === 'hr') {
-              router.replace('/employee/dashboard');
-              return;
             }
           }
         } catch {
@@ -185,16 +181,13 @@ export default function AdminLayoutClient({
         clearTimeout(timeoutId);
         if (res.ok) {
           const data = await res.json();
-          if (data.user?.role === 'admin') {
-            setSession(data.user);
-            try {
-              sessionStorage.setItem('sspharmacy-admin-session', JSON.stringify(data.user));
-              localStorage.setItem('sspharmacy-admin-session', JSON.stringify(data.user));
-            } catch {}
-          } else if (data.user?.role === 'employee' || data.user?.role === 'hr') {
-            router.replace('/employee/dashboard');
-            return;
-          } else {
+            if (data.user?.role === 'admin') {
+              setSession(data.user);
+              try {
+                sessionStorage.setItem('sspharmacy-admin-session', JSON.stringify(data.user));
+                localStorage.setItem('sspharmacy-admin-session', JSON.stringify(data.user));
+              } catch {}
+            } else {
             try {
               sessionStorage.removeItem('sspharmacy-admin-session');
               localStorage.removeItem('sspharmacy-admin-session');
@@ -309,7 +302,6 @@ export default function AdminLayoutClient({
           <AppHeader userName={session?.name} role={session?.role} notificationCount={session?.role === 'admin' ? pendingCount : 0} />
           <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 pt-6 md:p-6 md:pt-8 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-6 scroll-smooth scrollbar-none">
             <div className="max-w-7xl mx-auto space-y-4">
-              <OfflineSyncBanner />
               {children}
             </div>
           </main>

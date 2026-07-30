@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { products as initialProducts, type Product } from '@/data/products';
 import { createClient } from '@/lib/supabase/client';
@@ -172,9 +173,11 @@ export default function AdminProducts() {
       header: 'Formulation Product', 
       render: (p: Product) => (
         <div className="flex items-center gap-3">
-          <img 
+          <Image 
             src={p.image || `/products/logo/logo.webp`}
             alt={p.name} 
+            width={40}
+            height={40}
             className="w-10 h-10 object-cover rounded-lg shrink-0 border border-[#C9D5D5]/60"
           />
           <div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { products as initialProducts } from '@/data/products';
 import { useToast } from '@/components/ui/Toast';
 import { createClient } from '@/lib/supabase/client';
@@ -375,7 +376,7 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
                   <div className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center relative overflow-hidden group">
                     {url ? (
                       <>
-                        <img src={url} alt={label} className="w-full h-full object-contain p-1" />
+                        <Image src={url} alt={label} width={96} height={96} className="w-full h-full object-contain p-1" />
                         <button
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, [key]: '' }))}

@@ -25,7 +25,7 @@ export default function PWAInstallPrompt() {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       
-      const allowedRoutes = ['/employee/login', '/admin/login', '/employee/dashboard'];
+      const allowedRoutes = ['/admin/login'];
       if (allowedRoutes.includes(pathname)) {
         setIsVisible(true);
       }

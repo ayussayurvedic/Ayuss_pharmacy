@@ -89,15 +89,17 @@ const nextConfig: NextConfig = {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains; preload',
           },
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.supabase.co https://maps.geoapify.com https://grainy-gradients.vercel.app https://www.googletagmanager.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://api.geoapify.com https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms https://www.googletagmanager.com https://www.google.com https://*.google.com; frame-src 'self' https://maps.google.com https://www.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';",
-          },
+          // Content-Security-Policy is set dynamically in src/middleware.ts with dynamic nonces
         ],
       },
     ];
   },
 };
 
-export default nextConfig;
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
+export default withBundleAnalyzer(nextConfig);
+
 

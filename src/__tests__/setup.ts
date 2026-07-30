@@ -7,7 +7,6 @@ config({ path: path.resolve(process.cwd(), '.env.test') });
 import { vi, afterEach, beforeAll } from 'vitest';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { createToken } from '@/lib/auth';
-import { OFFICE_LOCATION } from '@/lib/location';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
@@ -83,84 +82,7 @@ afterEach(() => {
 // Office locations DB mutating logic removed to protect user data from tests.
 // The active office location cache helper is now mocked above in setup.ts.
 
-/**
- * Creates a real employee in the test database.
- */
-export async function createTestEmployee() {
-  const rand = crypto.randomBytes(4).toString('hex');
-  const employeeId = `cmk${Math.floor(1000000 + Math.random() * 9000000)}`;
-  const email = `test_emp_${rand}@example.com`;
-  const password = 'TestPass123!';
-  const passwordHash = await bcrypt.hash(password, 12);
 
-  const { data: employee, error } = await supabaseAdmin
-    .from('employees')
-    .insert({
-      employee_id: employeeId,
-      name: `Test Employee ${rand}`,
-      email,
-      password_hash: passwordHash,
-      role: 'employee',
-      status: 'Active',
-      join_date: new Date().toISOString().split('T')[0],
-    })
-    .select('*')
-    .single();
-
-  if (error || !employee) {
-    throw new Error(`Failed to create test employee: ${error?.message || 'unknown error'}`);
-  }
-
-  // Create default leave balance — only Casual type is allowed by DB constraint.
-  // The DB uses monthly granularity with unique constraint (employee_id, leave_type, year, month).
-  // Seed balance for June 2026 (month=6) to match the leave test dates (2026-06-09).
-  // Also seed balance for the current month so leave queries work for the current period.
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
-
-  const balancesToInsert: any[] = [
-    {
-      employee_id: employee.id,
-      leave_type: 'Casual',
-      total_days: 1,
-      used_days: 0,
-      year: 2026,
-      month: 6, // June 2026 — matches test leave request dates
-    },
-  ];
-
-  // Also add current month if it's not June 2026
-  if (currentYear !== 2026 || currentMonth !== 6) {
-    balancesToInsert.push({
-      employee_id: employee.id,
-      leave_type: 'Casual',
-      total_days: 1,
-      used_days: 0,
-      year: currentYear,
-      month: currentMonth,
-    });
-  }
-
-  await supabaseAdmin.from('leave_balances').insert(balancesToInsert);
-
-  // Ensure active session exists in DB
-  await supabaseAdmin.from('active_sessions').delete().eq('user_id', employee.id);
-  const { error: sessionError } = await supabaseAdmin.from('active_sessions').insert({
-    user_id: employee.id,
-    user_role: 'employee',
-    is_valid: true,
-    ip_address: '127.0.0.1',
-    user_agent: 'Vitest Agent',
-  });
-  if (sessionError) {
-    throw new Error(`Failed to create active session: ${sessionError.message}`);
-  }
-
-  return {
-    ...employee,
-    password,
-  };
-}
 
 export async function createTestAdmin() {
   const email = 'test_admin@sspharmacy.in';
@@ -237,45 +159,4 @@ export async function getTestSession(userId: string, role: string = 'employee', 
   return createToken({ id: userId, email, role });
 }
 
-/**
- * Helper to clean up all database tables for a specific employee ID.
- */
-export async function cleanupTestData(employeeId: string) {
-  if (!employeeId) return;
 
-  // Run deletes in dependency order (foreign keys first)
-  // Tables that use employee_id as the FK column
-  const employeeFkTables = [
-    'disputes',
-    'attendance_events',
-    'attendance_risk_events',
-    'attendance_projections',
-    'attendance',
-    'leave_requests',
-    'leave_balances',
-    'trusted_devices',
-    'wfh_requests',
-  ];
-
-  for (const table of employeeFkTables) {
-    try {
-      await supabaseAdmin.from(table).delete().eq('employee_id', employeeId);
-    } catch (err) {
-      console.warn(`Cleanup failed for table ${table}:`, err);
-    }
-  }
-
-  // active_sessions uses user_id, not employee_id
-  try {
-    await supabaseAdmin.from('active_sessions').delete().eq('user_id', employeeId);
-  } catch (err) {
-    console.warn('Cleanup failed for active_sessions:', err);
-  }
-
-  // Finally delete the employee record itself
-  try {
-    await supabaseAdmin.from('employees').delete().eq('id', employeeId);
-  } catch (err) {
-    console.warn('Failed to delete employee during cleanup:', err);
-  }
-}

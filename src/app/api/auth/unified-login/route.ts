@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { createToken, createCaptchaToken, verifyCaptchaToken } from '@/lib/auth';
-import { createActiveSession } from '@/lib/security/session-tracker';
 import bcrypt from 'bcryptjs';
 import { loginRateLimiter, CAPTCHA_THRESHOLD } from '@/lib/rate-limit';
 import { logAuditAction } from '@/lib/audit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '@/lib/env';
-import { isOfficeNetwork } from '@/lib/security/network-trust';
 
 async function recordFailedAttempt(ipKey: string, accountKey: string, fromOfficeNetwork: boolean) {
   if (!fromOfficeNetwork) {
@@ -47,9 +45,7 @@ export async function POST(request: NextRequest) {
     const accountRateLimitRes = await loginRateLimiter.get(accountKey);
 
     // If request comes from the office network (shared WiFi), skip IP-based blocking.
-    // All employees share the same public IP — blocking by IP would lock out the entire office.
-    // External IPs (home, mobile data) are still blocked by IP after 5 failed attempts.
-    const fromOfficeNetwork = await isOfficeNetwork(ip);
+    const fromOfficeNetwork = false;
 
     const isIpBlocked = !fromOfficeNetwork && (ipRateLimitRes && ipRateLimitRes.remainingPoints <= 0);
     const isAccountBlocked = accountRateLimitRes && accountRateLimitRes.remainingPoints <= 0;
@@ -213,19 +209,7 @@ export async function POST(request: NextRequest) {
           return response;
         }
 
-        // Create active session in database (Fail Closed)
-        const userAgent = request.headers.get('user-agent') || 'unknown';
-        const sessionRecord = await createActiveSession({
-          userId: authData.user.id,
-          role: 'admin',
-          ipAddress: ip,
-          userAgent,
-          deviceFingerprint: fingerprint || undefined,
-        });
 
-        if (!sessionRecord) {
-          return NextResponse.json({ error: 'Failed to initialize security session' }, { status: 500 });
-        }
 
         // Clear rate limit key on success
         await loginRateLimiter.delete(ipKey);
@@ -259,158 +243,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 4. EMPLOYEE PORTAL PIPELINE
-    if (portal === 'employee') {
-      const isEmail = cleanEmail.includes('@');
-      
-      const query = supabaseAdmin
-        .from('employees')
-        .select('id, email, employee_id, password_hash, status, name, role, mfa_enabled');
-        
-      const { data: user, error: dbErr } = await (isEmail 
-        ? query.ilike('email', cleanEmail).maybeSingle() 
-        : query.ilike('employee_id', cleanEmail).maybeSingle());
 
-      if (dbErr || !user) {
-        // Timing attack resistance: Run mock bcrypt compare
-        await bcrypt.compare(cleanPassword, '$2a$12$L8n8GvU.Y2d7b4OdfGkY3.2SDFs67asdfaHsklj123HjkasdfHj12');
-
-        // Internal audit log for missing user
-        await logAuditAction('LOGIN_FAILED', 'employees', '00000000-0000-0000-0000-000000000000', null, { 
-          reason: 'invalid_user', 
-          email: cleanEmail,
-          portal: 'employee'
-        });
-
-        await recordFailedAttempt(ipKey, accountKey, fromOfficeNetwork);
-
-        const currentRes = await loginRateLimiter.get(ipKey);
-        const failedAttempts = 5 - (currentRes?.remainingPoints || 5);
-        const responseData: { error: string; showCaptcha?: boolean; captcha?: any } = { error: 'Invalid credentials' };
-        if (failedAttempts >= CAPTCHA_THRESHOLD) {
-          responseData.showCaptcha = true;
-          responseData.captcha = await generateCaptchaChallenge();
-        }
-        return NextResponse.json(responseData, { status: 401 });
-      }
-
-      // Verify password
-      const isValidPassword = await bcrypt.compare(cleanPassword, user.password_hash);
-      if (!isValidPassword) {
-        await logAuditAction('LOGIN_FAILED', 'employees', user.id, null, { 
-          reason: 'invalid_password', 
-          email: cleanEmail 
-        }, { id: user.id, role: user.role });
-        
-        await recordFailedAttempt(ipKey, accountKey, fromOfficeNetwork);
-
-        const currentRes = await loginRateLimiter.get(ipKey);
-        const failedAttempts = 5 - (currentRes?.remainingPoints || 5);
-        const responseData: { error: string; showCaptcha?: boolean; captcha?: any } = { error: 'Invalid credentials' };
-        if (failedAttempts >= CAPTCHA_THRESHOLD) {
-          responseData.showCaptcha = true;
-          responseData.captcha = await generateCaptchaChallenge();
-        }
-        return NextResponse.json(responseData, { status: 401 });
-      }
-
-      // Verify account status
-      if (user.status !== 'Active') {
-        const auditReason = user.status === 'Suspended' ? 'suspended_account' : 
-                            user.status === 'Inactive' ? 'inactive_account' : 'disabled_account';
-
-        await logAuditAction('LOGIN_FAILED', 'employees', user.id, null, { 
-          reason: auditReason, 
-          email: cleanEmail 
-        }, { id: user.id, role: user.role });
-
-        await recordFailedAttempt(ipKey, accountKey, fromOfficeNetwork);
-        return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
-      }
-
-      // Verify correct role category
-      if (user.role !== 'employee' && user.role !== 'hr') {
-        await logAuditAction('LOGIN_FAILED', 'employees', user.id, null, { 
-          reason: 'invalid_role', 
-          email: cleanEmail 
-        }, { id: user.id, role: user.role });
-
-        await recordFailedAttempt(ipKey, accountKey, fromOfficeNetwork);
-        return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
-      }
-
-      // Handle MFA
-      if (user.mfa_enabled) {
-        const tempToken = await createToken({
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          name: user.name,
-          mfa_pending: true,
-          mfa_attempts: 0
-        });
-
-        const response = NextResponse.json({ 
-          requiresMFA: true,
-          role: user.role
-        });
-
-        response.cookies.set('mfa-pending-token', tempToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 5 * 60, // 5 minutes
-        });
-
-        await logAuditAction('LOGIN_MFA_PENDING', 'employees', user.id, null, null, { id: user.id, role: user.role });
-        return response;
-      }
-
-      // Create active session in database (Fail Closed)
-      const userAgent = request.headers.get('user-agent') || 'unknown';
-      const sessionRecord = await createActiveSession({
-        userId: user.id,
-        role: user.role,
-        ipAddress: ip,
-        userAgent,
-        deviceFingerprint: fingerprint || undefined,
-      });
-
-      if (!sessionRecord) {
-        return NextResponse.json({ error: 'Failed to initialize security session' }, { status: 500 });
-      }
-
-      // Clear rate limit key on success
-      await loginRateLimiter.delete(ipKey);
-      await loginRateLimiter.delete(accountKey);
-
-      const token = await createToken({
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        name: user.name,
-      });
-
-      const response = NextResponse.json({ 
-        success: true, 
-        role: user.role,
-        name: user.name 
-      });
-
-      response.cookies.set('employee-auth-token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 24 * 60 * 60, // 24 hours (employee session lifetime)
-      });
-
-      response.cookies.delete('mfa-pending-token');
-
-      await logAuditAction('LOGIN_SUCCESS', 'employees', user.id, null, null, { id: user.id, role: user.role });
-      return response;
-    }
 
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   } catch (err) {

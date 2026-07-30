@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Playfair_Display, Outfit, Inter, JetBrains_Mono } from 'next/font/google';
 import Script from 'next/script';
+import { headers } from 'next/headers';
 import './globals.css';
 
-import PWAStandaloneGuard from '@/components/pwa/PWAStandaloneGuard';
+
 import PWAInstallPrompt from '@/components/pwa/PWAInstallPrompt';
 import PushPermissionPrompt from '@/components/pwa/PushPermissionPrompt';
 import { ToastProvider } from '@/components/ui/Toast';
@@ -146,13 +147,17 @@ const orgSchema = {
   }
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-1NL15P2C1V';
   const clarityId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
+
+  // Retrieve dynamic CSP nonce from middleware request headers
+  const headersList = await headers();
+  const nonce = headersList.get('x-nonce') || undefined;
 
   return (
     <html lang="en" className={`min-h-screen antialiased overflow-x-hidden ${playfair.variable} ${outfit.variable} ${inter.variable} ${jetbrains.variable}`}>
@@ -167,8 +172,9 @@ export default function RootLayout({
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
               strategy="afterInteractive"
+              nonce={nonce}
             />
-            <Script id="google-analytics" strategy="afterInteractive">
+            <Script id="google-analytics" strategy="afterInteractive" nonce={nonce}>
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
@@ -185,7 +191,7 @@ export default function RootLayout({
 
         {/* Microsoft Clarity */}
         {clarityId && (
-          <Script id="microsoft-clarity" strategy="afterInteractive">
+          <Script id="microsoft-clarity" strategy="afterInteractive" nonce={nonce}>
             {`
               (function(c,l,a,r,i,t,y){
                   c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -200,7 +206,7 @@ export default function RootLayout({
         <ToastProvider>
           <CartProvider>
             {children}
-            <PWAStandaloneGuard />
+
             <PWAInstallPrompt />
             <PushPermissionPrompt />
           </CartProvider>

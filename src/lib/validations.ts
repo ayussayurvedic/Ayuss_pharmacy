@@ -30,3 +30,6 @@ export const changePasswordSchema = z.object({
 export type InquiryFormData = z.infer<typeof inquirySchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
+
+
+

@@ -2,71 +2,47 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken, getTokenFromRequest } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
-interface CacheEntry {
-  status: string | null;
-  timestamp: number;
-}
-
-const statusCache = new Map<string, CacheEntry>();
-const CACHE_TTL_MS = 60 * 1000; // 60 seconds
-
-async function getCachedEmployeeStatus(employeeId: string): Promise<string | null> {
-  const now = Date.now();
-  const cached = statusCache.get(employeeId);
-  if (cached && (now - cached.timestamp) < CACHE_TTL_MS) {
-    return cached.status;
-  }
-
-  let attempts = 0;
-  const maxAttempts = 3;
-  while (attempts < maxAttempts) {
-    try {
-      const { data: empData, error } = await supabaseAdmin
-        .from('employees')
-        .select('status')
-        .eq('id', employeeId)
-        .single();
-
-      if (error) throw error;
-
-      // Check if a valid session exists in active_sessions table
-      const { data: activeSession, error: sessionError } = await supabaseAdmin
-        .from('active_sessions')
-        .select('id')
-        .eq('user_id', employeeId)
-        .eq('is_valid', true)
-        .limit(1)
-        .maybeSingle();
-
-      if (sessionError) throw sessionError;
-
-      // If employee is active in DB but has no valid active session, treat as Revoked
-      const status = (!activeSession && empData?.status === 'Active') ? 'Revoked' : (empData?.status || null);
-      
-      if (statusCache.size >= 500) {
-        statusCache.clear();
-      }
-      statusCache.set(employeeId, { status, timestamp: now });
-      return status;
-    } catch (err) {
-      attempts++;
-      if (attempts >= maxAttempts) {
-        console.error(`[Middleware Cache Retry] Failed to fetch employee status after ${attempts} attempts:`, err);
-        throw err; // Fail closed by throwing error to caller
-      }
-      // Backoff delay: 100ms, 200ms
-      await new Promise((res) => setTimeout(res, attempts * 100));
-    }
-  }
-  return null;
-}
-
 interface AdminCacheEntry {
   exists: boolean;
   timestamp: number;
 }
 
+interface UserCacheEntry {
+  status: string | null;
+  timestamp: number;
+}
+
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds
 const adminCache = new Map<string, AdminCacheEntry>();
+const userCache = new Map<string, UserCacheEntry>();
+
+async function getCachedUserStatus(userId: string): Promise<string | null> {
+  const now = Date.now();
+  const cached = userCache.get(userId);
+  if (cached && (now - cached.timestamp) < CACHE_TTL_MS) {
+    return cached.status;
+  }
+
+  try {
+    const { data: userData, error } = await supabaseAdmin
+      .from('employees')
+      .select('status')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    const status = userData?.status || null;
+    if (userCache.size >= 500) {
+      userCache.clear();
+    }
+    userCache.set(userId, { status, timestamp: now });
+    return status;
+  } catch (err) {
+    console.error(`[Middleware Cache] Failed to fetch user status:`, err);
+    throw err;
+  }
+}
 
 async function getCachedAdminExistence(adminId: string): Promise<boolean> {
   const now = Date.now();
@@ -119,8 +95,10 @@ async function getCachedAdminExistence(adminId: string): Promise<boolean> {
 
 export async function middleware(request: NextRequest) {
   const correlationId = crypto.randomUUID();
+  const nonce = btoa(crypto.randomUUID());
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-correlation-id', correlationId);
+  requestHeaders.set('x-nonce', nonce);
 
   const runMiddleware = async (): Promise<NextResponse> => {
     const { pathname } = request.nextUrl;
@@ -190,22 +168,7 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    if (pathname === '/employee/login') {
-      const token = request.cookies.get('employee-auth-token')?.value;
-      if (token) {
-        const session = await verifyToken(token);
-        if (session && (session.role === 'employee' || session.role === 'hr')) {
-          try {
-            const empStatus = await getCachedEmployeeStatus(session.id);
-            if (empStatus === 'Active') {
-              return NextResponse.redirect(new URL('/employee/dashboard', request.url));
-            }
-          } catch (err) {
-            console.error('[Security Guard] Already logged in check failed for employee:', err);
-          }
-        }
-      }
-    }
+
 
     // 1. Admin route protection
     if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
@@ -222,9 +185,6 @@ export async function middleware(request: NextRequest) {
         return response;
       }
       if (session.role !== 'admin') {
-        if (session.role === 'employee' || session.role === 'hr') {
-          return NextResponse.redirect(new URL('/employee/dashboard', request.url));
-        }
         return NextResponse.redirect(new URL('/admin/login', request.url));
       }
 
@@ -245,43 +205,7 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // 2. Employee route protection
-    if (pathname.startsWith('/employee') && !pathname.startsWith('/employee/login')) {
-      const token = request.cookies.get('employee-auth-token')?.value;
 
-      if (!token) {
-        return NextResponse.redirect(new URL('/employee/login', request.url));
-      }
-
-      const session = await verifyToken(token);
-      if (!session) {
-        const response = NextResponse.redirect(new URL('/employee/login', request.url));
-        response.cookies.delete('employee-auth-token');
-        return response;
-      }
-      if (session.role !== 'employee' && session.role !== 'hr') {
-        if (session.role === 'admin') {
-          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-        }
-        return NextResponse.redirect(new URL('/employee/login', request.url));
-      }
-
-      // AUTH-02: Check if employee account is active (Fail Closed)
-      try {
-        const empStatus = await getCachedEmployeeStatus(session.id);
-        if (empStatus !== 'Active') {
-          console.warn(`[Security Guard] Employee user ID ${session.id} status is ${empStatus}. Blocking access.`);
-          const response = NextResponse.redirect(new URL('/employee/login?error=inactive', request.url));
-          response.cookies.delete('employee-auth-token');
-          return response;
-        }
-      } catch (err) {
-        console.error('[Security Guard] Employee status check failed closed:', err);
-        const response = NextResponse.redirect(new URL('/employee/login?error=db_error', request.url));
-        response.cookies.delete('employee-auth-token');
-        return response;
-      }
-    }
 
     // 3. API route protection
     if (pathname.startsWith('/api') && !isPublicApiRoute) {
@@ -304,7 +228,7 @@ export async function middleware(request: NextRequest) {
       // Fail Closed API checks
       try {
         if (session.role !== 'admin') {
-          const empStatus = await getCachedEmployeeStatus(session.id);
+          const empStatus = await getCachedUserStatus(session.id);
           if (empStatus !== 'Active') {
             return NextResponse.json({ error: 'Unauthorized: Account status not active' }, { status: 401 });
           }
@@ -329,9 +253,27 @@ export async function middleware(request: NextRequest) {
 
   const response = await runMiddleware();
   response.headers.set('x-correlation-id', correlationId);
+
+  // Apply Content-Security-Policy (CSP) with dynamic nonce in production
+  const isProd = process.env.NODE_ENV === 'production';
+  const cspHeader = isProd
+    ? `default-src 'self'; script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.supabase.co https://maps.geoapify.com https://grainy-gradients.vercel.app https://www.googletagmanager.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://api.geoapify.com https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms https://www.googletagmanager.com https://www.google.com https://*.google.com; frame-src 'self' https://maps.google.com https://www.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';`
+    : `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.supabase.co https://maps.geoapify.com https://grainy-gradients.vercel.app https://www.googletagmanager.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://api.geoapify.com https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms https://www.googletagmanager.com https://www.google.com https://*.google.com; frame-src 'self' https://maps.google.com https://www.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';`;
+
+  response.headers.set('Content-Security-Policy', cspHeader);
   return response;
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/employee/:path*', '/api/:path*'],
+  matcher: [
+    /*
+     * Match all request paths except for:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, favicon.png, manifest.json, manifest-admin.json, sw.js (metadata/PWA files)
+     * - products/ (static products assets)
+     * - images/ (static images)
+     */
+    '/((?!_next/static|_next/image|favicon\\.ico|favicon\\.png|manifest\\.json|manifest-admin\\.json|sw\\.js|products/.*|images/.*).*)',
+  ],
 };

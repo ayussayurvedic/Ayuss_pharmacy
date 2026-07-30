@@ -26,29 +26,3 @@ export function generateBreadcrumbSchema(items: BreadcrumbItem[]) {
   };
 }
 
-/**
- * Generates standard Page Metadata helpers
- */
-export function getPageMetadata(title: string, description: string, path: string, keywords: string[] = []) {
-  const canonicalUrl = `${CANONICAL_DOMAIN}${path.startsWith('/') ? '' : '/'}${path}`;
-  
-  return {
-    title,
-    description,
-    keywords,
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    openGraph: {
-      title,
-      description,
-      url: canonicalUrl,
-      type: 'website',
-    },
-    twitter: {
-      title,
-      description,
-      card: 'summary_large_image',
-    }
-  };
-}

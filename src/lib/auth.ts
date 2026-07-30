@@ -4,29 +4,6 @@ import { NextRequest } from 'next/server';
 import { env } from './env';
 import { supabaseAdmin } from './supabase-admin';
 
-export async function verifyActiveSession(employeeId: string): Promise<void> {
-  const { data, error } = await supabaseAdmin
-    .from('employees')
-    .select('status')
-    .eq('id', employeeId)
-    .single();
-  if (error || !data || data.status !== 'Active') {
-    throw new Error('Unauthorized: Account is inactive or deleted.');
-  }
-
-  const { data: activeSession, error: sessionError } = await supabaseAdmin
-    .from('active_sessions')
-    .select('id')
-    .eq('user_id', employeeId)
-    .eq('is_valid', true)
-    .limit(1)
-    .maybeSingle();
-
-  if (sessionError || !activeSession) {
-    throw new Error('Unauthorized: Session has been revoked or expired.');
-  }
-}
-
 const adminExistenceCache = new Map<string, { exists: boolean; timestamp: number }>();
 const CACHE_TTL_MS = 60 * 1000;
 
@@ -46,15 +23,7 @@ export async function verifyActiveAdmin(adminId: string): Promise<void> {
     .eq('id', adminId)
     .maybeSingle();
 
-  const { data: activeSession, error: sessionError } = await supabaseAdmin
-    .from('active_sessions')
-    .select('id')
-    .eq('user_id', adminId)
-    .eq('is_valid', true)
-    .limit(1)
-    .maybeSingle();
-
-  const exists = !!data && !error && !!activeSession && !sessionError;
+  const exists = !!data && !error;
 
   if (adminExistenceCache.size >= 500) {
     adminExistenceCache.clear();

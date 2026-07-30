@@ -19,8 +19,7 @@ export default function PushPermissionPrompt() {
     if (typeof window === 'undefined') return;
 
     // Restrict visibility to authenticated pages only
-    const isAuthRoute = (pathname.startsWith('/employee') && pathname !== '/employee/login') ||
-                        (pathname.startsWith('/admin') && pathname !== '/admin/login');
+    const isAuthRoute = pathname.startsWith('/admin') && pathname !== '/admin/login';
     if (!isAuthRoute) {
       setIsVisible(false);
       return;

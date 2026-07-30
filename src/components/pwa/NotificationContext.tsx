@@ -16,11 +16,11 @@ export interface AppNotification {
   sender_name: string;
 }
 
-const getNotificationsForEmployee = async (empId: string): Promise<{ success: boolean; notifications?: AppNotification[]; error?: string }> => ({ success: true, notifications: [] });
-const markNotificationRead = async (id: string, empId: string): Promise<{ success: boolean; error?: string }> => ({ success: true });
-const markAllNotificationsRead = async (empId: string): Promise<{ success: boolean; error?: string }> => ({ success: true });
-
-import { getNotificationsForAdmin, markAllAdminNotificationsRead } from '@/app/admin/notifications/actions';
+import { 
+  getNotificationsForAdmin, 
+  markAllAdminNotificationsRead,
+  markAdminNotificationRead
+} from '@/app/admin/notifications/actions';
 
 interface NotificationContextType {
   notifications: AppNotification[];
@@ -37,12 +37,11 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export function NotificationProvider({ 
   children, 
-  employeeId,
-  role
+  employeeId: adminId
 }: { 
   children: React.ReactNode;
   employeeId?: string;
-  role?: 'admin' | 'employee' | 'hr';
+  role?: string;
 }) {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -52,38 +51,35 @@ export function NotificationProvider({
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   const refreshNotifications = useCallback(async () => {
-    if (!employeeId) return;
-    const isAdmin = role === 'admin' || role === 'hr';
-    const res = isAdmin 
-      ? await getNotificationsForAdmin(employeeId)
-      : await getNotificationsForEmployee(employeeId);
+    if (!adminId) return;
+    const res = await getNotificationsForAdmin(adminId);
 
     if (res.success && res.notifications) {
       setNotifications(res.notifications as AppNotification[]);
     }
-  }, [employeeId, role]);
+  }, [adminId]);
 
   useEffect(() => {
-    if (!employeeId) return;
+    if (!adminId) return;
     refreshNotifications();
 
     // Poll for new notifications every 30 seconds
     const interval = setInterval(refreshNotifications, 30000);
     return () => clearInterval(interval);
-  }, [employeeId, refreshNotifications]);
+  }, [adminId, refreshNotifications]);
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
   const handleMarkAsRead = async (id: string) => {
-    if (!employeeId) return;
+    if (!adminId) return;
     
     // Optimistic UI update
     setNotifications(prev => 
       prev.map(n => n.id === id ? { ...n, is_read: true } : n)
     );
 
-    const res = await markNotificationRead(id, employeeId);
+    const res = await markAdminNotificationRead(id, adminId);
     if (!res.success) {
       // Revert if failed
       refreshNotifications();
@@ -92,17 +88,14 @@ export function NotificationProvider({
   };
 
   const handleMarkAllAsRead = async () => {
-    if (!employeeId) return;
+    if (!adminId) return;
     if (unreadCount === 0) return;
 
     // Optimistic UI update
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
 
     startTransition(async () => {
-      const isAdmin = role === 'admin' || role === 'hr';
-      const res = isAdmin
-        ? await markAllAdminNotificationsRead(employeeId)
-        : await markAllNotificationsRead(employeeId);
+      const res = await markAllAdminNotificationsRead(adminId);
       
       if (res.success) {
         toast.success('All notifications marked as read');

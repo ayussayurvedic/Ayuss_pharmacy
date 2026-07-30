@@ -373,3 +373,46 @@ export async function markAllAdminNotificationsRead(adminId: string) {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update notifications' };
   }
 }
+
+export async function markAdminNotificationRead(id: string, adminId: string) {
+  try {
+    const session = await getSession();
+    if (!session || !session.id) return { success: false, error: 'Unauthorized' };
+    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only' };
+
+    // Check if notification is targeted or broadcast
+    const { data: n, error: fetchErr } = await supabaseAdmin
+      .from('notifications')
+      .select('admin_id')
+      .eq('id', id)
+      .single();
+
+    if (fetchErr || !n) throw new Error('Notification not found');
+
+    if (n.admin_id !== null) {
+      // Targeted
+      const { error } = await supabaseAdmin
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', id);
+      if (error) throw error;
+    } else {
+      // Broadcast — insert a read row
+      const { error } = await supabaseAdmin
+        .from('notification_reads')
+        .insert({
+          notification_id: id,
+          admin_id: adminId,
+          employee_id: null
+        });
+      if (error) throw error;
+    }
+
+    revalidatePath('/admin/notifications');
+    return { success: true };
+  } catch (err) {
+    console.error('Error marking admin notification read:', err);
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to mark notification read' };
+  }
+}
