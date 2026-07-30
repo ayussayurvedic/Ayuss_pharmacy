@@ -3,11 +3,18 @@ import { cookies } from 'next/headers';
 import { env } from '../env';
 
 export async function createClient() {
+  const url = env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+
+  const finalUrl = !url || isBuildPhase || url.includes('placeholder') ? 'https://placeholder-project.supabase.co' : url;
+  const finalKey = !key || isBuildPhase || key.includes('placeholder') ? 'placeholder-anon-key' : key;
+
   const cookieStore = await cookies();
 
   return createServerClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    finalUrl,
+    finalKey,
     {
       cookies: {
         getAll() {
