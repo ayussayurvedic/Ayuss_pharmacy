@@ -23,7 +23,6 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6 text-[11px] font-bold tracking-widest uppercase">
           <Link href="/" className="hover:text-[#C9943E] transition-colors">Home</Link>
           <Link href="/products" className="hover:text-[#C9943E] transition-colors">Products</Link>
-          <Link href="/order-tracking" className="hover:text-[#C9943E] transition-colors">Track Order</Link>
           <Link href="/why-choose-us" className="hover:text-[#C9943E] transition-colors">Why Choose Us</Link>
           <Link href="/manufacturing" className="hover:text-[#C9943E] transition-colors">Manufacturing</Link>
           <Link href="/about" className="hover:text-[#C9943E] transition-colors">About Us</Link>
@@ -116,7 +115,6 @@ export default function Navbar() {
         <div className="md:hidden fixed top-20 left-0 right-0 bottom-0 bg-[#1A5C5E]/95 z-40 flex flex-col p-6 space-y-4 text-xs font-bold tracking-widest uppercase">
           <Link href="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Home</Link>
           <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Products</Link>
-          <Link href="/order-tracking" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Track Order</Link>
           <Link href="/why-choose-us" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Why Choose Us</Link>
           <Link href="/manufacturing" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Manufacturing</Link>
           <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">About Us</Link>

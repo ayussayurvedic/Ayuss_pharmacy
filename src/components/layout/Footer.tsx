@@ -7,7 +7,8 @@ import {
   Mail, 
   MapPin, 
   ShieldCheck, 
-  ExternalLink 
+  ExternalLink,
+  PackageCheck
 } from 'lucide-react';
 
 export default function Footer() {
@@ -32,21 +33,22 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Formulations / Navigation */}
+        {/* Formulations & Services */}
         <div className="space-y-4">
-          <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Formulations</h4>
+          <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Navigation & Orders</h4>
           <div className="flex flex-col gap-2.5">
             <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors flex items-center gap-1">
-              <span>Products</span>
+              <span>All Products</span>
             </Link>
-            <Link href="/order-tracking" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
-              Order Tracking
-            </Link>
-            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
-              Skin Care Creams
+            <Link href="/order-tracking" className="text-[#E8C87A] font-semibold hover:underline transition-colors flex items-center gap-1.5 bg-[#1A5C5E]/50 px-2.5 py-1.5 rounded-md border border-[#C9943E]/30 w-fit">
+              <PackageCheck className="w-3.5 h-3.5 text-[#C9943E]" />
+              <span>Track Your Order</span>
             </Link>
             <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
-              Pain Relief Creams & Pills
+              Pain Relief & Healing
+            </Link>
+            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
+              Skin Care & Radiance
             </Link>
             <Link href="/why-choose-us" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
               Quality Assurance
@@ -100,6 +102,8 @@ export default function Footer() {
         <div className="max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-[#FDF8F0]/60">
           <p>© {new Date().getFullYear()} S.S. PHARMACY. All rights reserved.</p>
           <div className="flex items-center gap-4">
+            <Link href="/order-tracking" className="hover:text-[#E8C87A] transition-colors font-medium">Track Order</Link>
+            <span>•</span>
             <Link href="/privacy" className="hover:text-[#E8C87A] transition-colors">Privacy Policy</Link>
             <span>•</span>
             <Link href="/terms" className="hover:text-[#E8C87A] transition-colors">Terms of Service</Link>
