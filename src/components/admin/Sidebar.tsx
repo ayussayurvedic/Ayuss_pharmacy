@@ -52,8 +52,8 @@ export default function Sidebar({ userName = 'Admin' }: SidebarProps) {
             src="/products/logo/logo.webp"
             alt="S.S. Pharmacy Logo"
             className="h-10 w-auto object-contain shrink-0"
-            width={40}
-            height={40}
+            width={180}
+            height={60}
             priority
           />
           {!collapsed && (
