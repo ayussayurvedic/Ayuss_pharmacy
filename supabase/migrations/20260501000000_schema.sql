@@ -6,6 +6,27 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ==========================================
+-- 5. Employees Table
+-- Stores internal employee HR profiles and auth credentials
+-- ==========================================
+CREATE TABLE public.employees (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    employee_id TEXT UNIQUE NOT NULL, -- e.g., 'EMP-001'
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL, -- Hashed with bcrypt
+    role TEXT DEFAULT 'employee' CHECK (role IN ('employee', 'hr')),
+    join_date DATE NOT NULL,
+    department TEXT,
+    designation TEXT,
+    phone TEXT,
+    status TEXT DEFAULT 'Active' CHECK (status IN ('Active', 'Inactive', 'On Leave')),
+    avatar_url TEXT, -- Path to file in Supabase Storage
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ==========================================
 -- 1. Inquiries Table
 -- Stores contact form submissions from the public website
 -- ==========================================
@@ -81,27 +102,6 @@ CREATE TABLE public.application_profiles (
     
     status TEXT DEFAULT 'assigned' CHECK (status IN ('assigned', 'processing', 'completed', 'rejected')),
     role_category TEXT DEFAULT 'IT' CHECK (role_category IN ('IT', 'Non-IT')),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- ==========================================
--- 5. Employees Table
--- Stores internal employee HR profiles and auth credentials
--- ==========================================
-CREATE TABLE public.employees (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    employee_id TEXT UNIQUE NOT NULL, -- e.g., 'EMP-001'
-    name TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL, -- Hashed with bcrypt
-    role TEXT DEFAULT 'employee' CHECK (role IN ('employee', 'hr')),
-    join_date DATE NOT NULL,
-    department TEXT,
-    designation TEXT,
-    phone TEXT,
-    status TEXT DEFAULT 'Active' CHECK (status IN ('Active', 'Inactive', 'On Leave')),
-    avatar_url TEXT, -- Path to file in Supabase Storage
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

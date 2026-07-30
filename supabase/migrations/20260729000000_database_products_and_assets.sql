@@ -2,6 +2,39 @@
 -- S.S. Pharmacy Product Catalog Expansion & Banners Migration
 -- ============================================================
 
+-- 0. Create base products table if not exists
+CREATE TABLE IF NOT EXISTS public.products (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    category TEXT,
+    mrp NUMERIC,
+    selling_price NUMERIC,
+    pack_size TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS on products
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'products' AND policyname = 'Public can view products'
+    ) THEN
+        CREATE POLICY "Public can view products" ON public.products 
+            FOR SELECT USING (true);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'products' AND policyname = 'Admins have full access to products'
+    ) THEN
+        CREATE POLICY "Admins have full access to products" ON public.products 
+            FOR ALL USING (public.is_admin());
+    END IF;
+END $$;
+
 -- 1. Extend products table with content and media fields
 ALTER TABLE public.products 
 ADD COLUMN IF NOT EXISTS composition TEXT NOT NULL DEFAULT '',
