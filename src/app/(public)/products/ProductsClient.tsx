@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { products, type Product } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { createClient } from '@/lib/supabase/client';
-import { ShoppingBag, Search, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
+import { ShoppingBag, Search, Loader2 } from 'lucide-react';
 
 export default function ProductsClient() {
   const { handleAddToCart } = useCart();
@@ -132,13 +133,15 @@ export default function ProductsClient() {
               key={p.id} 
               className="bg-white border border-[#C9D5D5] rounded-2xl overflow-hidden shadow-sm flex flex-col p-6 hover:shadow-md hover:border-[#C9943E] transition-all duration-300 group"
             >
-              <Link href={`/products/${p.id}`} className="block relative aspect-square mb-6 bg-slate-50 rounded-xl p-4 overflow-hidden border border-slate-100">
-                <img 
-                  src={p.image} 
+              <Link href={`/products/${p.id}`} className="block relative aspect-square mb-6 bg-slate-50 rounded-xl overflow-hidden border border-slate-100">
+                <Image 
+                  src={p.image || ''} 
                   alt={p.name} 
-                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
+                  fill
+                  className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
-                <span className="absolute top-3 left-3 bg-[#1A5C5E]/90 text-[#FDF8F0] text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-sm">
+                <span className="absolute top-3 left-3 bg-[#1A5C5E]/90 text-[#FDF8F0] text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-sm z-10">
                   {p.packSize}
                 </span>
               </Link>

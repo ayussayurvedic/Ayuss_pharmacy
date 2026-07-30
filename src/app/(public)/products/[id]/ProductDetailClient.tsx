@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Product } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { 
@@ -58,8 +59,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-16">
           {/* Gallery */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="bg-white border border-[#C9D5D5] rounded-2xl p-6 flex items-center justify-center aspect-square shadow-sm">
-              <img src={selectedImg} alt={product.name} className="max-h-full max-w-full object-contain" />
+            <div className="bg-white border border-[#C9D5D5] rounded-2xl flex items-center justify-center aspect-square shadow-sm overflow-hidden relative">
+              <Image src={selectedImg || ''} alt={product.name} fill className="object-contain p-6" sizes="(max-width: 768px) 100vw, 40vw" priority />
             </div>
             <div className="flex gap-2.5 overflow-x-auto pb-1">
               {gallery.map((img, idx) => (
@@ -67,13 +68,13 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                   key={idx}
                   type="button"
                   onClick={() => setSelectedImg(img)}
-                  className={`w-16 h-16 border-2 p-1.5 rounded-xl bg-white cursor-pointer shrink-0 transition-all ${
+                  className={`w-16 h-16 border-2 rounded-xl bg-white cursor-pointer shrink-0 transition-all overflow-hidden relative ${
                     selectedImg === img 
                       ? 'border-[#1A5C5E] shadow-sm' 
                       : 'border-slate-200 hover:border-[#C9943E]'
                   }`}
                 >
-                  <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-contain" />
+                  <Image src={img || ''} alt={`View ${idx + 1}`} fill className="object-contain p-1.5" sizes="64px" />
                 </button>
               ))}
             </div>

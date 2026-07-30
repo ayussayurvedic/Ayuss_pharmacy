@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { ShoppingBag, Menu, X, Trash2 } from 'lucide-react';
 
@@ -15,7 +16,7 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 h-20 bg-[#1A5C5E] border-b border-[#2d5238] text-white z-50 shadow-sm font-sans">
       <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/products/logo/logo.webp" alt="S.S. Pharmacy Logo" className="h-14 w-auto" />
+          <Image src="/products/logo/logo.webp" alt="S.S. Pharmacy Logo" className="h-14 w-auto" width={150} height={56} priority />
           <span className="font-bold text-lg tracking-wide hidden sm:inline font-serif">S.S. PHARMACY</span>
         </Link>
 
@@ -76,7 +77,7 @@ export default function Navbar() {
               ) : (
                 cartItems.map((item) => (
                   <div key={item.product.id} className="flex gap-3 border-b pb-3 items-center">
-                    <img src={item.product.image} alt={item.product.name} className="w-12 h-12 object-contain bg-white rounded border p-1" />
+                    <Image src={item.product.image || ''} alt={item.product.name} className="object-contain bg-white rounded border p-1" width={48} height={48} />
                     <div className="flex-1 text-xs">
                       <span className="font-bold text-slate-900 block">{item.product.name}</span>
                       <span className="text-slate-500 block text-[10px] mt-0.5">Qty: {item.quantity} · {item.product.packSize}</span>

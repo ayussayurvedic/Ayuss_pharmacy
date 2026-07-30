@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Award, 
@@ -158,11 +159,12 @@ export default function ManufacturingClient() {
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                   className="relative rounded-2xl overflow-hidden border border-[#C9D5D5] shadow-md bg-white group aspect-[4/3] max-h-[320px] cursor-pointer"
                 >
-                  <img
-                    src={pillar.image}
+                  <Image
+                    src={pillar.image || ''}
                     alt={pillar.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent flex items-end p-4">
                     <span className="inline-flex items-center gap-1 bg-[#FDF8F0]/95 backdrop-blur-sm border border-[#C9943E]/30 rounded-md px-2.5 py-1 text-[9px] font-bold text-[#1A5C5E] uppercase tracking-wide">

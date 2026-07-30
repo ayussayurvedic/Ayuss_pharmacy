@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   ShieldCheck, 
@@ -105,11 +106,12 @@ export default function AboutClient() {
               className="lg:col-span-5"
             >
               <div className="relative rounded-2xl overflow-hidden border border-[#C9D5D5] shadow-md bg-white group aspect-[4/5] max-h-[460px]">
-                <img
-                  src="/products/Moon-light/Moon cream Hero_section.webp"
+                <Image
+                  src="/products/moon-light/moon-cream-hero-section.webp"
                   alt="Ayurvedic herbs and formulation process at S.S. Pharmacy"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1A5C5E]/90 via-[#1A5C5E]/30 to-transparent flex items-end p-6 md:p-8">
                   <div className="space-y-1.5">
@@ -283,11 +285,12 @@ export default function AboutClient() {
             >
               <div className="w-full rounded-2xl overflow-hidden border border-[#C9D5D5] shadow-xs bg-white flex flex-col">
                 <div className="relative w-full h-[240px] md:h-[280px] overflow-hidden bg-slate-100">
-                  <img
+                  <Image
                     src={`https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=900&height=420&center=lonlat:78.571027,14.755504&zoom=14&marker=lonlat:78.571027,14.755504;color:%231a5c5e;size:medium&apiKey=${env.NEXT_PUBLIC_GEOAPIFY_API_KEY || ''}`}
                     alt="S.S. Pharmacy Manufacturing Facility Map"
-                    className="w-full h-full object-cover"
-                    loading="lazy"
+                    fill
+                    className="object-cover"
+                    unoptimized
                   />
                 </div>
                 <div className="p-4 sm:p-5 bg-white border-t border-[#C9D5D5]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

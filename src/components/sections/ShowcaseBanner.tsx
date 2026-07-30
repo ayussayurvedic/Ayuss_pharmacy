@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 
 export default function ShowcaseBanner() {
@@ -15,16 +16,24 @@ export default function ShowcaseBanner() {
         className="relative w-full min-h-[260px] md:min-h-[300px] rounded-3xl overflow-hidden flex items-center shadow-lg border border-[#C9D5D5]/60 group"
       >
         {/* Background Image */}
-        <picture className="absolute inset-0 block w-full h-full z-0">
-          <source media="(max-width: 767px)" srcSet="/products/Hero%20section/madebynature-mobile.webp" />
-          <img 
-            src="/products/Hero%20section/madebynature.webp" 
+        <div className="absolute inset-0 z-0 w-full h-full overflow-hidden group-hover:scale-105 transition-transform duration-700">
+          <Image 
+            src="/products/hero-section/madebynature-mobile.webp" 
             alt="Ayurveda Herbal Showcase" 
-            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-            width={1200}
-            height={300}
+            fill
+            className="object-cover object-center md:hidden"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
           />
-        </picture>
+          <Image 
+            src="/products/hero-section/madebynature.webp" 
+            alt="Ayurveda Herbal Showcase" 
+            fill
+            className="object-cover object-center hidden md:block"
+            sizes="100vw"
+            priority
+          />
+        </div>
 
         {/* Dark Gradient Overlay (Constrained to Left Side Only - Right Side 100% Clear) */}
         <div className="absolute inset-y-0 left-0 w-full md:w-[55%] bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10" />

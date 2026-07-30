@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ShieldCheck, Factory, Leaf } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ManufacturingTeaser() {
   return (
@@ -27,12 +28,13 @@ export default function ManufacturingTeaser() {
             viewport={{ once: true }}
             className="relative rounded-[18px] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.05)] bg-[#E2E8F0] border border-[#1A5C5E]/10"
           >
-            <img 
+            <Image 
               src="/products/chemist_lab.webp" 
               alt="Controlled Ayurvedic pharmaceutical processing facility at S.S. Pharmacy" 
               className="w-full h-auto aspect-[16/10] max-h-[380px] object-cover block transition-transform duration-500 hover:scale-[1.02]"
               width={800}
               height={500}
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
             <div className="absolute bottom-4 left-4 bg-[#FDF8F0]/94 text-slate-800 px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 text-[10px] font-bold backdrop-blur-sm shadow border border-[#1A5C5E]/10">
               <ShieldCheck className="w-4 h-4 text-[#C9943E]" />

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   Phone, 
   Mail, 
@@ -17,10 +18,12 @@ export default function Footer() {
         {/* Brand column */}
         <div className="space-y-4">
           <div className="flex items-center gap-2.5">
-            <img 
+            <Image 
               src="/products/logo/logo.webp" 
               alt="S.S. Pharmacy Logo" 
               className="h-9 w-auto" 
+              width={96}
+              height={36}
             />
             <span className="font-bold text-white tracking-widest text-sm font-serif">S.S. PHARMACY</span>
           </div>

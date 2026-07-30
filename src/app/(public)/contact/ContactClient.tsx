@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/components/ui/Toast';
 import { env } from '@/lib/env';
@@ -201,11 +202,12 @@ export default function ContactClient() {
       <section className="max-w-[1200px] mx-auto px-6">
         <div className="w-full rounded-2xl overflow-hidden border border-[#C9D5D5] shadow-sm bg-white flex flex-col">
           <div className="relative w-full h-[260px] md:h-[340px] overflow-hidden bg-slate-100">
-            <img
+            <Image
               src={`https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=1200&height=420&center=lonlat:78.571027,14.755504&zoom=14&marker=lonlat:78.571027,14.755504;color:%231a5c5e;size:medium&apiKey=${env.NEXT_PUBLIC_GEOAPIFY_API_KEY || ''}`}
               alt="S.S. Pharmacy Facility Map"
-              className="w-full h-full object-cover"
-              loading="lazy"
+              fill
+              className="object-cover"
+              unoptimized
             />
           </div>
           <div className="p-4 sm:p-5 bg-white border-t border-[#C9D5D5]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

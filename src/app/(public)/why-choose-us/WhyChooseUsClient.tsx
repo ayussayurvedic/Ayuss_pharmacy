@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   ShieldCheck, 
   Award, 
@@ -130,10 +131,12 @@ export default function WhyChooseUsClient() {
       <section className="max-w-[1200px] mx-auto px-6">
         <div className="relative rounded-3xl overflow-hidden border-2 border-[#C9D5D5] shadow-xl text-white group min-h-[300px] md:min-h-[340px] flex items-center">
           {/* Background Image - Fully Visible */}
-          <img 
+          <Image 
             src="/products/banner.webp" 
             alt="Ayurvedic raw botanicals and ingredients" 
-            className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" 
+            fill
+            className="object-cover object-center group-hover:scale-105 transition-transform duration-700 z-0" 
+            sizes="100vw"
           />
 
           {/* Light Text Scrim Overlay (Left Side Only for High Readability) */}

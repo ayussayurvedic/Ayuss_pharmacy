@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AboutTeaser() {
   return (
@@ -14,12 +15,13 @@ export default function AboutTeaser() {
           viewport={{ once: true }}
           className="hidden md:block relative rounded-[20px] overflow-hidden border border-[#1A5C5E]/12 shadow-[0_12px_32px_rgba(0,0,0,0.06)]"
         >
-          <img 
-            src="/products/Moon-light/Moon cream Hero_section.webp" 
+          <Image 
+            src="/products/moon-light/moon-cream-hero-section.webp" 
             alt="Authentic Ayurvedic herbal formulation" 
             className="w-full min-h-[380px] max-h-[440px] object-cover block"
             width={600}
             height={440}
+            sizes="50vw"
           />
         </motion.div>
 

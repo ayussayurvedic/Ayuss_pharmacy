@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Leaf, ShieldCheck, Star, ShoppingBag, CheckCircle2, ArrowRight } from 'lucide-react';
 import { products, type Product } from '@/data/products';
 import { useCart } from '@/context/CartContext';
@@ -82,11 +83,15 @@ export default function ProductsPortfolio() {
                   </div>
 
                   {/* Product Image */}
-                  <img 
-                    src={product.transparentImage || product.image} 
-                    alt={product.name}
-                    className="h-full object-contain max-h-[175px] transition-transform duration-500 group-hover:scale-[1.08] filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.08)]"
-                  />
+                  <div className="relative w-full h-[175px] transition-transform duration-500 group-hover:scale-[1.08]">
+                    <Image 
+                      src={product.transparentImage || product.image || ''} 
+                      alt={product.name}
+                      fill
+                      className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.08)]"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
                 </div>
 
                 {/* 2. Content Info Body */}
