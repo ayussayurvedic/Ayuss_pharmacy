@@ -97,18 +97,32 @@ export default function HeroCarousel() {
         if (error) throw error;
 
         if (data && data.length > 0) {
-          const mapped: Slide[] = data.map((dbS: any) => ({
-            id: dbS.id,
-            desktopImage: dbS.desktop_image_url,
-            mobileImage: dbS.mobile_image_url,
-            alt: dbS.title || 'S.S. Pharmacy Banner',
-            eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
-            title: dbS.title || '',
-            titleLine2: dbS.subtitle || '',
-            subtitle: dbS.subtitle || '',
-            description: dbS.description || '',
-            productId: dbS.link_url || 'all'
-          }));
+          const mapped: Slide[] = data.map((dbS: any) => {
+            const desktop = dbS.desktop_image_url || '';
+            let mobile = dbS.mobile_image_url || '';
+
+            // Ensure mobile strictly resolves to a mobile .webp asset
+            if (!mobile || mobile === desktop) {
+              const lower = (dbS.id + ' ' + dbS.title + ' ' + desktop).toLowerCase();
+              if (lower.includes('moon')) mobile = '/products/hero-section/hero-moon-mobile.webp';
+              else if (lower.includes('cream') || lower.includes('pain-cream')) mobile = '/products/hero-section/hero-pain-cream-mobile.webp';
+              else if (lower.includes('pills') || lower.includes('pain-pills')) mobile = '/products/hero-section/hero-pain-pills-mobile.webp';
+              else mobile = '/products/hero-section/hero-main-mobile.webp';
+            }
+
+            return {
+              id: dbS.id,
+              desktopImage: desktop,
+              mobileImage: mobile,
+              alt: dbS.title || 'S.S. Pharmacy Banner',
+              eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
+              title: dbS.title || '',
+              titleLine2: dbS.subtitle || '',
+              subtitle: dbS.subtitle || '',
+              description: dbS.description || '',
+              productId: dbS.link_url || 'all'
+            };
+          });
           // Only update if array actually changed to prevent initial hydration blinking
           setCarouselSlides((prev) => {
             if (JSON.stringify(prev) === JSON.stringify(mapped)) return prev;
