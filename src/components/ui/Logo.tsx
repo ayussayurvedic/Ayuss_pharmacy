@@ -12,11 +12,10 @@ export default function Logo({ className = "", dark = false }: LogoProps) {
     <Image
       src="/products/logo/logo.webp"
       alt="S.S. Pharmacy Logo"
-      width={120}
-      height={120}
+      width={180}
+      height={60}
       className={className || "w-44 h-auto object-contain"}
       priority
-      style={dark ? { filter: 'brightness(0) invert(1)' } : undefined}
     />
   );
 }
