@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/components/ui/Toast';
@@ -12,7 +12,11 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const router = useRouter();
   const supabase = createClient();
-  const checkoutAttemptId = useRef(crypto.randomUUID());
+  const checkoutAttemptId = useRef('');
+
+  useEffect(() => {
+    checkoutAttemptId.current = window.crypto.randomUUID();
+  }, []);
 
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'online_razorpay'>('cod');
   const [loading, setLoading] = useState(false);
