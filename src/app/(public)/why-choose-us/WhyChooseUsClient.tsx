@@ -186,7 +186,7 @@ export default function WhyChooseUsClient() {
       <section className="max-w-[1200px] mx-auto px-6 pb-16">
         <div className="relative rounded-3xl overflow-hidden min-h-[220px] md:min-h-[280px]">
           <Image
-            src="/products/Moon-light/moon-cream-hero-section.webp"
+            src="/products/moon-light/moon-cream-hero-section.webp"
             alt="S.S. Pharmacy Ayurvedic product range"
             fill
             className="object-cover"

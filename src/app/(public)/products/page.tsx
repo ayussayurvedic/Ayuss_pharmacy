@@ -79,7 +79,7 @@ const productListSchema = {
         "name": "Moon Light Cream",
         "description": "Ayurvedic Skin Care Cream with Manjishta, Chandana, and Bahlika Flower. Supports healthy-looking skin and even-looking tone.",
         "url": "https://sspharmacy.com/products/moon-light-cream",
-        "image": "https://sspharmacy.com/products/Moon-light/Moon%20cream%20front%20view.webp",
+        "image": "https://sspharmacy.com/products/moon-light/moon-cream-front-view.webp",
         "brand": { "@type": "Brand", "name": "Moon Light" },
         "offers": {
           "@type": "Offer",
