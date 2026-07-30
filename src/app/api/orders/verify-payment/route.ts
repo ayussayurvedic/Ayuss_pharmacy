@@ -14,6 +14,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing verification fields' }, { status: 400 });
     }
 
+    // Fetch order total to log transaction securely
+    const { data: order, error: queryErr } = await supabaseAdmin
+      .from('orders')
+      .select('total_amount')
+      .eq('id', orderId)
+      .maybeSingle();
+
+    if (queryErr || !order) {
+      return NextResponse.json({ error: 'Order reference not found' }, { status: 400 });
+    }
+
     const secret = process.env.RAZORPAY_KEY_SECRET;
     if (!secret || razorpayOrderId === 'sandbox_order') {
       console.warn('⚠️ Warning: RAZORPAY_KEY_SECRET is not configured or using sandbox. Falling back to sandbox validation.');
@@ -25,6 +36,21 @@ export async function POST(request: NextRequest) {
         .eq('id', orderId);
         
       if (dbErr) throw dbErr;
+
+      // Log transaction
+      const { error: txErr } = await supabaseAdmin.from('payment_transactions').insert({
+        order_id: orderId,
+        payment_method: 'online_razorpay_sandbox',
+        transaction_id: `sandbox_${Date.now()}`,
+        gateway_order_id: 'sandbox_order',
+        amount: order.total_amount,
+        status: 'paid',
+        raw_payload: body,
+      });
+      if (txErr) {
+        console.error('Failed to log sandbox transaction:', txErr);
+      }
+
       return NextResponse.json({ success: true, sandbox: true });
     }
 
@@ -46,6 +72,20 @@ export async function POST(request: NextRequest) {
       .eq('id', orderId);
 
     if (dbErr) throw dbErr;
+
+    // Log transaction
+    const { error: txErr } = await supabaseAdmin.from('payment_transactions').insert({
+      order_id: orderId,
+      payment_method: 'online_razorpay',
+      transaction_id: razorpayPaymentId,
+      gateway_order_id: razorpayOrderId,
+      amount: order.total_amount,
+      status: 'paid',
+      raw_payload: body,
+    });
+    if (txErr) {
+      console.error('Failed to log live transaction:', txErr);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
