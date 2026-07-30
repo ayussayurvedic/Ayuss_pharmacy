@@ -37,7 +37,7 @@ export default function ManufacturingClient() {
       id: "03",
       title: "Quality Assurance & Lab Validation",
       desc: "We enforce multi-tiered validation checks. From raw botanical extraction to final bottle seals, every batch is tested to confirm identification metrics, safety, and consistent therapeutic support.",
-      image: "/products/Moon-light/Moon cream Hero_section.webp",
+      image: "/products/Moon-light/moon-cream-hero-section.webp",
       badge: "Physico-Chemical Testing"
     }
   ];

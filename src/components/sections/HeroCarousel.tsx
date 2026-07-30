@@ -22,8 +22,8 @@ interface Slide {
 const slides: Slide[] = [
   {
     id: 'moon-cream',
-    desktopImage: '/products/Hero%20section/hero-moon-desktop.webp',
-    mobileImage: '/products/Hero%20section/hero-moon-mobile.webp',
+    desktopImage: '/products/hero-section/hero-moon-desktop.webp',
+    mobileImage: '/products/hero-section/hero-moon-mobile.webp',
     alt: 'Moon Light Cream – Pure Ayurvedic Skin Care',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Moon Light',
@@ -34,8 +34,8 @@ const slides: Slide[] = [
   },
   {
     id: 'pain-cream',
-    desktopImage: '/products/Hero%20section/hero-pain-cream-desktop.webp',
-    mobileImage: '/products/Hero%20section/hero-pain-cream-mobile.webp',
+    desktopImage: '/products/hero-section/hero-pain-cream-desktop.webp',
+    mobileImage: '/products/hero-section/hero-pain-cream-mobile.webp',
     alt: 'Dr. Lion Pain Relief Cream – S.S. Pharmacy',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Dr. Lion',
@@ -46,8 +46,8 @@ const slides: Slide[] = [
   },
   {
     id: 'brand-main',
-    desktopImage: '/products/Hero%20section/hero-main-desktop.webp',
-    mobileImage: '/products/Hero%20section/hero-main-mobile.webp',
+    desktopImage: '/products/hero-section/hero-main-desktop.webp',
+    mobileImage: '/products/hero-section/hero-main-mobile.webp',
     alt: 'Ayurvedic Solutions for Modern Wellness – S.S. Pharmacy',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Ayurvedic Solutions for',
@@ -58,8 +58,8 @@ const slides: Slide[] = [
   },
   {
     id: 'pain-pills',
-    desktopImage: '/products/Hero%20section/hero-pain-pills-desktop.webp',
-    mobileImage: '/products/Hero%20section/hero-pain-pills-mobile.webp',
+    desktopImage: '/products/hero-section/hero-pain-pills-desktop.webp',
+    mobileImage: '/products/hero-section/hero-pain-pills-mobile.webp',
     alt: 'Dr. Lion Pain Pills – Traditional Herbal Remedy',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Dr. Lion',
