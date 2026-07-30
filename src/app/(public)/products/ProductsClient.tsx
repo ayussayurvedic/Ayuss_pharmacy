@@ -80,49 +80,52 @@ export default function ProductsClient() {
       <div className="max-w-[1200px] mx-auto px-6 space-y-10">
         
         {/* Header Block */}
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="flex items-center justify-center gap-2 text-[11px] text-[#2A7B7E] font-medium uppercase tracking-wider mb-2">
+        <div className="border-b border-[#C9D5D5]/60 pb-8 space-y-4">
+          <div className="flex items-center gap-2 text-[11px] text-[#2A7B7E] font-medium uppercase tracking-wider mb-2">
             <Link href="/" className="hover:text-[#1A5C5E] transition-colors">Home</Link>
             <span>•</span>
             <span className="text-slate-400">Products</span>
           </div>
 
-          <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block">Ayurvedic Formulations</span>
-          <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-serif text-[#1A5C5E] font-semibold uppercase leading-snug">
-            Ayurvedic Products
-          </h1>
-          <p className="text-sm text-slate-600 leading-relaxed font-light">
-            Government-licensed proprietary formulations (License No. R-1970/Ayur) crafted using pure botanical extracts.
-          </p>
-
-          {/* Search Input */}
-          <div className="relative max-w-md mx-auto pt-2">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-5" />
-            <input
-              type="text"
-              placeholder="Search formulations, ingredients..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full border border-[#C9D5D5] pl-10 pr-4 py-2.5 rounded-xl text-xs outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-white shadow-sm font-sans"
-            />
+          <div className="max-w-3xl space-y-2">
+            <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block">Ayurvedic Formulations</span>
+            <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-serif text-[#1A5C5E] font-semibold uppercase leading-snug">
+              Ayurvedic Products
+            </h1>
+            <p className="text-sm text-slate-600 leading-relaxed font-light max-w-2xl pb-2">
+              Government-licensed proprietary formulations (License No. R-1970/Ayur) crafted using pure botanical extracts.
+            </p>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex justify-center gap-2 pt-2">
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer border ${
-                  selectedCategory === cat.id
-                    ? 'bg-[#1A5C5E] text-white border-[#1A5C5E] shadow-sm'
-                    : 'bg-white text-slate-600 border-[#C9D5D5] hover:border-[#C9943E]'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          {/* Search Input & Category Filter Pills */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2">
+            <div className="relative max-w-md w-full">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <input
+                type="text"
+                placeholder="Search formulations, ingredients..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full border border-[#C9D5D5] pl-10 pr-4 py-2.5 rounded-xl text-xs outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-white shadow-sm font-sans"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer border ${
+                    selectedCategory === cat.id
+                      ? 'bg-[#1A5C5E] text-white border-[#1A5C5E] shadow-sm'
+                      : 'bg-white text-slate-600 border-[#C9D5D5] hover:border-[#C9943E]'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

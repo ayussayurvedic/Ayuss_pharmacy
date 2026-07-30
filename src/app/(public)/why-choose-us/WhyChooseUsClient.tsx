@@ -63,20 +63,20 @@ export default function WhyChooseUsClient() {
     <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-screen font-sans">
       {/* Hero Header */}
       <section className="border-b border-[#C9D5D5]/60 pb-6 pt-2 mb-8">
-        <div className="max-w-[1200px] mx-auto px-6 text-center">
+        <div className="max-w-[1200px] mx-auto px-6">
           {/* Breadcrumbs */}
-          <div className="flex items-center justify-center gap-2 text-[11px] text-[#2A7B7E] font-medium mb-4 uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[11px] text-[#2A7B7E] font-medium mb-4 uppercase tracking-wider">
             <Link href="/" className="hover:text-[#1A5C5E] transition-colors">Home</Link>
             <span>•</span>
             <span className="text-slate-400">Why Choose Us</span>
           </div>
 
-          <div className="max-w-2xl mx-auto space-y-2">
-            <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block">Foundational Standards</span>
-            <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-serif text-[#1A5C5E] font-semibold leading-snug uppercase">
+          <div className="max-w-3xl">
+            <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block mb-2">Foundational Standards</span>
+            <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-serif text-[#1A5C5E] font-semibold leading-snug uppercase mb-3">
               Why Choose S.S. Pharmacy?
             </h1>
-            <p className="text-sm text-slate-600 leading-relaxed font-light">
+            <p className="text-sm text-slate-600 leading-relaxed max-w-2xl font-light">
               Our production philosophy bridges time-tested Ayurvedic insights with rigorous analytical laboratory checks to deliver genuine relief.
             </p>
           </div>
