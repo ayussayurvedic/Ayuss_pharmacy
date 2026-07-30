@@ -22,8 +22,8 @@ interface Slide {
 const slides: Slide[] = [
   {
     id: 'moon-cream',
-    desktopImage: '/products/hero-section/hero-moon-desktop.webp',
-    mobileImage: '/products/hero-section/hero-moon-mobile.webp',
+    desktopImage: '/products/hero-section/hero-moon-desktop.webp?v=2',
+    mobileImage: '/products/hero-section/hero-moon-mobile.webp?v=2',
     alt: 'Moon Light Cream – Pure Ayurvedic Skin Care',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Moon Light',
@@ -34,8 +34,8 @@ const slides: Slide[] = [
   },
   {
     id: 'pain-cream',
-    desktopImage: '/products/hero-section/hero-pain-cream-desktop.webp',
-    mobileImage: '/products/hero-section/hero-pain-cream-mobile.webp',
+    desktopImage: '/products/hero-section/hero-pain-cream-desktop.webp?v=2',
+    mobileImage: '/products/hero-section/hero-pain-cream-mobile.webp?v=2',
     alt: 'Dr. Lion Pain Relief Cream – S.S. Pharmacy',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Dr. Lion',
@@ -109,7 +109,11 @@ export default function HeroCarousel() {
             description: dbS.description || '',
             productId: dbS.link_url || 'all'
           }));
-          setCarouselSlides(mapped);
+          // Only update if array actually changed to prevent initial hydration blinking
+          setCarouselSlides((prev) => {
+            if (JSON.stringify(prev) === JSON.stringify(mapped)) return prev;
+            return mapped;
+          });
         }
       } catch (err) {
         console.error('Failed to load page assets from Supabase, loading fallback slides:', err);
@@ -134,13 +138,13 @@ export default function HeroCarousel() {
     >
       {/* Mobile View: No Text, height is natural image height */}
       <div className="block md:hidden w-full relative">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           <motion.img
             key={activeSlide.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.5, ease: 'linear' }}
             src={activeSlide.mobileImage}
             alt={activeSlide.alt}
             className="w-full h-auto object-cover block m-0 p-0"
@@ -150,15 +154,15 @@ export default function HeroCarousel() {
 
       {/* Desktop View: Text overlays, standard fixed height */}
       <div className="hidden md:block relative w-full h-[620px] lg:h-[680px]">
-        {/* Desktop Image */}
+        {/* Desktop Image with Smooth Synchronized Crossfade */}
         <div className="absolute inset-0 z-0">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout">
             <motion.img
               key={activeSlide.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
               src={activeSlide.desktopImage}
               alt={activeSlide.alt}
               className="w-full h-full object-cover object-right"
@@ -170,7 +174,7 @@ export default function HeroCarousel() {
         <div 
           className="absolute inset-0 pointer-events-none z-10" 
           style={{
-            background: 'linear-gradient(90deg, rgba(253, 248, 240, 0.94) 0%, rgba(253, 248, 240, 0.6) 42%, rgba(253, 248, 240, 0) 68%)'
+            background: 'linear-gradient(90deg, rgba(253, 248, 240, 0.65) 0%, rgba(253, 248, 240, 0.25) 32%, rgba(253, 248, 240, 0) 55%)'
           }}
         />
 
@@ -178,13 +182,13 @@ export default function HeroCarousel() {
         <div className="absolute inset-0 z-20 flex items-center">
           <div className="max-w-[1280px] w-full mx-auto px-6 pointer-events-none">
             <div className="w-[42%] max-w-[540px] flex flex-col items-start text-left pointer-events-auto">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="popLayout">
                 <motion.div
                   key={activeSlide.id}
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -16 }}
-                  transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
                   className="space-y-4"
                 >
                   <div className="flex items-center gap-2.5 mb-2.5 w-full">

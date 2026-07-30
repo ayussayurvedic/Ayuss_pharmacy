@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { 
   ShieldCheck, 
   Award, 
@@ -60,7 +61,7 @@ export default function WhyChooseUsClient() {
   ];
 
   return (
-    <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-screen font-sans">
+    <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-[100dvh] font-sans overflow-hidden">
       {/* Hero Header */}
       <section className="border-b border-[#C9D5D5]/60 pb-6 pt-2 mb-8">
         <div className="max-w-[1200px] mx-auto px-6">
@@ -71,7 +72,12 @@ export default function WhyChooseUsClient() {
             <span className="text-slate-400">Why Choose Us</span>
           </div>
 
-          <div className="max-w-3xl">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="max-w-3xl"
+          >
             <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block mb-2">Foundational Standards</span>
             <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-serif text-[#1A5C5E] font-semibold leading-snug uppercase mb-3">
               Why Choose S.S. Pharmacy?
@@ -79,22 +85,38 @@ export default function WhyChooseUsClient() {
             <p className="text-sm text-slate-600 leading-relaxed max-w-2xl font-light">
               Our production philosophy bridges time-tested Ayurvedic insights with rigorous analytical laboratory checks to deliver genuine relief.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Points Grid */}
       <section className="max-w-[1200px] mx-auto px-6 mb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div 
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: { staggerChildren: 0.12 }
+            }
+          }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
           {points.map((pt, idx) => {
             const Icon = pt.icon;
             return (
-              <div 
+              <motion.div 
                 key={idx}
-                className="bg-white p-6 rounded-2xl border border-[#C9D5D5]/50 hover:border-[#C9943E] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between group"
+                variants={{
+                  hidden: { opacity: 0, y: 25 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+                }}
+                className="bg-white p-6 rounded-2xl border border-[#C9D5D5]/50 hover:border-[#C9943E] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between group cursor-default"
               >
                 <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#C9943E]/10 text-[#C9943E] flex items-center justify-center border border-[#C9943E]/25 group-hover:bg-[#1A5C5E] group-hover:text-white transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-[#C9943E]/10 text-[#C9943E] flex items-center justify-center border border-[#C9943E]/25 group-hover:bg-[#1A5C5E] group-hover:text-white transition-all duration-300">
                     <Icon size={18} />
                   </div>
                   <h3 className="font-serif text-base font-bold text-[#1A5C5E] uppercase tracking-wide">
@@ -109,15 +131,21 @@ export default function WhyChooseUsClient() {
                   <CheckCircle2 size={11} className="text-[#1A5C5E]" />
                   <span>Quality Standard Verified</span>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </section>
 
       {/* Quality Credentials Row */}
       <section className="max-w-[1200px] mx-auto px-6 mb-16">
-        <div className="bg-white p-8 rounded-2xl border border-[#C9D5D5] shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="bg-white p-8 rounded-2xl border border-[#C9D5D5] shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
+        >
           <div className="lg:col-span-8 space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1A5C5E]/5 text-[#1A5C5E] border border-[#1A5C5E]/15 text-[9px] font-bold uppercase tracking-wider">
               <Factory size={12} className="text-[#C9943E]" />
@@ -147,12 +175,18 @@ export default function WhyChooseUsClient() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* FAQ Accordion Section */}
       <section className="max-w-[1000px] mx-auto px-6 py-16">
-        <div className="text-center space-y-3 mb-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center space-y-3 mb-10"
+        >
           <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block">Common Questions</span>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-serif text-[#1A5C5E] font-bold leading-tight uppercase">
             Frequently Asked Questions
@@ -162,12 +196,28 @@ export default function WhyChooseUsClient() {
             <Leaf className="w-3.5 h-3.5 text-[#C9943E]" />
             <span className="w-10 h-[1px] bg-[#C9943E] opacity-50" />
           </div>
-        </div>
+        </motion.div>
 
-        <div className="space-y-3">
+        <motion.div 
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-30px" }}
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1 }
+            }
+          }}
+          className="space-y-3"
+        >
           {faqItems.map((faq, i) => (
-            <details 
+            <motion.details 
               key={i} 
+              variants={{
+                hidden: { opacity: 0, y: 15 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+              }}
               className="group bg-white border border-[#C9D5D5] rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-shadow"
             >
               <summary className="flex items-center justify-between gap-4 px-6 py-4 cursor-pointer list-none text-sm font-semibold text-[#1A5C5E] hover:bg-[#F2F7F7] transition-colors select-none">
@@ -177,14 +227,20 @@ export default function WhyChooseUsClient() {
               <div className="px-6 pb-5 pt-1 text-sm text-slate-600 leading-relaxed border-t border-[#C9D5D5]/50">
                 {faq.answer}
               </div>
-            </details>
+            </motion.details>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* CTA Banner */}
       <section className="max-w-[1200px] mx-auto px-6 pb-16">
-        <div className="relative rounded-3xl overflow-hidden min-h-[220px] md:min-h-[280px]">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="relative rounded-3xl overflow-hidden min-h-[220px] md:min-h-[280px]"
+        >
           <Image
             src="/products/raw-herbs-banner.webp"
             alt="S.S. Pharmacy Ayurvedic botanical raw herbs and formulations"
@@ -224,8 +280,9 @@ export default function WhyChooseUsClient() {
               <ArrowRight size={16} />
             </Link>
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   );
 }
+

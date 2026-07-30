@@ -10,7 +10,7 @@ import ShowcaseBanner from '@/components/sections/ShowcaseBanner';
 
 export default function HomeClient() {
   return (
-    <div className="bg-[#FDF8F0] pb-16 min-h-screen">
+    <div suppressHydrationWarning className="bg-[#FDF8F0] pb-16 min-h-[100dvh]">
       <HeroCarousel />
       <Highlights />
       <ProductsPortfolio />

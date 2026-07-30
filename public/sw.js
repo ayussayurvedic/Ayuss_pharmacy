@@ -1,5 +1,5 @@
-const CACHE_NAME = 'sspharmacy-app-50f17a22-9b7c-458a-ad35-c25ce86215b0';
-const SCOPES = ['/employee', '/admin'];
+const CACHE_NAME = 'sspharmacy-app-729dce6b-2e9d-40c4-9b21-3bd4c50cef3c';
+const SCOPES = ['/'];
 
 // Utility to bound dynamic caches to prevent storage exhaustion
 function limitCacheSize(cacheName, maxItems) {
@@ -15,21 +15,25 @@ function limitCacheSize(cacheName, maxItems) {
   });
 }
 
-// Install event - pre-cache critical login and shell assets
+// Install event - pre-cache critical public shell and brand assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll([
-        '/employee/login',
+        '/',
+        '/products',
+        '/why-choose-us',
+        '/about',
+        '/contact',
+        '/manufacturing',
         '/admin/login',
-        '/favicon.svg',
-        '/icons/icon-192.png',
-        '/icons/icon-512.png',
-        '/splash/apple-splash-640-1136.png',
-        '/splash/apple-splash-750-1334.png',
-        '/splash/apple-splash-1170-2532.png',
-        '/splash/apple-splash-1290-2796.png'
-      ]);
+        '/products/logo/logo.webp',
+        '/products/banner.webp',
+        '/products/raw-herbs-banner.webp',
+        '/products/chemist_lab.webp',
+        '/products/why_choose_us_image.webp',
+        '/favicon.svg'
+      ]).catch((err) => console.log('[SW] Non-critical precache item skipped:', err));
     })
   );
 });
@@ -119,7 +123,7 @@ self.addEventListener('fetch', (event) => {
               if (url.pathname.startsWith('/admin')) {
                 return caches.match('/admin/login');
               }
-              return caches.match('/employee/login');
+              return caches.match('/');
             });
           })
       );

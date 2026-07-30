@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Lexend } from 'next/font/google';
+import { Playfair_Display, Outfit, Inter, JetBrains_Mono } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 
@@ -10,6 +10,20 @@ import { ToastProvider } from '@/components/ui/Toast';
 import { CartProvider } from '@/context/CartContext';
 import SchemaMarkup from '@/components/layout/SchemaMarkup';
 
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-playfair',
+  preload: true,
+});
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-outfit',
+  preload: true,
+});
+
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
@@ -17,10 +31,10 @@ const inter = Inter({
   preload: true,
 });
 
-const lexend = Lexend({
+const jetbrains = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-lexend',
+  variable: '--font-jetbrains',
   preload: true,
 });
 
@@ -141,7 +155,7 @@ export default function RootLayout({
   const clarityId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
 
   return (
-    <html lang="en" className={`min-h-screen antialiased overflow-x-hidden ${inter.variable} ${lexend.variable}`}>
+    <html lang="en" className={`min-h-screen antialiased overflow-x-hidden ${playfair.variable} ${outfit.variable} ${inter.variable} ${jetbrains.variable}`}>
       <head>
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />

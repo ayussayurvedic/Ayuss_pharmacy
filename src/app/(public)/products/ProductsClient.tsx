@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 import { products, type Product } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { createClient } from '@/lib/supabase/client';
@@ -76,7 +77,7 @@ export default function ProductsClient() {
   });
 
   return (
-    <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-screen font-sans">
+    <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-[100dvh] font-sans overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-6 space-y-10">
         
         {/* Header Block */}
@@ -87,7 +88,12 @@ export default function ProductsClient() {
             <span className="text-slate-400">Products</span>
           </div>
 
-          <div className="max-w-3xl space-y-2">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="max-w-3xl space-y-2"
+          >
             <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block">Ayurvedic Formulations</span>
             <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-serif text-[#1A5C5E] font-semibold uppercase leading-snug">
               Ayurvedic Products
@@ -95,10 +101,15 @@ export default function ProductsClient() {
             <p className="text-sm text-slate-600 leading-relaxed font-light max-w-2xl pb-2">
               Government-licensed proprietary formulations (License No. R-1970/Ayur) crafted using pure botanical extracts.
             </p>
-          </div>
+          </motion.div>
 
           {/* Search Input & Category Filter Pills */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+            className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2"
+          >
             <div className="relative max-w-md w-full">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
@@ -126,71 +137,90 @@ export default function ProductsClient() {
                 </button>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Product Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map((p) => (
-            <div 
-              key={p.id} 
-              className="bg-white border border-[#C9D5D5] rounded-2xl overflow-hidden shadow-sm flex flex-col p-6 hover:shadow-md hover:border-[#C9943E] transition-all duration-300 group"
-            >
-              <Link href={`/products/${p.id}`} className="block relative aspect-square mb-6 bg-slate-50 rounded-xl overflow-hidden border border-slate-100">
-                <Image 
-                  src={p.image || ''} 
-                  alt={p.name} 
-                  fill
-                  className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-                <span className="absolute top-3 left-3 bg-[#1A5C5E]/90 text-[#FDF8F0] text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-sm z-10">
-                  {p.packSize}
-                </span>
-              </Link>
-
-              <div className="space-y-2 mb-4">
-                <span className="text-[9px] font-bold text-[#C9943E] uppercase tracking-wider block">
-                  {p.category}
-                </span>
-                <Link href={`/products/${p.id}`}>
-                  <h3 className="font-serif font-bold text-lg text-[#1A5C5E] hover:text-[#134547] transition-colors uppercase">
-                    {p.name}
-                  </h3>
+        <motion.div 
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: { staggerChildren: 0.12 }
+            }
+          }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          <AnimatePresence mode="popLayout">
+            {filtered.map((p) => (
+              <motion.div 
+                key={p.id} 
+                layout
+                initial={{ opacity: 0, y: 25, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="bg-white border border-[#C9D5D5] rounded-2xl overflow-hidden shadow-sm flex flex-col p-6 hover:shadow-md hover:border-[#C9943E] transition-all duration-300 group"
+              >
+                <Link href={`/products/${p.id}`} className="block relative aspect-square mb-6 bg-slate-50 rounded-xl overflow-hidden border border-slate-100">
+                  <Image 
+                    src={p.image || ''} 
+                    alt={p.name} 
+                    fill
+                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                  <span className="absolute top-3 left-3 bg-[#1A5C5E]/90 text-[#FDF8F0] text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-sm z-10">
+                    {p.packSize}
+                  </span>
                 </Link>
-                <p className="text-slate-500 text-xs leading-relaxed font-light line-clamp-2">
-                  {p.composition}
-                </p>
-              </div>
 
-              {/* Benefits list preview */}
-              <div className="space-y-1 mb-6 pt-2 border-t border-slate-100">
-                {p.benefits.slice(0, 2).map((benefit, i) => (
-                  <div key={i} className="flex items-center gap-1.5 text-[10px] text-slate-500 font-light">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#C9943E] shrink-0" />
-                    <span>{benefit}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-auto flex justify-between items-center pt-4 border-t border-slate-100">
-                <div>
-                  <span className="text-[9px] text-slate-400 block uppercase font-bold tracking-wider">Price</span>
-                  <span className="font-bold text-lg text-[#1A5C5E]">₹{p.sellingPrice || p.mrp}</span>
+                <div className="space-y-2 mb-4">
+                  <span className="text-[9px] font-bold text-[#C9943E] uppercase tracking-wider block">
+                    {p.category}
+                  </span>
+                  <Link href={`/products/${p.id}`}>
+                    <h3 className="font-serif font-bold text-lg text-[#1A5C5E] hover:text-[#134547] transition-colors uppercase">
+                      {p.name}
+                    </h3>
+                  </Link>
+                  <p className="text-slate-500 text-xs leading-relaxed font-light line-clamp-2">
+                    {p.composition}
+                  </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleAddToCart(p, 1)}
-                  className="bg-[#1A5C5E] hover:bg-[#134547] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer border-0 uppercase tracking-wider shadow-sm transition-all"
-                >
-                  <ShoppingBag className="w-3.5 h-3.5" />
-                  <span>Add to Bag</span>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+
+                {/* Benefits list preview */}
+                <div className="space-y-1 mb-6 pt-2 border-t border-slate-100">
+                  {p.benefits.slice(0, 2).map((benefit, i) => (
+                    <div key={i} className="flex items-center gap-1.5 text-[10px] text-slate-500 font-light">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C9943E] shrink-0" />
+                      <span>{benefit}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-auto flex justify-between items-center pt-4 border-t border-slate-100">
+                  <div>
+                    <span className="text-[9px] text-slate-400 block uppercase font-bold tracking-wider">Price</span>
+                    <span className="font-bold text-lg text-[#1A5C5E]">₹{p.sellingPrice || p.mrp}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAddToCart(p, 1)}
+                    className="bg-[#1A5C5E] hover:bg-[#134547] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer border-0 uppercase tracking-wider shadow-sm transition-all hover:scale-105 active:scale-95"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Add to Bag</span>
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );
 }
+

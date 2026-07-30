@@ -81,9 +81,11 @@
   --color-warning: #f59e0b;
   --color-error: #ef4444;
 
-  /* Typography */
-  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
-  --font-heading: var(--font-lexend), system-ui, -apple-system, sans-serif;
+  /* Typography Contract (DESIGN.md) */
+  --font-sans: var(--font-outfit), var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-heading: var(--font-playfair), Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
   /* Border radius */
   --radius-sm: 0.375rem;
@@ -271,3 +273,14 @@
 .animate-bounce-subtle {
   animation: bounce-subtle 3s ease-in-out infinite;
 }
+
+/* Global Loading Bar Animation */
+@keyframes loading-bar {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}
+.animate-loading-bar {
+  animation: loading-bar 1.6s ease-in-out infinite;
+}
+

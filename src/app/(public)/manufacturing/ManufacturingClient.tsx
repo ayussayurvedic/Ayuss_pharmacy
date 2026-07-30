@@ -72,7 +72,7 @@ export default function ManufacturingClient() {
   };
 
   return (
-    <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-screen font-sans">
+    <div suppressHydrationWarning className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-[100dvh] font-sans">
       {/* 1. Hero Header */}
       <section className="border-b border-[#C9D5D5]/60 pb-6 pt-2">
         <div className="max-w-[1200px] mx-auto px-6">

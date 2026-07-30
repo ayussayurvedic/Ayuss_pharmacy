@@ -8,6 +8,16 @@ import {
   AlertTriangle, 
   Eye 
 } from 'lucide-react';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // ==========================================
 // 1. ADMIN CARD (SINGLE-SHELL)
@@ -94,34 +104,24 @@ interface AdminStatusBadgeProps {
 }
 
 export function AdminStatusBadge({ status, type }: AdminStatusBadgeProps) {
-  let inferredType: 'success' | 'warning' | 'danger' | 'neutral' | 'info' = type || 'neutral';
+  let variant: "success" | "warning" | "destructive" | "secondary" | "gold" = "secondary";
   
-  if (!type) {
-    const s = status.toLowerCase();
-    if (s === 'active' || s === 'paid' || s === 'resolved' || s === 'approved' || s === 'delivered' || s === 'completed' || s === 'published' || s === 'new') {
-      inferredType = 'success';
-    } else if (s === 'draft' || s === 'pending' || s === 'cod_pending' || s === 'under_review' || s === 'preparing' || s === 'investigating' || s === 'issued' || s === 'shipped') {
-      inferredType = 'warning';
-    } else if (s === 'failed' || s === 'cancelled' || s === 'rejected' || s === 'critical') {
-      inferredType = 'danger';
-    } else if (s === 'archived' || s === 'contacted' || s === 'in_transit') {
-      inferredType = 'info';
-    }
+  const s = status.toLowerCase();
+  if (s === 'active' || s === 'paid' || s === 'resolved' || s === 'approved' || s === 'delivered' || s === 'completed' || s === 'published' || s === 'new') {
+    variant = "success";
+  } else if (s === 'draft' || s === 'pending' || s === 'cod_pending' || s === 'under_review' || s === 'preparing' || s === 'investigating' || s === 'issued' || s === 'shipped') {
+    variant = "warning";
+  } else if (s === 'failed' || s === 'cancelled' || s === 'rejected' || s === 'critical') {
+    variant = "destructive";
+  } else if (s === 'archived' || s === 'contacted' || s === 'in_transit') {
+    variant = "gold";
   }
 
-  const badgeStyles = {
-    success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    warning: 'bg-[#C9943E]/10 text-[#C9943E] border-[#C9943E]/30',
-    danger: 'bg-rose-50 text-rose-700 border-rose-200',
-    info: 'bg-sky-50 text-sky-700 border-sky-200',
-    neutral: 'bg-slate-100 text-slate-700 border-slate-200'
-  };
-
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badgeStyles[inferredType]}`}>
+    <Badge variant={variant} className="gap-1.5 uppercase text-[10px]">
       <span className="w-1.5 h-1.5 rounded-full bg-current" />
       <span>{status.replace('_', ' ')}</span>
-    </span>
+    </Badge>
   );
 }
 
@@ -148,36 +148,32 @@ export function AdminDataTable<T>({
   onRowClick
 }: AdminDataTableProps<T>) {
   return (
-    <div className="bg-white rounded-2xl border border-[#C9D5D5]/60 shadow-xs overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs text-slate-700">
-          <thead className="bg-[#FDF8F0] border-b border-[#C9D5D5]/60 uppercase text-[10px] text-[#1A5C5E] font-bold tracking-wider">
-            <tr>
-              {columns.map((col, idx) => (
-                <th key={idx} className={`p-4 ${col.className || ''}`}>
-                  {col.header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#C9D5D5]/40">
-            {data.map((item) => (
-              <tr 
-                key={keyExtractor(item)}
-                onClick={() => onRowClick && onRowClick(item)}
-                className={`transition-colors ${onRowClick ? 'hover:bg-slate-50 cursor-pointer' : ''}`}
-              >
-                {columns.map((col, idx) => (
-                  <td key={idx} className={`p-4 ${col.className || ''}`}>
-                    {col.render(item)}
-                  </td>
-                ))}
-              </tr>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          {columns.map((col, idx) => (
+            <TableHead key={idx} className={col.className}>
+              {col.header}
+            </TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.map((item) => (
+          <TableRow 
+            key={keyExtractor(item)}
+            onClick={() => onRowClick && onRowClick(item)}
+            className={onRowClick ? 'cursor-pointer' : ''}
+          >
+            {columns.map((col, idx) => (
+              <TableCell key={idx} className={col.className}>
+                {col.render(item)}
+              </TableCell>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
 
@@ -464,18 +460,18 @@ export function AdminTextarea({ label, helperText, error, className = '', ...pro
 // 9. ADMIN SKELETON
 // ==========================================
 interface AdminSkeletonProps {
-  type?: 'card' | 'table' | 'line' | 'kpi';
+  type?: 'card' | 'table' | 'line' | 'stat' | 'kpi';
   rows?: number;
 }
 
-export function AdminSkeleton({ type = 'line', rows = 3 }: AdminSkeletonProps) {
-  if (type === 'kpi') {
+export function AdminSkeleton({ type = 'card', rows = 3 }: AdminSkeletonProps) {
+  if (type === 'stat' || type === 'kpi') {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, idx) => (
-          <div key={idx} className="p-4 bg-[var(--admin-surface-subtle)] rounded-xl animate-pulse space-y-2">
-            <div className="h-3 w-24 bg-[#e4e4e7] rounded" />
-            <div className="h-6 w-16 bg-[#e4e4e7] rounded" />
+          <div key={idx} className="p-4 bg-white border rounded-xl space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-6 w-16" />
           </div>
         ))}
       </div>
@@ -484,24 +480,24 @@ export function AdminSkeleton({ type = 'line', rows = 3 }: AdminSkeletonProps) {
 
   if (type === 'card') {
     return (
-      <div className="p-5 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-xl animate-pulse space-y-3">
-        <div className="h-4 w-40 bg-[var(--admin-surface-subtle)] rounded" />
-        <div className="h-3 w-64 bg-[var(--admin-surface-subtle)] rounded" />
-        <div className="h-20 w-full bg-[var(--admin-surface-subtle)] rounded mt-2" />
+      <div className="p-5 bg-white border rounded-xl space-y-3">
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="h-3 w-64" />
+        <Skeleton className="h-20 w-full mt-2" />
       </div>
     );
   }
 
   if (type === 'table') {
     return (
-      <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-xl overflow-hidden">
-        <div className="h-10 bg-[var(--admin-surface-subtle)] border-b border-[var(--admin-border)]" />
+      <div className="bg-white border rounded-xl overflow-hidden">
+        <Skeleton className="h-10 w-full border-b" />
         <div className="p-4 space-y-3">
           {Array.from({ length: rows }).map((_, idx) => (
-            <div key={idx} className="flex justify-between items-center py-2 border-b border-[#f4f4f0] last:border-0">
-              <div className="h-3 w-28 bg-[var(--admin-surface-subtle)] rounded" />
-              <div className="h-3 w-36 bg-[var(--admin-surface-subtle)] rounded" />
-              <div className="h-3 w-20 bg-[var(--admin-surface-subtle)] rounded" />
+            <div key={idx} className="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-3 w-36" />
+              <Skeleton className="h-3 w-20" />
             </div>
           ))}
         </div>
@@ -512,7 +508,7 @@ export function AdminSkeleton({ type = 'line', rows = 3 }: AdminSkeletonProps) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, idx) => (
-        <div key={idx} className="h-3 w-full bg-[var(--admin-surface-subtle)] rounded animate-pulse" />
+        <Skeleton key={idx} className="h-3 w-full" />
       ))}
     </div>
   );
