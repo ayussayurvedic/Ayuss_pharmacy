@@ -33,16 +33,12 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Formulations & Services */}
+        {/* Formulations & Navigation */}
         <div className="space-y-4">
-          <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Navigation & Orders</h4>
+          <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Navigation & Quick Links</h4>
           <div className="flex flex-col gap-2.5">
-            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors flex items-center gap-1">
-              <span>All Products</span>
-            </Link>
-            <Link href="/order-tracking" className="text-[#E8C87A] font-semibold hover:underline transition-colors flex items-center gap-1.5 bg-[#1A5C5E]/50 px-2.5 py-1.5 rounded-md border border-[#C9943E]/30 w-fit">
-              <PackageCheck className="w-3.5 h-3.5 text-[#C9943E]" />
-              <span>Track Your Order</span>
+            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
+              All Products
             </Link>
             <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
               Pain Relief & Healing
@@ -52,6 +48,15 @@ export default function Footer() {
             </Link>
             <Link href="/why-choose-us" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
               Quality Assurance
+            </Link>
+            
+            {/* Stylish Track Your Order Button at bottom of column */}
+            <Link 
+              href="/order-tracking" 
+              className="mt-2 text-[#E8C87A] font-bold text-[11px] uppercase tracking-wider hover:bg-[#1A5C5E] transition-all flex items-center justify-center gap-2 bg-[#1A5C5E]/60 px-3.5 py-2.5 rounded-xl border border-[#C9943E]/40 shadow-xs hover:shadow-md hover:scale-[1.02] w-full text-center group"
+            >
+              <PackageCheck className="w-4 h-4 text-[#C9943E] group-hover:scale-110 transition-transform" />
+              <span>Track Your Order</span>
             </Link>
           </div>
         </div>
