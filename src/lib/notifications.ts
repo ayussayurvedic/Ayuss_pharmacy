@@ -56,50 +56,6 @@ function getAppUrl(): string {
 
 
 /**
- * Template for new customer order notification sent to admins.
- */
-export function getAdminOrderNotificationTemplate(orderNumber: string, customerName: string, totalAmount: number, paymentMethod: string) {
-  return `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #1A5C5E;">New Customer Order Placed</h2>
-      <p><strong>Order Number:</strong> ${orderNumber}</p>
-      <p><strong>Customer Name:</strong> ${customerName}</p>
-      <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
-      <p><strong>Payment Method:</strong> ${paymentMethod.toUpperCase()}</p>
-      <div style="margin: 30px 0;">
-        <a href="${getAppUrl()}/admin/orders" 
-           style="background-color: #1A5C5E; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-          View Orders Dashboard
-        </a>
-      </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
-    </div>
-  `;
-}
-
-/**
- * Template for distributor application notification sent to admins.
- */
-export function getAdminDistributorApplicationTemplate(companyName: string, contactPerson: string, phone: string, city: string) {
-  return `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #1A5C5E;">New Distributor Lead Application Received</h2>
-      <p><strong>Company/Firm:</strong> ${companyName}</p>
-      <p><strong>Contact Person:</strong> ${contactPerson}</p>
-      <p><strong>Mobile Number:</strong> ${phone}</p>
-      <p><strong>City / Region:</strong> ${city}</p>
-      <div style="margin: 30px 0;">
-        <a href="${getAppUrl()}/admin/distributors" 
-           style="background-color: #1A5C5E; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-          Review Distributor Leads
-        </a>
-      </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
-    </div>
-  `;
-}
-
-/**
  * Template for contact inquiry notification sent to admins.
  */
 export function getAdminInquiryTemplate(name: string, email: string, phone: string | null, company: string | null, message: string) {
@@ -163,5 +119,83 @@ export async function notifyAdminsIfEnabled(
     console.error('Failed to notify admins:', err);
     return { success: false, error: err };
   }
+}
+
+/**
+ * Template for order confirmation sent to customers.
+ */
+export function getCustomerOrderTemplate(
+  orderNum: string,
+  customerName: string,
+  items: Array<{ name: string; quantity: number; price: number }>,
+  total: number,
+  address: string
+) {
+  const itemsHtml = items
+    .map(
+      (item) =>
+        `<tr>
+          <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${item.name}</td>
+          <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${item.quantity}</td>
+          <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: right;">₹${item.price.toFixed(2)}</td>
+        </tr>`
+    )
+    .join('');
+
+  return `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+      <h2 style="color: #1A5C5E;">Order Confirmed!</h2>
+      <p>Dear ${customerName},</p>
+      <p>Thank you for shopping with S.S. Pharmacy. Your order <strong>#${orderNum}</strong> has been received and is being processed.</p>
+      
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <thead>
+          <tr style="background-color: #f8fafc;">
+            <th style="padding: 8px; text-align: left; border-bottom: 2px solid #cbd5e1;">Item</th>
+            <th style="padding: 8px; text-align: center; border-bottom: 2px solid #cbd5e1;">Qty</th>
+            <th style="padding: 8px; text-align: right; border-bottom: 2px solid #cbd5e1;">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsHtml}
+          <tr>
+            <td colspan="2" style="padding: 8px; font-weight: bold; text-align: right;">Total Amount:</td>
+            <td style="padding: 8px; font-weight: bold; text-align: right; color: #1A5C5E;">₹${total.toFixed(2)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p><strong>Shipping Address:</strong><br>${address}</p>
+      <p>You can track your order status on our portal using your order number.</p>
+      <div style="margin: 30px 0; text-align: center;">
+        <a href="${getAppUrl()}/order-tracking" 
+           style="background-color: #1A5C5E; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+          Track Order
+        </a>
+      </div>
+      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy Team</p>
+    </div>
+  `;
+}
+
+/**
+ * Template for new order notifications sent to admin users.
+ */
+export function getAdminOrderTemplate(orderNum: string, customerName: string, total: number) {
+  return `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+      <h2 style="color: #0f172a;">New Customer Order Placed</h2>
+      <p>Order Number: <strong>#${orderNum}</strong></p>
+      <p>Customer Name: <strong>${customerName}</strong></p>
+      <p>Order Total: <strong style="color: #1A5C5E;">₹${total.toFixed(2)}</strong></p>
+      <div style="margin: 30px 0;">
+        <a href="${getAppUrl()}/admin/orders" 
+           style="background-color: #0f172a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+          Open Admin Panel
+        </a>
+      </div>
+      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy Systems</p>
+    </div>
+  `;
 }
 

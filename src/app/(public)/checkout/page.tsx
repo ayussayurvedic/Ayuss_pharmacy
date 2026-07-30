@@ -14,6 +14,20 @@ export default function CheckoutPage() {
   const supabase = createClient();
   const checkoutAttemptId = useRef('');
 
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'online_razorpay'>('cod');
+  const [loading, setLoading] = useState(false);
+  const [detectingLocation, setDetectingLocation] = useState(false);
+
+  const [form, setForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: ''
+  });
+
   useEffect(() => {
     checkoutAttemptId.current = window.crypto.randomUUID();
     
@@ -28,19 +42,6 @@ export default function CheckoutPage() {
     }
   }, []);
 
-  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'online_razorpay'>('cod');
-  const [loading, setLoading] = useState(false);
-  const [detectingLocation, setDetectingLocation] = useState(false);
-
-  const [form, setForm] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: ''
-  });
 
   // Auto-save form changes to localStorage
   const updateForm = (updates: Partial<typeof form>) => {
@@ -103,62 +104,35 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
-      const generatedOrderNum = `SSP-${Math.floor(100000 + Math.random() * 900000)}`;
+      // 1. Submit order data to the secure server API route
+      const res = await fetch('/api/orders/place', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: form.email,
+          name: form.name,
+          phone: form.phone,
+          address: form.address,
+          city: form.city,
+          state: form.state,
+          pincode: form.pincode,
+          cartItems,
+          paymentMethod,
+          delivery,
+          subtotal,
+          total,
+          checkoutAttemptId: checkoutAttemptId.current,
+        }),
+      });
 
-      // 1. Create order record
-      const { data: newOrder, error: orderErr } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('checkout_attempt_id', checkoutAttemptId.current)
-        .maybeSingle();
-
-      if (orderErr) throw orderErr;
-
-      let orderId = newOrder?.id;
-      let orderNum = newOrder?.order_number || generatedOrderNum;
-
-      if (!newOrder) {
-        const { data: insertedOrder, error: insErr } = await supabase
-          .from('orders')
-          .insert({
-            order_number: generatedOrderNum,
-            customer_name: form.name,
-            customer_phone: form.phone,
-            customer_email: form.email || null,
-            shipping_address: form.address,
-            city: form.city,
-            state: form.state,
-            pincode: form.pincode,
-            subtotal,
-            delivery_charge: delivery,
-            total_amount: total,
-            payment_method: paymentMethod,
-            payment_status: paymentMethod === 'cod' ? 'cod_pending' : 'pending',
-            order_status: 'new',
-            checkout_attempt_id: checkoutAttemptId.current
-          })
-          .select()
-          .single();
-
-        if (insErr) throw insErr;
-        orderId = insertedOrder.id;
-        orderNum = insertedOrder.order_number;
-
-        // 2. Insert items
-        const items = cartItems.map((item) => ({
-          order_id: orderId,
-          product_id: item.product.id,
-          product_name: item.product.name,
-          quantity: item.quantity,
-          unit_price: item.product.sellingPrice || item.product.mrp || 0,
-          total_price: (item.product.sellingPrice || item.product.mrp || 0) * item.quantity,
-          mrp_snapshot: item.product.mrp || 0,
-          pack_size_snapshot: item.product.packSize || '100g'
-        }));
-
-        const { error: itemsErr } = await supabase.from('order_items').insert(items);
-        if (itemsErr) throw itemsErr;
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to place order.');
       }
+
+      const { orderId, orderNumber } = data;
 
       // Online payment handling via Razorpay
       if (paymentMethod === 'online_razorpay') {
@@ -171,7 +145,7 @@ export default function CheckoutPage() {
             amount: total * 100, // Amount in paise
             currency: 'INR',
             name: 'S.S. PHARMACY',
-            description: `Order #${orderNum}`,
+            description: `Order #${orderNumber}`,
             image: '/products/logo/logo.webp',
             prefill: {
               name: form.name,
@@ -182,10 +156,29 @@ export default function CheckoutPage() {
               color: '#1A5C5E',
             },
             handler: async function (response: any) {
-              await supabase.from('orders').update({ payment_status: 'paid' }).eq('id', orderId);
+              // Verify signature on the server-side securely
+              const verifyRes = await fetch('/api/orders/verify-payment', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  orderId,
+                  razorpayOrderId: response.razorpay_order_id || 'sandbox_order',
+                  razorpayPaymentId: response.razorpay_payment_id || 'sandbox_payment',
+                  razorpaySignature: response.razorpay_signature || 'sandbox_signature',
+                }),
+              });
+
+              const verifyData = await verifyRes.json();
+              if (!verifyRes.ok || verifyData.error) {
+                toast.error(verifyData.error || 'Payment signature verification failed.');
+                return;
+              }
+
               handleClearCart();
-              toast.success('Payment authorized!');
-              router.push(`/order-success/${orderNum}`);
+              toast.success('Payment verified successfully!');
+              router.push(`/order-success/${orderNumber}`);
             },
           };
           const rzp = new (window as any).Razorpay(options);
@@ -193,15 +186,31 @@ export default function CheckoutPage() {
           setLoading(false);
           return;
         } else {
-          // Fallback sandbox test authorization
-          toast.warning('Razorpay live SDK fallback. Authorizing test payment...');
-          await supabase.from('orders').update({ payment_status: 'paid' }).eq('id', orderId);
+          // Fallback sandbox test authorization using server verification
+          toast.warning('Razorpay live SDK fallback. Verifying test payment...');
+          const verifyRes = await fetch('/api/orders/verify-payment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId,
+              razorpayOrderId: 'sandbox_order',
+              razorpayPaymentId: 'sandbox_payment',
+              razorpaySignature: 'sandbox_signature',
+            }),
+          });
+          
+          if (!verifyRes.ok) {
+            toast.error('Sandbox verification failed.');
+            return;
+          }
         }
       }
 
       handleClearCart();
       toast.success('Order placed successfully.');
-      router.push(`/order-success/${orderNum}`);
+      router.push(`/order-success/${orderNumber}`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order.');
     } finally {
