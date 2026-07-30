@@ -4,6 +4,9 @@ import AboutClient from './AboutClient';
 export const metadata: Metadata = {
   title: 'About Us',
   description: 'Learn about S.S. PHARMACY\'s legacy, government approved Ayurvedic manufacturing License R-1970/Ayur, and our core principles of authenticity and quality in Yerraguntla, Andhra Pradesh.',
+  alternates: {
+    canonical: '/about',
+  },
   keywords: [
     'About S.S. Pharmacy',
     'Ayurvedic history',

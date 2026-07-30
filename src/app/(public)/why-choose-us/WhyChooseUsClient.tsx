@@ -36,6 +36,29 @@ export default function WhyChooseUsClient() {
     }
   ];
 
+  const faqItems = [
+    {
+      question: "Is S.S. Pharmacy a government licensed manufacturer?",
+      answer: "Yes. S.S. Pharmacy operates under Manufacturing License No. R-1970/Ayur, issued by the Licensing Authority of Andhra Pradesh under the AYUSH Department. Our facility is subject to regular government inspections."
+    },
+    {
+      question: "Are S.S. Pharmacy products tested for heavy metal safety?",
+      answer: "Every batch is verified to meet strict pharmacopoeial safety limits for heavy metals including lead, mercury, arsenic, and cadmium — ensuring zero toxic heavy metal contamination above permissible levels."
+    },
+    {
+      question: "What is Schedule T compliance?",
+      answer: "Schedule T is a set of Good Manufacturing Practice (GMP) standards specifically mandated for Ayurvedic, Siddha, and Unani medicines in India. Our facility adheres to these standards for cleanliness, equipment calibration, raw material testing, and batch documentation."
+    },
+    {
+      question: "Where is S.S. Pharmacy located?",
+      answer: "Our manufacturing facility is located at D. No. 1-2-211 & 1-2-212, Prakash Nagar, Yerraguntla Panchayati, YSR Kadapa District, Andhra Pradesh - 516309, India."
+    },
+    {
+      question: "Can I become a wholesale distributor for S.S. Pharmacy?",
+      answer: "Yes! We partner with medical shops, clinics, hospitals, and regional wholesale buyers. Contact us through our Contact page or call +91 98485 23295 to apply for regional distribution rights."
+    },
+  ];
+
   return (
     <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-screen font-sans">
       {/* Hero Header */}
@@ -127,16 +150,47 @@ export default function WhyChooseUsClient() {
         </div>
       </section>
 
-      {/* Bottom CTA Banner with Banner Image */}
-      <section className="max-w-[1200px] mx-auto px-6">
-        <div className="relative rounded-3xl overflow-hidden border-2 border-[#C9D5D5] shadow-xl text-white group min-h-[300px] md:min-h-[340px] flex items-center">
-          {/* Background Image - Fully Visible */}
-          <Image 
-            src="/products/banner.webp" 
-            alt="Ayurvedic raw botanicals and ingredients" 
+      {/* FAQ Accordion Section */}
+      <section className="max-w-[1000px] mx-auto px-6 py-16">
+        <div className="text-center space-y-3 mb-10">
+          <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block">Common Questions</span>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-serif text-[#1A5C5E] font-bold leading-tight uppercase">
+            Frequently Asked Questions
+          </h2>
+          <div className="flex items-center justify-center gap-2" aria-hidden="true">
+            <span className="w-10 h-[1px] bg-[#C9943E] opacity-50" />
+            <Leaf className="w-3.5 h-3.5 text-[#C9943E]" />
+            <span className="w-10 h-[1px] bg-[#C9943E] opacity-50" />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {faqItems.map((faq, i) => (
+            <details 
+              key={i} 
+              className="group bg-white border border-[#C9D5D5] rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-shadow"
+            >
+              <summary className="flex items-center justify-between gap-4 px-6 py-4 cursor-pointer list-none text-sm font-semibold text-[#1A5C5E] hover:bg-[#F2F7F7] transition-colors select-none">
+                <span>{faq.question}</span>
+                <ArrowRight className="w-4 h-4 text-[#C9943E] shrink-0 transition-transform group-open:rotate-90" />
+              </summary>
+              <div className="px-6 pb-5 pt-1 text-sm text-slate-600 leading-relaxed border-t border-[#C9D5D5]/50">
+                {faq.answer}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="max-w-[1200px] mx-auto px-6 pb-16">
+        <div className="relative rounded-3xl overflow-hidden min-h-[220px] md:min-h-[280px]">
+          <Image
+            src="/products/Moon-light/Moon cream Hero_section.webp"
+            alt="S.S. Pharmacy Ayurvedic product range"
             fill
-            className="object-cover object-center group-hover:scale-105 transition-transform duration-700 z-0" 
-            sizes="100vw"
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 1200px"
           />
 
           {/* Light Text Scrim Overlay (Left Side Only for High Readability) */}

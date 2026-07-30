@@ -2,8 +2,11 @@ import type { Metadata } from 'next';
 import ManufacturingClient from './ManufacturingClient';
 
 export const metadata: Metadata = {
-  title: 'Manufacturing & Quality | S.S. PHARMACY',
+  title: 'Manufacturing & Quality',
   description: 'Licensed Ayurvedic manufacturing facility operating under License R-1970/Ayur in Andhra Pradesh. Cleanroom processing, chemical assays, and Schedule T quality standards.',
+  alternates: {
+    canonical: '/manufacturing',
+  },
   keywords: [
     'Ayurvedic manufacturing',
     'GMP facility',
@@ -12,7 +15,7 @@ export const metadata: Metadata = {
     'R-1970/Ayur'
   ],
   openGraph: {
-    title: 'Manufacturing & Quality | S.S. PHARMACY',
+    title: 'Manufacturing & Quality',
     description: 'Licensed Ayurvedic manufacturing facility operating under License R-1970/Ayur in Andhra Pradesh.',
     url: 'https://sspharmacy.com/manufacturing',
     siteName: 'S.S. PHARMACY',

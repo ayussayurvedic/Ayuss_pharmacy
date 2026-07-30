@@ -6,6 +6,9 @@ export const metadata: Metadata = {
     absolute: 'S.S. Pharmacy | Ayurvedic Products & Licensed Manufacturing',
   },
   description: 'Quality-focused Ayurvedic products, licensed manufacturing, product and distributor enquiries. Operating under Mfg. Lic. R-1970/Ayur in Andhra Pradesh.',
+  alternates: {
+    canonical: '/',
+  },
   keywords: [
     'S.S. PHARMACY',
     'Ayurvedic products',

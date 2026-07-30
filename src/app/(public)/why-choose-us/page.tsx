@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import WhyChooseUsClient from './WhyChooseUsClient';
+import SchemaMarkup from '@/components/layout/SchemaMarkup';
 
 export const metadata: Metadata = {
   title: 'Why Choose Us',
   description: 'Why choose S.S. Pharmacy - authentic Ayurvedic sourcing, heavy metal safety limits compliance, Schedule T compliance, and complete batch traceability.',
+  alternates: {
+    canonical: '/why-choose-us',
+  },
   keywords: [
     'Why Choose S.S. Pharmacy',
     'Ayurvedic quality',
@@ -19,6 +23,58 @@ export const metadata: Metadata = {
   },
 };
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is S.S. Pharmacy a government licensed manufacturer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. S.S. Pharmacy operates under Manufacturing License No. R-1970/Ayur, issued by the Licensing Authority of Andhra Pradesh under the AYUSH Department. Our facility is subject to regular government inspections."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are S.S. Pharmacy products tested for heavy metal safety?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Every batch is verified to meet strict pharmacopoeial safety limits for heavy metals including lead, mercury, arsenic, and cadmium — ensuring zero toxic heavy metal contamination above permissible levels."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Schedule T compliance?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Schedule T is a set of Good Manufacturing Practice (GMP) standards specifically mandated for Ayurvedic, Siddha, and Unani medicines in India. Our facility adheres to these standards for cleanliness, equipment calibration, raw material testing, and batch documentation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where is S.S. Pharmacy located?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our manufacturing facility is located at D. No. 1-2-211 & 1-2-212, Prakash Nagar, Yerraguntla Panchayati, YSR Kadapa District, Andhra Pradesh - 516309, India."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I become a wholesale distributor for S.S. Pharmacy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! We partner with medical shops, clinics, hospitals, and regional wholesale buyers. Contact us through our Contact page or call +91 98485 23295 to apply for regional distribution rights."
+      }
+    }
+  ]
+};
+
 export default function WhyChooseUsPage() {
-  return <WhyChooseUsClient />;
+  return (
+    <>
+      <SchemaMarkup schema={faqSchema} />
+      <WhyChooseUsClient />
+    </>
+  );
 }

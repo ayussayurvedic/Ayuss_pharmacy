@@ -36,7 +36,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://sspharmacy.com'),
   alternates: {
-    canonical: 'https://sspharmacy.com',
+    canonical: '/',
   },
   title: {
     default: 'AYU S.S. PHARMACY - Authentic Ayurvedic Quality',
