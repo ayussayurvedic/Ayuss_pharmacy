@@ -19,8 +19,8 @@ export default function WhyChooseUsClient() {
       icon: Leaf
     },
     {
-      title: "Zero Heavy Metals",
-      desc: "Our formulations contain zero added synthetic steroids, synthetic chemicals, or heavy metal contamination.",
+      title: "Heavy Metal Safe",
+      desc: "Every batch is verified to meet strict pharmacopoeial safety limits, ensuring zero toxic heavy metal contamination.",
       icon: FlaskConical
     },
     {

@@ -7,7 +7,7 @@ import { generateBreadcrumbSchema, CANONICAL_DOMAIN } from '@/lib/seo';
 const path = '/services';
 
 export const metadata: Metadata = {
-  title: 'Ayurvedic Manufacturing & Wholesale Supply | S.S. Pharmacy',
+  title: 'Manufacturing & Wholesale Services',
   description:
     'GMP-certified Ayurvedic proprietary medicine manufacturing, contract packaging, wholesale distribution, and custom formulation development under AYUSH License R-1970/Ayur.',
   alternates: {

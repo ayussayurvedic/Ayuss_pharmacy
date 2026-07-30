@@ -8,7 +8,7 @@ import { generateBreadcrumbSchema, CANONICAL_DOMAIN } from '@/lib/seo';
 const path = '/industries';
 
 export const metadata: Metadata = {
-  title: 'Industries We Serve | Pharmacies, Clinics, Private Label | S.S. Pharmacy',
+  title: 'Sectors We Serve',
   description:
     'S.S. Pharmacy supplies premium Ayurvedic formulations to retail pharmacies, medical stores, wellness clinics, and private labels under government manufacturing licenses.',
   alternates: {

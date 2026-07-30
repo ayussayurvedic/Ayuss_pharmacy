@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Product } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { 
@@ -18,6 +19,7 @@ import {
 
 export default function ProductDetailClient({ product }: { product: Product }) {
   const { handleAddToCart } = useCart();
+  const router = useRouter();
   const [selectedImg, setSelectedImg] = useState(product.image || '');
   const [activeTab, setActiveTab] = useState<'description' | 'ingredients' | 'specifications' | 'directions'>('description');
 
@@ -34,6 +36,11 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     { key: 'specifications' as const, label: 'Specifications' },
     { key: 'directions' as const, label: 'Directions' },
   ];
+
+  const handleBuyNow = () => {
+    handleAddToCart(product, 1);
+    router.push('/checkout');
+  };
 
   return (
     <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-screen font-sans">
@@ -106,7 +113,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
             {/* Pricing & Add to Cart */}
             <div className="bg-white p-5 rounded-2xl border border-[#C9D5D5] shadow-sm space-y-4">
-              <div className="flex items-end justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold block mb-1">Price</span>
                   <div className="flex items-baseline gap-2">
@@ -117,14 +124,24 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                   </div>
                   <span className="text-[10px] text-slate-400 block mt-0.5">{product.packSize} • Inclusive of all taxes</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleAddToCart(product, 1)}
-                  className="bg-[#1A5C5E] hover:bg-[#134547] text-white px-6 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer border-0 uppercase tracking-wider shadow-sm transition-all"
-                >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>Add to Bag</span>
-                </button>
+                
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleAddToCart(product, 1)}
+                    className="border border-[#1A5C5E] text-[#1A5C5E] hover:bg-[#1A5C5E]/5 px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer uppercase tracking-wider transition-all"
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>Add to Bag</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleBuyNow}
+                    className="bg-[#1A5C5E] hover:bg-[#134547] text-white px-6 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer border-0 uppercase tracking-wider shadow-sm transition-all"
+                  >
+                    <span>Buy Now</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -176,7 +193,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                 <div className="space-y-3">
                   <h3 className="font-serif text-xl text-[#1A5C5E] font-semibold uppercase">Product Overview</h3>
                   <p className="text-sm text-slate-600 leading-relaxed font-light">
-                    {product.name} is a {product.category.toLowerCase()} formulated with traditional Ayurvedic ingredients. 
+                    {product.name} is an {product.category.toLowerCase()} formulated with traditional Ayurvedic ingredients. 
                     Manufactured at our government-licensed facility in Yerraguntla, Kadapa District, Andhra Pradesh 
                     under strict GMP and Schedule T compliance standards.
                   </p>

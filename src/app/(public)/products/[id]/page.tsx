@@ -56,7 +56,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${product.name} | S.S. Pharmacy`,
+    title: product.name,
     description: `${product.category} - ${product.benefits.join(', ')}. Manufactured under AYUSH License R-1970/Ayur.`,
     keywords: [
       product.name,
@@ -66,7 +66,7 @@ export async function generateMetadata({
       'R-1970/Ayur'
     ],
     openGraph: {
-      title: `${product.name} | S.S. Pharmacy`,
+      title: product.name,
       description: `${product.category} - ${product.benefits.join(', ')}.`,
       url: `https://sspharmacy.com/products/${product.id}`,
       siteName: 'S.S. Pharmacy',

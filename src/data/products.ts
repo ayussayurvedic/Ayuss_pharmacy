@@ -34,12 +34,12 @@ export const products: Product[] = [
     packSize: "100g Jar",
     mrp: 249,
     sellingPrice: 199,
-    image: "/products/Dr lion pain cream/Pain cream front view.webp",
-    transparentImage: "/products/Dr lion pain cream/Pain cream front view.webp",
+    image: "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
+    transparentImage: "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
     galleryImages: [
-      "/products/Dr lion pain cream/Pain cream front view.webp",
-      "/products/Dr lion pain cream/Pain cream transparent image.webp",
-      "/products/Hero%20section/hero-pain-cream-mobile.webp"
+      "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
+      "/products/dr-lion-pain-cream/pain-cream-transparent-image.webp",
+      "/products/hero-section/hero-pain-cream-mobile.webp"
     ]
   },
   {
@@ -59,12 +59,12 @@ export const products: Product[] = [
     packSize: "60 Pills Container",
     mrp: 299,
     sellingPrice: 249,
-    image: "/products/Dr lion Pain pills/Pain_pills.webp",
-    transparentImage: "/products/Dr lion Pain pills/Pain_pills.webp",
+    image: "/products/dr-lion-pain-pills/pain-pills.webp",
+    transparentImage: "/products/dr-lion-pain-pills/pain-pills.webp",
     galleryImages: [
-      "/products/Dr lion Pain pills/Pain_pills.webp",
-      "/products/Dr lion Pain pills/pain pills transparent.webp",
-      "/products/Hero%20section/hero-pain-pills-mobile.webp"
+      "/products/dr-lion-pain-pills/pain-pills.webp",
+      "/products/dr-lion-pain-pills/pain-pills-transparent.webp",
+      "/products/hero-section/hero-pain-pills-mobile.webp"
     ]
   },
   {
@@ -84,13 +84,13 @@ export const products: Product[] = [
     packSize: "100g Jar",
     mrp: 349,
     sellingPrice: 299,
-    image: "/products/Moon-light/Moon cream front view.webp",
-    transparentImage: "/products/Moon-light/Moon cream front view.webp",
+    image: "/products/moon-light/moon-cream-front-view.webp",
+    transparentImage: "/products/moon-light/moon-cream-front-view.webp",
     galleryImages: [
-      "/products/Moon-light/Moon cream front view.webp",
-      "/products/Moon-light/Moon cream Hero_section.webp",
-      "/products/Moon-light/Moon cream transparent.webp",
-      "/products/Hero%20section/hero-moon-mobile.webp"
+      "/products/moon-light/moon-cream-front-view.webp",
+      "/products/moon-light/moon-cream-hero-section.webp",
+      "/products/moon-light/moon-cream-transparent.webp",
+      "/products/hero-section/hero-moon-mobile.webp"
     ]
   }
 ];
