@@ -3,7 +3,7 @@
  * Enforces canonical configurations and builds structured JSON-LD schemas
  */
 
-export const CANONICAL_DOMAIN = 'https://www.sspharmacy.in';
+export const CANONICAL_DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://sspharmacy.com';
 
 export interface BreadcrumbItem {
   name: string;

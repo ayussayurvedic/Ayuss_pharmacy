@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { products } from '@/data/products';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import ProductDetailClient from './ProductDetailClient';
+import SchemaMarkup from '@/components/layout/SchemaMarkup';
+import { generateBreadcrumbSchema } from '@/lib/seo';
 
 async function fetchProduct(id: string) {
   try {
@@ -48,26 +50,26 @@ export async function generateMetadata({
 
   if (!product) {
     return {
-      title: 'Formulation Not Found | S.S. PHARMACY',
+      title: 'Formulation Not Found | S.S. Pharmacy',
       description: 'The requested Ayurvedic formulation could not be found.',
     };
   }
 
   return {
-    title: `${product.name} | S.S. PHARMACY`,
+    title: `${product.name} | S.S. Pharmacy`,
     description: `${product.category} - ${product.benefits.join(', ')}. Manufactured under AYUSH License R-1970/Ayur.`,
     keywords: [
       product.name,
       product.category,
-      'S.S. PHARMACY',
+      'S.S. Pharmacy',
       'Ayurvedic medicine',
       'R-1970/Ayur'
     ],
     openGraph: {
-      title: `${product.name} | S.S. PHARMACY`,
+      title: `${product.name} | S.S. Pharmacy`,
       description: `${product.category} - ${product.benefits.join(', ')}.`,
       url: `https://sspharmacy.com/products/${product.id}`,
-      siteName: 'S.S. PHARMACY',
+      siteName: 'S.S. Pharmacy',
       images: product.image ? [{ url: product.image, alt: product.name }] : [],
     },
   };
@@ -89,5 +91,43 @@ export default async function ProductDetailPage({
     );
   }
 
-  return <ProductDetailClient product={product} />;
+  const breadcrumbs = [
+    { name: 'Home', path: '/' },
+    { name: 'Products', path: '/products' },
+    { name: product.name, path: `/products/${product.id}` },
+  ];
+
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    'name': product.name,
+    'image': product.image ? [product.image] : [],
+    'description': `${product.category} - ${product.benefits.join(', ')}. Manufactured under AYUSH License R-1970/Ayur.`,
+    'sku': product.id,
+    'mpn': product.id,
+    'brand': {
+      '@type': 'Brand',
+      'name': 'S.S. Pharmacy',
+    },
+    'offers': {
+      '@type': 'Offer',
+      'url': `https://sspharmacy.com/products/${product.id}`,
+      'priceCurrency': 'INR',
+      'price': product.sellingPrice || product.mrp,
+      'itemCondition': 'https://schema.org/NewCondition',
+      'availability': 'https://schema.org/InStock',
+      'seller': {
+        '@type': 'MedicalBusiness',
+        'name': 'S.S. Pharmacy',
+      },
+    },
+  };
+
+  return (
+    <>
+      <SchemaMarkup schema={productSchema} />
+      <SchemaMarkup schema={generateBreadcrumbSchema(breadcrumbs)} />
+      <ProductDetailClient product={product} />
+    </>
+  );
 }

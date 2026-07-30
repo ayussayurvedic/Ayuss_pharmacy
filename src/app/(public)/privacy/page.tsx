@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
+import { CANONICAL_DOMAIN } from '@/lib/seo';
+
+const path = '/privacy';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | S.S. Pharmacy',
   description: 'Privacy Policy for S.S. Pharmacy. Learn how we collect, use, and protect your information.',
   alternates: {
-    canonical: 'https://www.sspharmacy.in/privacy',
+    canonical: `${CANONICAL_DOMAIN}${path}`,
   },
 };
 
@@ -16,26 +19,27 @@ export default function PrivacyPage() {
         <h1 className="text-3xl md:text-5xl font-semibold text-ink tracking-[-1.5px] leading-tight mb-4">
           Privacy Policy
         </h1>
-        <p className="text-sm text-muted mb-8">Last Updated: 2024</p>
+        <p className="text-sm text-muted mb-8">Last Updated: 2026</p>
 
         {/* Content */}
         <div className="space-y-6 text-sm text-body-text leading-relaxed">
           <p>
-            At S.S. Pharmacy, we value your privacy and are committed to protecting your personal information. This Privacy Policy details how we handle the data you provide when interacting with our public website.
+            At S.S. Pharmacy, we value your privacy and are committed to protecting your personal information. This Privacy Policy details how we handle the data you provide when interacting with our public website, ordering products, or submitting inquiries.
           </p>
 
           <h2 className="text-xl font-semibold text-ink pt-4 border-t border-hairline">
             1. Information We Collect
           </h2>
           <p>
-            We collect information that you voluntarily submit through our contact and inquiry forms. This includes:
+            We collect information that you voluntarily submit through our contact, checkout, and distributor inquiry forms. This includes:
           </p>
           <ul className="list-disc pl-5 space-y-1">
             <li>Full Name</li>
             <li>Email Address</li>
             <li>Phone Number</li>
-            <li>Company Name</li>
-            <li>Staffing requirements and any other message content you provide</li>
+            <li>Company Name / Distributor Information</li>
+            <li>Delivery Address and billing information for orders</li>
+            <li>Formulation and wholesale requirement details</li>
           </ul>
 
           <h2 className="text-xl font-semibold text-ink pt-4 border-t border-hairline">
@@ -45,19 +49,20 @@ export default function PrivacyPage() {
             We use the collected information exclusively to:
           </p>
           <ul className="list-disc pl-5 space-y-1">
-            <li>Respond to your staffing requests and inquiries</li>
-            <li>Provide candidate shortlists and recruitment proposals</li>
-            <li>Communicate with you regarding our placement services</li>
+            <li>Respond to your product orders and distributor inquiries</li>
+            <li>Process and fulfill shipping of Ayurvedic formulations</li>
+            <li>Coordinate B2B wholesale distribution applications</li>
+            <li>Communicate with you regarding order confirmations, updates, or manufacturing services</li>
           </ul>
           <p>
-            We do not use your information for unrelated marketing campaigns or automated profiling.
+            We do not use your information for unrelated marketing campaigns, tracking, or automated profiling.
           </p>
 
           <h2 className="text-xl font-semibold text-ink pt-4 border-t border-hairline">
             3. Sharing and Selling Information
           </h2>
           <p>
-            <strong>We do not sell, rent, or trade your personal information to third parties.</strong> Your data is accessed only by authorized S.S. Pharmacy personnel for the purpose of fulfilling your recruitment and placement needs.
+            <strong>We do not sell, rent, or trade your personal information to third parties.</strong> Your data is accessed only by authorized S.S. Pharmacy personnel and trusted shipping/delivery partners for the purpose of fulfilling your orders and distribution requests.
           </p>
 
           <h2 className="text-xl font-semibold text-ink pt-4 border-t border-hairline">
@@ -71,7 +76,7 @@ export default function PrivacyPage() {
             5. Governing Law
           </h2>
           <p>
-            This website and our operations are governed by the laws of the State of Alabama, USA.
+            This website and our manufacturing operations are governed by the laws of Andhra Pradesh, India, under the regulations of the AYUSH Department and the Drugs and Cosmetics Act.
           </p>
 
           <h2 className="text-xl font-semibold text-ink pt-4 border-t border-hairline">
@@ -82,8 +87,8 @@ export default function PrivacyPage() {
           </p>
           <p className="font-semibold text-ink">
             S.S. Pharmacy<br />
-            Email: <a href="mailto:hr@sspharmacy.in" className="text-teal-primary hover:underline">hr@sspharmacy.in</a><br />
-            Address: 1680, Unit 2G, 14th Ave S, Birmingham, AL 35205
+            Email: <a href="mailto:info@sspharmacy.com" className="text-teal-primary hover:underline">info@sspharmacy.com</a><br />
+            Address: D. No. 1-2-211 & 1-2-212, Prakash Nagar, Yerraguntla, Kadapa District, Andhra Pradesh - 516309, India
           </p>
         </div>
       </div>

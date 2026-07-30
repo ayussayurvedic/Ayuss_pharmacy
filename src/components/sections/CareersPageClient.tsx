@@ -55,7 +55,7 @@ export default function CareersPageClient({ initialJobs }: { initialJobs: Public
             Careers
           </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-5 max-w-4xl mx-auto">
-            Join the Team That Builds Teams
+            Join Our Mission for Ayurvedic Excellence
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Explore exciting opportunities at S.S. Pharmacy and join our mission for authentic Ayurvedic healthcare.
