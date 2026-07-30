@@ -1,18 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, MessageSquare, FileText, Calendar, Users, Clock, Settings, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Package, MessageSquare, Building2, Settings, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
 const navItems = [
   { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/admin/orders', icon: ShoppingBag, label: 'Orders' },
+  { href: '/admin/products', icon: Package, label: 'Products' },
   { href: '/admin/inquiries', icon: MessageSquare, label: 'Inquiries' },
-  { href: '/admin/applications', icon: FileText, label: 'Applications' },
-  { href: '/admin/interview-requests', icon: Calendar, label: 'Interview Requests' },
-  { href: '/admin/employees', icon: Users, label: 'Employees' },
-  { href: '/admin/attendance', icon: Clock, label: 'Attendance' },
+  { href: '/admin/distributors', icon: Building2, label: 'Distributor Leads' },
   { href: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 
@@ -47,19 +47,29 @@ export default function Sidebar({ userName = 'Admin' }: SidebarProps) {
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-white/10">
-        {!collapsed && (
-          <Link href="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1A5C5E] to-[#134547] flex items-center justify-center text-white font-bold text-[10px] border border-[#C9943E]/30">
-              SS
+        <Link href="/admin" className="flex items-center gap-2.5 overflow-hidden">
+          <Image
+            src="/products/logo/logo.webp"
+            alt="S.S. Pharmacy Logo"
+            className="h-10 w-auto object-contain shrink-0"
+            width={40}
+            height={40}
+            priority
+          />
+          {!collapsed && (
+            <div className="flex flex-col">
+              <span className="font-bold text-sm font-serif tracking-wide whitespace-nowrap">
+                S.S. PHARMACY
+              </span>
+              <span className="text-[9px] font-bold text-[#C9943E] uppercase tracking-widest leading-none mt-0.5">
+                Admin Panel
+              </span>
             </div>
-            <span className="font-bold text-sm">
-              S.S. Pharmacy<span className="text-[#C9943E]">.</span>
-            </span>
-          </Link>
-        )}
+          )}
+        </Link>
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
+          className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white transition-colors ml-1"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}

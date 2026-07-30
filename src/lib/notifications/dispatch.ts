@@ -78,7 +78,7 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
       };
 
       // Set admin flags if target is admin or if it is an admin-specific event type
-      const isAdminType = type === 'inquiry' || type === 'interview_requested' || type === 'wfh_requested' || type === 'leave_requested' || type.includes('admin');
+      const isAdminType = type === 'inquiry' || type === 'order_created' || type === 'distributor_applied' || type.includes('admin');
       if (adminId) {
         insertData.admin_id = adminId;
         insertData.is_for_admin = true;

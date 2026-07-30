@@ -270,49 +270,168 @@ export default function NewProductForm() {
 
         <AdminCard className="space-y-5 bg-white border border-[#C9D5D5]/60 p-6 rounded-2xl shadow-xs">
           <div className="flex justify-between items-center border-b border-[#C9D5D5]/40 pb-2">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E]">4. Product Images (WebP Sequenced)</h3>
-            <span className="text-[10px] text-slate-400 font-semibold font-mono">Format: WebP Required</span>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E]">4. Product Images & Visual Assets</h3>
+            <span className="text-[10px] text-slate-400 font-semibold font-mono">WebP / DataURL / File Upload</span>
           </div>
-          <AdminInput
-            label="Image 1 (Main/Hero view) *"
-            name="image1"
-            value={formData.image1}
-            onChange={handleInputChange}
-            error={errors.image1}
-            placeholder="e.g. /products/Dr lion pain cream/Pain cream front view.webp"
-            required
-          />
-          <AdminInput
-            label="Image 2 (Secondary/Transparent view) *"
-            name="image2"
-            value={formData.image2}
-            onChange={handleInputChange}
-            error={errors.image2}
-            placeholder="e.g. /products/Dr lion pain cream/Pain cream transparent image.webp"
-            required
-          />
-          <AdminInput
-            label="Image 3 (Gallery view 1)"
-            name="image3"
-            value={formData.image3}
-            onChange={handleInputChange}
-            error={errors.image3}
-            placeholder="e.g. /products/Hero section/hero-pain-cream-mobile.webp"
-          />
-          <AdminInput
-            label="Image 4 (Gallery view 2)"
-            name="image4"
-            value={formData.image4}
-            onChange={handleInputChange}
-            error={errors.image4}
-          />
-          <AdminInput
-            label="Image 5 (Gallery view 3)"
-            name="image5"
-            value={formData.image5}
-            onChange={handleInputChange}
-            error={errors.image5}
-          />
+
+          {/* Quick Image Preset Selector */}
+          <div className="p-4 bg-[#FDF8F0] border border-[#C9D5D5]/60 rounded-xl space-y-2">
+            <span className="text-[10px] font-bold text-[#1A5C5E] uppercase tracking-wider block">Quick Presets & Sample Asset Paths:</span>
+            <div className="flex flex-wrap gap-2 text-[10px]">
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({
+                  ...prev,
+                  image1: '/products/dr-lion-pain-cream/pain-cream-front-view.webp',
+                  image2: '/products/dr-lion-pain-cream/pain-cream-transparent-image.webp'
+                }))}
+                className="px-2.5 py-1 bg-white border border-[#C9D5D5] hover:border-[#1A5C5E] text-[#134547] rounded-lg font-bold transition-all cursor-pointer"
+              >
+                + Pain Cream Assets
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({
+                  ...prev,
+                  image1: '/products/dr-lion-pain-pills/pain-pills.webp',
+                  image2: '/products/dr-lion-pain-pills/pain-pills-transparent.webp'
+                }))}
+                className="px-2.5 py-1 bg-white border border-[#C9D5D5] hover:border-[#1A5C5E] text-[#134547] rounded-lg font-bold transition-all cursor-pointer"
+              >
+                + Pain Pills Assets
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({
+                  ...prev,
+                  image1: '/products/Moon-light/moon-cream-front-view.webp',
+                  image2: '/products/Moon-light/moon-cream-transparent.webp'
+                }))}
+                className="px-2.5 py-1 bg-white border border-[#C9D5D5] hover:border-[#1A5C5E] text-[#134547] rounded-lg font-bold transition-all cursor-pointer"
+              >
+                + Moonlight Cream Assets
+              </button>
+            </div>
+          </div>
+
+          {/* Live Image Thumbnail Previews */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {[
+              { key: 'image1', label: 'Main / Hero' },
+              { key: 'image2', label: 'Transparent' },
+              { key: 'image3', label: 'Gallery 1' },
+              { key: 'image4', label: 'Gallery 2' },
+              { key: 'image5', label: 'Gallery 3' }
+            ].map(({ key, label }) => {
+              const url = (formData as any)[key];
+              return (
+                <div key={key} className="space-y-1.5">
+                  <div className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center relative overflow-hidden group">
+                    {url ? (
+                      <>
+                        <img src={url} alt={label} className="w-full h-full object-contain p-1" />
+                        <button
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, [key]: '' }))}
+                          className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          ✕
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-[10px] text-slate-400 font-bold">No Image</span>
+                    )}
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 block text-center uppercase tracking-wider">{label}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <div>
+              <AdminInput
+                label="Image 1 (Main / Hero View) *"
+                name="image1"
+                value={formData.image1}
+                onChange={handleInputChange}
+                error={errors.image1}
+                placeholder="URL or Upload below"
+                required
+              />
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setFormData(prev => ({ ...prev, image1: reader.result as string }));
+                        setIsDirty(true);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-[#1A5C5E]/10 file:text-[#1A5C5E] hover:file:bg-[#1A5C5E]/20 cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div>
+              <AdminInput
+                label="Image 2 (Transparent View) *"
+                name="image2"
+                value={formData.image2}
+                onChange={handleInputChange}
+                error={errors.image2}
+                placeholder="URL or Upload below"
+                required
+              />
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setFormData(prev => ({ ...prev, image2: reader.result as string }));
+                        setIsDirty(true);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-[#1A5C5E]/10 file:text-[#1A5C5E] hover:file:bg-[#1A5C5E]/20 cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <AdminInput
+              label="Image 3 (Gallery View 1)"
+              name="image3"
+              value={formData.image3}
+              onChange={handleInputChange}
+              error={errors.image3}
+              placeholder="e.g. /products/hero-section/hero-pain-cream-mobile.webp"
+            />
+            <AdminInput
+              label="Image 4 (Gallery View 2)"
+              name="image4"
+              value={formData.image4}
+              onChange={handleInputChange}
+              error={errors.image4}
+            />
+            <AdminInput
+              label="Image 5 (Gallery View 3)"
+              name="image5"
+              value={formData.image5}
+              onChange={handleInputChange}
+              error={errors.image5}
+            />
+          </div>
         </AdminCard>
 
         <div className="flex items-center justify-end gap-3 pt-2">

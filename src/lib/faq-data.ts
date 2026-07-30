@@ -5,33 +5,33 @@ export interface FAQItem {
 
 export const faqs: FAQItem[] = [
   {
-    question: 'What staffing models do you offer?',
+    question: 'What types of Ayurvedic products do you manufacture?',
     answer:
-      'We offer Contract Staffing, C2C (Corp-to-Corp), Contract-to-Hire, and Full-Time Recruitment. Each model is designed for different hiring needs — from short-term project work to permanent placements.',
+      'We manufacture a wide range of GMP-certified Ayurvedic medicines including pain balms, herbal oils, syrups, capsules, powders (churnas), and topical ointments. All products are formulated under AYUSH License R-1970/Ayur with 100% natural ingredients.',
   },
   {
-    question: 'How quickly can you fill a position?',
+    question: 'Are your products safe and certified?',
     answer:
-      'For contract and C2C roles, we typically present shortlisted candidates within 3-5 business days. For full-time placements, expect 7-10 business days. Timelines depend on role complexity and availability.',
+      'Yes. All S.S. Pharmacy products are manufactured in our GMP-certified facility under strict quality control. We hold AYUSH License R-1970/Ayur and follow Ayurvedic Pharmacopoeia of India (API) standards for every formulation.',
   },
   {
-    question: 'What is C2C staffing?',
+    question: 'Do you offer bulk or wholesale pricing?',
     answer:
-      'C2C (Corp-to-Corp) is a model where an independent contractor operates through their own business entity and invoices the client company directly. It is commonly used for specialized, project-based IT engagements in the US market.',
+      'Absolutely. We welcome distributors, wholesalers, and retail pharmacy chains. Submit a distributor inquiry through our website or contact us directly for bulk pricing, MOQs, and partnership terms.',
   },
   {
-    question: 'Which technology domains do you cover?',
+    question: 'How long does shipping take?',
     answer:
-      'We place professionals in Software Development, Data Science & AI/ML, Cloud & DevOps, Cybersecurity, QA & Test Automation, ERP Technologies (SAP, Oracle, Workday), and Business Analysis & Project Management.',
+      'Standard delivery across India takes 3-5 business days. Express shipping is available for select pin codes. Orders above ₹500 qualify for free shipping. You can track your order in real-time via WhatsApp or our Order Tracking page.',
   },
   {
-    question: 'Where are you located and which markets do you serve?',
+    question: 'Can I return or exchange a product?',
     answer:
-      'We are headquartered in Birmingham, Alabama, USA. We serve US-based clients exclusively — Fortune 500 companies, mid-size enterprises, government agencies, and startups across the United States.',
+      'We accept returns within 7 days of delivery for unopened, undamaged products. Damaged or defective items are eligible for immediate replacement. Contact us at support@sspharmacy.in with your order number to initiate a return.',
   },
   {
-    question: 'How do I submit a staffing requirement?',
+    question: 'How do I become a distributor for S.S. Pharmacy?',
     answer:
-      'Use the contact form on our Contact page, email us at contact@sspharmacy.in, or call us directly. We respond within 24 hours with a tailored proposal.',
+      'Visit the "Become a Distributor" section on our website and fill out the application form. Our partnership team will review your details and respond within 48 hours with next steps and territory availability.',
   },
 ];

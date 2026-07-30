@@ -131,11 +131,11 @@ export default function AdminSettingsClient() {
   }
 
   return (
-    <div className="space-y-5 pb-12 text-slate-200 font-sans">
-      <div className="pb-3 border-b border-slate-800">
-        <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">System Settings & Configuration</span>
-        <h1 className="text-xl font-bold text-slate-100">Tax Safety Gates</h1>
-        <p className="text-xs text-slate-500 margin-0">Ayurvedic manufacturing credentials, business details, tax rates, and document prefixes</p>
+    <div className="space-y-5 pb-12 text-slate-800 font-sans">
+      <div className="pb-3 border-b border-[#C9D5D5]/60">
+        <span className="text-[10px] font-bold text-[#C9943E] uppercase tracking-wider">System Settings & Configuration</span>
+        <h1 className="text-xl sm:text-2xl font-bold text-[#134547]">Tax & Business Safety Gates</h1>
+        <p className="text-xs text-slate-600 margin-0">Ayurvedic manufacturing credentials, business details, tax rates, and document prefixes</p>
       </div>
 
       {/* Safety Gate Header Card */}

@@ -53,103 +53,23 @@ function getAppUrl(): string {
   return 'https://sspharmacy.in';
 }
 
-/**
- * Template for new assignment notification.
- */
-export function getAssignmentTemplate(employeeName: string, clientName: string) {
-  return `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #0f172a;">New Client Profile Assigned</h2>
-      <p>Hi ${employeeName},</p>
-      <p>A new client profile for <strong>${clientName}</strong> has been assigned to you for processing.</p>
-      <div style="margin: 30px 0;">
-        <a href="${getAppUrl()}/employee/assigned-profiles" 
-           style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-          View Assignment
-        </a>
-      </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
-    </div>
-  `;
-}
 
-export function getLeaveStatusTemplate(employeeName: string, type: string, status: string, startDate: string, endDate: string) {
-  const color = status === 'Approved' ? '#10b981' : '#ef4444';
-  return `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #0f172a;">Leave Request ${status}</h2>
-      <p>Hi ${employeeName},</p>
-      <p>Your <strong>${type} Leave</strong> request from ${startDate} to ${endDate} has been <strong style="color: ${color};">${status.toUpperCase()}</strong>.</p>
-      <div style="margin: 30px 0;">
-        <a href="${getAppUrl()}/employee/leaves" 
-           style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-          View Leave Status
-        </a>
-      </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
-    </div>
-  `;
-}
-
-export function getWFHStatusTemplate(employeeName: string, date: string, status: string) {
-  const color = status.includes('Approved') ? '#10b981' : '#ef4444';
-  const label = status.includes('Approved') ? 'Approved' : 'Rejected';
-  return `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #0f172a;">WFH Request ${label}</h2>
-      <p>Hi ${employeeName},</p>
-      <p>Your <strong>Work From Home</strong> request for ${date} has been <strong style="color: ${color};">${label.toUpperCase()}</strong>.</p>
-      <div style="margin: 30px 0;">
-        <a href="${getAppUrl()}/employee/attendance" 
-           style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-          Check Attendance
-        </a>
-      </div>
-      <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
-    </div>
-  `;
-}
-
-export function getInterviewRequestTemplate(data: {
-  consultantName: string;
-  consultantPhone: string;
-  consultantTechnology: string;
-  clientCompany: string;
-  interviewDateTime: string;
-  interviewPlatform: string;
-}) {
-  return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333333; line-height: 1.6;">
-      <p>I hope you are doing well.</p>
-      <p>Please find the interview details below for support:</p>
-      <p style="margin-bottom: 5px;"><strong>Consultant Name:</strong> ${data.consultantName}</p>
-      <p style="margin-bottom: 5px;"><strong>Consultant Contact Number:</strong> ${data.consultantPhone || 'N/A'}</p>
-      <p style="margin-bottom: 5px;"><strong>Consultant Technology:</strong> ${data.consultantTechnology || 'N/A'}</p>
-      <p style="margin-bottom: 5px;"><strong>Client/Company:</strong> ${data.clientCompany}</p>
-      <p style="margin-bottom: 5px;"><strong>Interview Date & Time (EST):</strong> ${data.interviewDateTime}</p>
-      <p style="margin-bottom: 5px;"><strong>Interview Platform:</strong> ${data.interviewPlatform}</p>
-      <br>
-      <p>Kindly find my resume attached for your reference.</p>
-      <p>Please let me know if any additional information is required</p>
-    </div>
-  `;
-}
 
 /**
- * Template for leave request notification sent to admins.
+ * Template for new customer order notification sent to admins.
  */
-export function getAdminLeaveRequestTemplate(employeeName: string, type: string, startDate: string, endDate: string, reason: string) {
+export function getAdminOrderNotificationTemplate(orderNumber: string, customerName: string, totalAmount: number, paymentMethod: string) {
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #0f172a;">New Leave Request Submitted</h2>
-      <p><strong>Employee:</strong> ${employeeName}</p>
-      <p><strong>Leave Type:</strong> ${type} Leave</p>
-      <p><strong>Duration:</strong> ${startDate} to ${endDate}</p>
-      <p><strong>Reason:</strong> ${reason}</p>
+      <h2 style="color: #1A5C5E;">New Customer Order Placed</h2>
+      <p><strong>Order Number:</strong> ${orderNumber}</p>
+      <p><strong>Customer Name:</strong> ${customerName}</p>
+      <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
+      <p><strong>Payment Method:</strong> ${paymentMethod.toUpperCase()}</p>
       <div style="margin: 30px 0;">
-        <a href="${getAppUrl()}/admin/approvals" 
-           style="background-color: #0f172a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-          Go to Approval Queue
+        <a href="${getAppUrl()}/admin/orders" 
+           style="background-color: #1A5C5E; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+          View Orders Dashboard
         </a>
       </div>
       <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>
@@ -158,18 +78,20 @@ export function getAdminLeaveRequestTemplate(employeeName: string, type: string,
 }
 
 /**
- * Template for WFH request notification sent to admins.
+ * Template for distributor application notification sent to admins.
  */
-export function getAdminWFHRequestTemplate(employeeName: string, date: string) {
+export function getAdminDistributorApplicationTemplate(companyName: string, contactPerson: string, phone: string, city: string) {
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #0f172a;">New WFH Request Submitted</h2>
-      <p><strong>Employee:</strong> ${employeeName}</p>
-      <p><strong>Requested Date:</strong> ${date}</p>
+      <h2 style="color: #1A5C5E;">New Distributor Lead Application Received</h2>
+      <p><strong>Company/Firm:</strong> ${companyName}</p>
+      <p><strong>Contact Person:</strong> ${contactPerson}</p>
+      <p><strong>Mobile Number:</strong> ${phone}</p>
+      <p><strong>City / Region:</strong> ${city}</p>
       <div style="margin: 30px 0;">
-        <a href="${getAppUrl()}/admin/approvals" 
-           style="background-color: #0f172a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-          Go to Approval Queue
+        <a href="${getAppUrl()}/admin/distributors" 
+           style="background-color: #1A5C5E; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+          Review Distributor Leads
         </a>
       </div>
       <p style="color: #64748b; font-size: 14px;">Regards,<br>S.S. Pharmacy</p>

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Settings, CheckSquare, ArrowRight } from 'lucide-react';
+import { Settings, ShoppingBag, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 interface DashboardGreetingProps {
@@ -38,23 +38,23 @@ export default function DashboardGreeting({ userName }: DashboardGreetingProps) 
             <span className="text-primary-300 brightness-110 flex items-center gap-1.5 mt-0.5">{firstName} <span className="animate-bounce">👋</span></span>
           </h1>
           <p className="text-white/60 text-[11px] mt-1.5 pb-2 leading-relaxed">
-            Realtime workforce monitoring, attendance telemetry, operational approvals, and compliance oversight.
+            Manage orders, products, distributor leads, and customer inquiries from your operations dashboard.
           </p>
         </div>
       </div>
 
       {/* Bottom Action Cards */}
       <div className="flex gap-3 relative z-10 w-full">
-        {/* Review Approvals */}
-        <Link href="/admin/approvals" className="flex-1">
+        {/* View Orders */}
+        <Link href="/admin/orders" className="flex-1">
           <div className="bg-white/15 backdrop-blur-md rounded-[20px] p-3 flex items-center justify-between border border-white/20 cursor-pointer hover:bg-white/20 active:scale-[0.98] transition-all">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-primary-400 shrink-0">
-                <CheckSquare className="w-4.5 h-4.5 stroke-[2.2]" />
+                <ShoppingBag className="w-4.5 h-4.5 stroke-[2.2]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[11px] font-extrabold text-white leading-tight">Review Approvals</span>
-                <span className="text-[9px] text-white/70 leading-none mt-0.5 font-medium">Approve leaves & WFH</span>
+                <span className="text-[11px] font-extrabold text-white leading-tight">Recent Orders</span>
+                <span className="text-[9px] text-white/70 leading-none mt-0.5 font-medium">Fulfillment & tracking</span>
               </div>
             </div>
             <ArrowRight className="w-3.5 h-3.5 text-white animate-pulse" />

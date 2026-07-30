@@ -100,7 +100,7 @@ export default function InquiryForm() {
             How Can We Help? <span className="text-error">*</span>
           </>
         }
-        placeholder="Tell us about your staffing needs, timeline, and any specific requirements..."
+        placeholder="Tell us about your product inquiry, bulk order requirements, or any questions about our Ayurvedic formulations..."
         error={errors.requirement?.message}
         className="resize-none"
         {...register('requirement')}

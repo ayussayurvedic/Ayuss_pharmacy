@@ -68,10 +68,10 @@ export default function AdminNotificationPreferences({
       <div className="space-y-4">
         {(
           [
-            { key: 'leave_approval_required', label: 'Leave Requests Requiring Approval' },
-            { key: 'attendance_issues', label: 'Employee Attendance & Clocking Issues' },
-            { key: 'daily_reports_submitted', label: 'Daily Metrics & Reports Submissions' },
-            { key: 'new_applications', label: 'New Candidate Job Applications' },
+            { key: 'leave_approval_required', label: 'New Customer Orders Placed' },
+            { key: 'attendance_issues', label: 'Low Stock & Inventory Alerts' },
+            { key: 'daily_reports_submitted', label: 'Daily Sales & Revenue Reports' },
+            { key: 'new_applications', label: 'New Distributor Lead Applications' },
             { key: 'system_alerts', label: 'System Health & Security Alerts' },
           ] as const
         ).map((item) => {
