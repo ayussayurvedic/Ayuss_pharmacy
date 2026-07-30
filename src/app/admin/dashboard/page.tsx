@@ -191,9 +191,9 @@ export default function AdminDashboard() {
       {/* Title Subheader */}
       <div className="bg-[#134547] text-white p-6 rounded-2xl border border-[#1A5C5E] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md">
         <div className="space-y-1">
-          <span className="text-[10px] font-bold text-[#C9943E] uppercase tracking-wider block">Administrative Command Center</span>
-          <h1 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-wide">Executive Dashboard</h1>
-          <p className="text-slate-300 text-xs font-light">Realtime operations summary, revenue trends, and pending lead logs</p>
+          <span className="text-[10px] font-bold text-[#E8C87A] uppercase tracking-wider block">Administrative Command Center</span>
+          <h1 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-wide !text-white text-white">Executive Dashboard</h1>
+          <p className="!text-slate-200 text-slate-200 text-xs font-light">Realtime operations summary, revenue trends, and pending lead logs</p>
         </div>
 
         <select

@@ -57,12 +57,12 @@ export default function Sidebar({ userName = 'Admin' }: SidebarProps) {
             priority
           />
           {!collapsed && (
-            <div className="flex flex-col">
-              <span className="font-bold text-sm font-serif tracking-wide whitespace-nowrap">
+            <div className="flex flex-col min-w-0">
+              <span className="font-serif font-black text-white text-base tracking-wider leading-none uppercase truncate">
                 S.S. PHARMACY
               </span>
-              <span className="text-[9px] font-bold text-[#C9943E] uppercase tracking-widest leading-none mt-0.5">
-                Admin Panel
+              <span className="text-[10px] font-bold text-[#E8C87A] uppercase tracking-widest leading-none mt-1 truncate">
+                Ayurvedic Healthcare
               </span>
             </div>
           )}

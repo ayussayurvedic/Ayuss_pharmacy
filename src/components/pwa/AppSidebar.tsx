@@ -180,8 +180,16 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
         <div className="flex items-center justify-between p-4 border-b border-[#1A5C5E]/60 h-16">
           {!collapsed ? (
             <>
-              <Link href={role === 'admin' ? '/admin/dashboard' : '/employee/dashboard'} className="flex items-center gap-2.5">
-                <Logo className="w-40 h-auto" dark={true} />
+              <Link href={role === 'admin' ? '/admin/dashboard' : '/employee/dashboard'} className="flex items-center gap-2.5 min-w-0">
+                <Logo className="w-10 h-10 object-contain shrink-0" />
+                <div className="flex flex-col min-w-0">
+                  <span className="font-serif font-black text-white text-sm tracking-wider leading-none uppercase truncate">
+                    S.S. PHARMACY
+                  </span>
+                  <span className="text-[9px] font-bold text-[#E8C87A] uppercase tracking-widest leading-none mt-1 truncate">
+                    Ayurvedic Healthcare
+                  </span>
+                </div>
               </Link>
               <button 
                 onClick={() => setCollapsed(true)} 
