@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/components/ui/Toast';
+import { env } from '@/lib/env';
 import { 
   Phone, 
   Mail, 
@@ -201,7 +202,7 @@ export default function ContactClient() {
         <div className="w-full rounded-2xl overflow-hidden border border-[#C9D5D5] shadow-sm bg-white flex flex-col">
           <div className="relative w-full h-[260px] md:h-[340px] overflow-hidden bg-slate-100">
             <img
-              src="https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=1200&height=420&center=lonlat:78.571027,14.755504&zoom=14&marker=lonlat:78.571027,14.755504;color:%231a5c5e;size:medium&apiKey=34036dd1e9ed4badb10aed72da04affb"
+              src={`https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=1200&height=420&center=lonlat:78.571027,14.755504&zoom=14&marker=lonlat:78.571027,14.755504;color:%231a5c5e;size:medium&apiKey=${env.NEXT_PUBLIC_GEOAPIFY_API_KEY || ''}`}
               alt="S.S. Pharmacy Facility Map"
               className="w-full h-full object-cover"
               loading="lazy"

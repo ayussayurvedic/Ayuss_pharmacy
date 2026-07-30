@@ -14,6 +14,7 @@ import {
   FlaskConical 
 } from 'lucide-react';
 import PartnershipCard from '@/components/sections/PartnershipCard';
+import { env } from '@/lib/env';
 
 export default function AboutClient() {
   return (
@@ -283,7 +284,7 @@ export default function AboutClient() {
               <div className="w-full rounded-2xl overflow-hidden border border-[#C9D5D5] shadow-xs bg-white flex flex-col">
                 <div className="relative w-full h-[240px] md:h-[280px] overflow-hidden bg-slate-100">
                   <img
-                    src="https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=900&height=420&center=lonlat:78.571027,14.755504&zoom=14&marker=lonlat:78.571027,14.755504;color:%231a5c5e;size:medium&apiKey=34036dd1e9ed4badb10aed72da04affb"
+                    src={`https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=900&height=420&center=lonlat:78.571027,14.755504&zoom=14&marker=lonlat:78.571027,14.755504;color:%231a5c5e;size:medium&apiKey=${env.NEXT_PUBLIC_GEOAPIFY_API_KEY || ''}`}
                     alt="S.S. Pharmacy Manufacturing Facility Map"
                     className="w-full h-full object-cover"
                     loading="lazy"
