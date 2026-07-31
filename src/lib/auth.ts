@@ -167,7 +167,7 @@ export async function getSession(): Promise<TokenPayload | null> {
     if (pathname) {
       if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
         tokenCookieName = 'admin-auth-token';
-      } else if (pathname.startsWith('/employee') || pathname.startsWith('/api/attendance') || pathname.startsWith('/api/mfa') || pathname.startsWith('/api/auth')) {
+      } else if (pathname.startsWith('/api/mfa') || pathname.startsWith('/api/auth')) {
         tokenCookieName = 'employee-auth-token';
       }
     }
@@ -225,7 +225,7 @@ export function getTokenFromRequest(request: NextRequest): string | null {
   let tokenCookieName: string | null = null;
   if (pathname.startsWith('/api/admin') || pathname.startsWith('/admin')) {
     tokenCookieName = 'admin-auth-token';
-  } else if (pathname.startsWith('/api/attendance') || pathname.startsWith('/api/mfa') || pathname.startsWith('/employee')) {
+  } else if (pathname.startsWith('/api/mfa')) {
     tokenCookieName = 'employee-auth-token';
   } else if (roleParam === 'admin') {
     tokenCookieName = 'admin-auth-token';

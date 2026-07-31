@@ -169,7 +169,7 @@ self.addEventListener('activate', (event) => {
 
 // Background Sync event handler
 self.addEventListener('sync', (event) => {
-  if (event.tag === 'attendance-sync') {
+  if (event.tag === 'order-sync') {
     event.waitUntil(
       self.clients.matchAll().then((clients) => {
         clients.forEach((client) => {

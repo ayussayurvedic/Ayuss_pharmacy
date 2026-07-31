@@ -29,33 +29,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Admin password updated successfully' });
     }
 
-    // Employee Password Change (via database)
-    const { data: employee, error: fetchError } = await supabaseAdmin
-      .from('employees')
-      .select('password_hash')
-      .eq('id', session.id)
-      .single();
-
-    if (fetchError || !employee) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const isValidCurrent = await bcrypt.compare(currentPassword, employee.password_hash);
-    if (!isValidCurrent) {
-      return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 });
-    }
-
-    const newHash = await bcrypt.hash(newPassword, 12);
-    const { error: updateError } = await supabaseAdmin
-      .from('employees')
-      .update({ password_hash: newHash })
-      .eq('id', session.id);
-
-    if (updateError) {
-      return NextResponse.json({ error: 'Failed to update password' }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, message: 'Password updated successfully' });
+    return NextResponse.json({ error: 'Unauthorized: Admin role required' }, { status: 403 });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {

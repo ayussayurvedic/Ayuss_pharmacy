@@ -15,44 +15,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    let responseUser = null;
-
-    // If admin, they don't exist in employees table, so we use session data directly
-    if (session.role === 'admin') {
-      responseUser = {
-        id: session.id,
-        name: session.name || 'Administrator',
-        role: 'admin',
-        email: session.email
-      };
-    } else {
-      // Fetch latest employee info from DB
-      const { data: user, error } = await supabaseAdmin
-        .from('employees')
-        .select('id, name, role, email')
-        .eq('id', session.id)
-        .single();
-
-      if (error || !user) {
-        if (error && error.code === 'PGRST116') {
-          return NextResponse.json({ error: 'User not found' }, { status: 404 });
-        }
-        console.warn('Transient DB fetch issue for employee, falling back to JWT session payload:', error);
-        responseUser = {
-          id: session.id,
-          name: session.name || 'Employee',
-          role: session.role || 'employee',
-          email: session.email
-        };
-      } else {
-        responseUser = {
-          id: user.id,
-          name: user.name,
-          role: user.role,
-          email: user.email
-        };
-      }
-    }
+    const responseUser = {
+      id: session.id,
+      name: session.name || 'Administrator',
+      role: session.role || 'admin',
+      email: session.email
+    };
 
     const response = NextResponse.json({ user: responseUser });
 

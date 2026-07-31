@@ -8,12 +8,7 @@ interface PushSubscriptionRow {
   endpoint: string;
   p256dh: string;
   auth: string;
-  employee_id?: string | null;
   admin_id?: string | null;
-  employees?: {
-    status: string;
-    notification_preferences: Record<string, boolean | undefined> | null;
-  } | null;
 }
 
 // Track VAPID initialization status
@@ -44,8 +39,7 @@ function initVapid() {
 interface DispatchNotificationOptions {
   title: string;
   message: string;
-  type: string; // e.g. 'leave_approved', 'leave_rejected', 'attendance_reminder', 'daily_reports_submitted'
-  employeeId?: string | null; // Targeted employee
+  type: string; // e.g. 'order_created', 'distributor_applied', 'inquiry_received', 'system_alert'
   adminId?: string | null;    // Targeted admin
   clickActionUrl?: string;    // Direct navigation URL
   senderName?: string;        // In-app notification sender
@@ -54,13 +48,13 @@ interface DispatchNotificationOptions {
 
 /**
  * Dispatch a notification cohesively:
- * 1. Insert into in-app notifications table (if targeted to employee or broadcast).
+ * 1. Insert into in-app notifications table.
  * 2. Filter target's notification preferences from the DB.
- * 3. Fetch push subscriptions (mapping to employee_id or admin_id).
+ * 3. Fetch push subscriptions (mapping to admin_id).
  * 4. Dispatch encrypted Web Push payloads and prune stale subscriptions on error.
  */
 export async function dispatchNotification(options: DispatchNotificationOptions) {
-  const { title, message, type, employeeId, adminId, clickActionUrl, senderName = 'System', skipInApp = false } = options;
+  const { title, message, type, adminId, clickActionUrl, senderName = 'System', skipInApp = false } = options;
 
   console.log(`[Dispatch] Initiating notification "${title}": "${message}" (Type: ${type})`);
 
@@ -72,18 +66,13 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
         title,
         message,
         type: type.includes('alert') ? 'alert' : type.includes('announcement') ? 'announcement' : 'personal',
-        employee_id: employeeId || null,
         sender_name: senderName,
-        is_read: false
+        is_read: false,
+        is_for_admin: true
       };
 
-      // Set admin flags if target is admin or if it is an admin-specific event type
-      const isAdminType = type === 'inquiry' || type === 'order_created' || type === 'distributor_applied' || type.includes('admin');
       if (adminId) {
         insertData.admin_id = adminId;
-        insertData.is_for_admin = true;
-      } else if (isAdminType) {
-        insertData.is_for_admin = true;
       }
 
       const { data: insertedNotif, error: insertError } = await supabaseAdmin
@@ -96,8 +85,6 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
         console.error('Failed to insert in-app notification record:', insertError);
       } else {
         inAppNotificationId = insertedNotif.id;
-        revalidatePath('/employee/dashboard');
-        revalidatePath('/employee/attendance');
         revalidatePath('/admin/notifications');
       }
     } catch (err) {
@@ -133,55 +120,15 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
         .eq('is_active', true);
       
       subscriptions = (adminSubs || []) as unknown as PushSubscriptionRow[];
-    } else if (employeeId) {
-      // Employee preference check
-      const { data: employee, error: empErr } = await supabaseAdmin
-        .from('employees')
-        .select('notification_preferences')
-        .eq('id', employeeId)
-        .maybeSingle();
-
-      if (!empErr && employee) {
-        const preferences = (employee.notification_preferences || {}) as Record<string, boolean | undefined>;
-        const isEnabled = preferences[type] !== false; // Default to true if not explicitly false
-        if (!isEnabled) {
-          console.log(`[Dispatch] Employee ${employeeId} has disabled notifications of type "${type}". Aborting push.`);
-          return { success: true, reason: 'Disabled by user preferences' };
-        }
-      }
-
-      // Fetch active subscriptions for target employee
-      const { data: empSubs } = await supabaseAdmin
-        .from('push_subscriptions')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .eq('is_active', true);
-      
-      subscriptions = (empSubs || []) as unknown as PushSubscriptionRow[];
     } else {
-      // Broadcast / Announcement to all active employees and admins
-      // 1. Fetch active employee subscriptions and filter by preferences
-      const { data: employeeSubs } = await supabaseAdmin
-        .from('push_subscriptions')
-        .select('*, employees!inner(status, notification_preferences)')
-        .eq('is_active', true)
-        .eq('employees.status', 'Active');
-
-      const employeeSubsTyped = (employeeSubs || []) as unknown as PushSubscriptionRow[];
-      const filteredEmployeeSubs = employeeSubsTyped.filter((sub) => {
-        const preferences = sub.employees?.notification_preferences || {};
-        return preferences[type] !== false;
-      });
-
-      // 2. Fetch active admin subscriptions (exclude none unless toggled)
+      // Broadcast / Announcement to all active admins
       const { data: adminSubs } = await supabaseAdmin
         .from('push_subscriptions')
         .select('*')
         .eq('is_active', true)
         .not('admin_id', 'is', null);
 
-      const adminSubsTyped = (adminSubs || []) as unknown as PushSubscriptionRow[];
-      subscriptions = [...filteredEmployeeSubs, ...adminSubsTyped];
+      subscriptions = (adminSubs || []) as unknown as PushSubscriptionRow[];
     }
   } catch (err) {
     console.error('Failed to resolve target subscriptions and preferences:', err);

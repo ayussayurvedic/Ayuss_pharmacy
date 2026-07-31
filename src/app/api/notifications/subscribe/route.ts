@@ -39,9 +39,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = subscriptionSchema.parse(body);
 
-    const isUserAdmin = session.role === 'admin' || session.role === 'hr';
-
-    // 4. Broken Object Level Authorization (BOLA) Check & DB Upsert
     const upsertPayload: Record<string, any> = {
       endpoint: validated.subscription.endpoint,
       p256dh: validated.subscription.keys.p256dh,
@@ -49,38 +46,9 @@ export async function POST(request: NextRequest) {
       device_name: validated.deviceName || null,
       browser_type: validated.browserType || null,
       is_active: true,
+      admin_id: session.id,
       updated_at: new Date().toISOString()
     };
-
-    if (isUserAdmin) {
-      // Admin verification
-      const { data: adminRecord, error: adminErr } = await supabaseAdmin
-        .from('admin_users')
-        .select('id')
-        .eq('id', session.id)
-        .maybeSingle();
-
-      if (adminErr || !adminRecord) {
-        return NextResponse.json({ error: 'Admin account not found' }, { status: 403 });
-      }
-
-      upsertPayload.admin_id = session.id;
-      upsertPayload.employee_id = null;
-    } else {
-      // Employee verification
-      const { data: employeeRecord, error: empErr } = await supabaseAdmin
-        .from('employees')
-        .select('id')
-        .eq('id', session.id)
-        .maybeSingle();
-
-      if (empErr || !employeeRecord) {
-        return NextResponse.json({ error: 'Employee account not found' }, { status: 403 });
-      }
-
-      upsertPayload.employee_id = session.id;
-      upsertPayload.admin_id = null;
-    }
 
     const { error: upsertError } = await supabaseAdmin
       .from('push_subscriptions')

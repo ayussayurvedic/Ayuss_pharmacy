@@ -25,14 +25,14 @@ async function getCachedUserStatus(userId: string): Promise<string | null> {
 
   try {
     const { data: userData, error } = await supabaseAdmin
-      .from('employees')
-      .select('status')
+      .from('admin_users')
+      .select('id')
       .eq('id', userId)
       .maybeSingle();
 
     if (error) throw error;
 
-    const status = userData?.status || null;
+    const status = userData ? 'Active' : null;
     if (userCache.size >= 500) {
       userCache.clear();
     }

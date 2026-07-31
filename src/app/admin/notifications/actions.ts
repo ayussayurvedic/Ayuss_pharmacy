@@ -34,7 +34,7 @@ export async function getSentNotifications() {
 
     const { data, error } = await supabaseAdmin
       .from('notifications')
-      .select('*, employees:employee_id(name, employee_id)')
+      .select('*')
       .or(`is_pinned.eq.true,created_at.gte.${threeDaysAgoIso}`)
       .order('created_at', { ascending: false });
 
@@ -56,21 +56,10 @@ export async function createNotification(
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized' };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only' };
 
-    // Resolve sender's name (admin/hr employee name)
-    let senderName = 'Admin';
-    if (session.role === 'hr') {
-      const { data: hrEmp } = await supabaseAdmin
-        .from('employees')
-        .select('name')
-        .eq('id', session.id)
-        .single();
-      if (hrEmp?.name) senderName = hrEmp.name;
-    } else {
-      senderName = 'Administrator';
-    }
+    const senderName = 'Administrator';
 
     const { data, error } = await supabaseAdmin
       .from('notifications')
@@ -93,8 +82,8 @@ export async function createNotification(
         title,
         message,
         type: 'company_announcement',
-        employeeId: employeeId || null,
-        clickActionUrl: '/employee/dashboard',
+        adminId: employeeId || null,
+        clickActionUrl: '/admin/notifications',
         senderName,
         skipInApp: true
       });
@@ -102,8 +91,6 @@ export async function createNotification(
       console.warn(`[Push Delivery Failed] action: createNotification, error: ${pushErr.message}`);
     }
 
-    revalidatePath('/employee/dashboard');
-    revalidatePath('/employee/attendance');
     revalidatePath('/admin/notifications');
 
     return { success: true, notification: data };

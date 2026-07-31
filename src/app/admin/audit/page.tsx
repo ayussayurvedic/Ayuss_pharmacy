@@ -34,16 +34,13 @@ export default async function AuditLogsPage(props: PageProps) {
   // Search by user name or email if search query is provided
   const searchUserIds: string[] = [];
   if (q) {
-    const [{ data: matchingAdmins }, { data: matchingEmployees }] = await Promise.all([
-      supabaseAdmin.from('admin_users').select('id').ilike('email', `%${q}%`),
-      supabaseAdmin.from('employees').select('id').or(`name.ilike.%${q}%,email.ilike.%${q}%`)
-    ]);
+    const { data: matchingAdmins } = await supabaseAdmin
+      .from('admin_users')
+      .select('id')
+      .ilike('email', `%${q}%`);
 
     if (matchingAdmins) {
       searchUserIds.push(...matchingAdmins.map(a => a.id));
-    }
-    if (matchingEmployees) {
-      searchUserIds.push(...matchingEmployees.map(e => e.id));
     }
   }
 
@@ -73,17 +70,14 @@ export default async function AuditLogsPage(props: PageProps) {
 
   // Batch query to resolve user emails and names
   const userIds = Array.from(new Set(logs?.map(log => log.user_id) || [])).filter(Boolean);
-  const [{ data: admins }, { data: emps }] = await Promise.all([
-    supabaseAdmin.from('admin_users').select('id, email').in('id', userIds.length ? userIds : ['_']),
-    supabaseAdmin.from('employees').select('id, name, email').in('id', userIds.length ? userIds : ['_'])
-  ]);
+  const { data: admins } = await supabaseAdmin
+    .from('admin_users')
+    .select('id, email')
+    .in('id', userIds.length ? userIds : ['_']);
 
   const actorMap: Record<string, { name: string; email: string }> = {};
   admins?.forEach(admin => {
     actorMap[admin.id] = { name: 'Admin', email: admin.email };
-  });
-  emps?.forEach(emp => {
-    actorMap[emp.id] = { name: emp.name, email: emp.email };
   });
 
   return (

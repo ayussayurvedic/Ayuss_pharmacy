@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const table = session.role === 'admin' ? 'admin_users' : 'employees';
+    const table = 'admin_users';
     const { data: user, error: fetchError } = await supabaseAdmin
       .from(table)
       .select('mfa_secret')

@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const qrCode = await generateQRCode(otpauth);
 
     // Temporarily save encrypted secret in DB (not enabled yet)
-    const table = session.role === 'admin' ? 'admin_users' : 'employees';
+    const table = 'admin_users';
     const encryptedSecret = encryptSecret(secret);
     const { error } = await supabaseAdmin
       .from(table)

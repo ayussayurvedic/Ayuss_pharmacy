@@ -117,26 +117,6 @@ export const apiRateLimiter = new DbRateLimiter({
   keyPrefix: 'api',
 });
 
-/**
- * Attendance API rate limiter (check-in/check-out).
- * - 10 requests per minute per IP+userId combination
- */
-export const attendanceRateLimiter = new DbRateLimiter({
-  points: 10,
-  duration: 60,
-  keyPrefix: 'attendance',
-});
-
-/**
- * Presence API rate limiter.
- * - Max 3 heartbeats per minute per employee
- */
-export const presenceRateLimiter = new DbRateLimiter({
-  points: 3,
-  duration: 60,
-  keyPrefix: 'presence',
-});
-
 // CAPTCHA trigger flag at 3 attempts
 export const CAPTCHA_THRESHOLD = 3;
 

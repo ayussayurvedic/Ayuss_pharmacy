@@ -52,41 +52,7 @@ export async function changePassword(data: { currentPassword?: string; newPasswo
       return { success: true };
     }
 
-    // Employee password change logic
-    const { data: employee, error: fetchError } = await supabaseAdmin
-      .from('employees')
-      .select('password_hash')
-      .eq('id', session.id)
-      .single();
-
-    if (fetchError || !employee) {
-      return { success: false, error: 'Employee record not found' };
-    }
-
-    // 1. Verify current password
-    if (data.currentPassword) {
-      const isValid = await bcrypt.compare(data.currentPassword, employee.password_hash);
-      if (!isValid) {
-        return { success: false, error: 'Current password is incorrect' };
-      }
-    }
-
-    // 2. Hash new password
-    if (!data.newPassword) {
-      return { success: false, error: 'New password is required' };
-    }
-    const newHash = await bcrypt.hash(data.newPassword, 12);
-
-    // 3. Update in DB
-    const { error: updateError } = await supabaseAdmin
-      .from('employees')
-      .update({ password_hash: newHash })
-      .eq('id', session.id);
-
-    if (updateError) {
-      console.error('Error updating employee password:', updateError instanceof Error ? updateError.message : String(updateError));
-      return { success: false, error: 'Failed to update password in database' };
-    }
+    return { success: false, error: 'Unauthorized: Admin role required' };
 
     revalidatePath('/employee/profile');
     return { success: true };

@@ -228,18 +228,12 @@ export async function getBlockedEntities() {
     return [];
   }
 
-  // Fetch employees and admins to resolve UUID keys
-  const [{ data: employees }, { data: admins }] = await Promise.all([
-    supabaseAdmin.from('employees').select('id, name, email'),
-    supabaseAdmin.from('admin_users').select('id, email')
-  ]);
+  // Fetch admins to resolve UUID keys
+  const { data: admins } = await supabaseAdmin
+    .from('admin_users')
+    .select('id, email');
 
   const employeeMap = new Map<string, { name: string; email: string }>();
-  if (employees) {
-    employees.forEach(emp => {
-      employeeMap.set(emp.id, { name: emp.name, email: emp.email });
-    });
-  }
 
   const adminMap = new Map<string, string>();
   if (admins) {

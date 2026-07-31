@@ -370,7 +370,7 @@ export default function AdminNotificationsClient({
                           {isBroadcast ? (
                             <><Users className="w-2.5 h-2.5 text-zinc-400" /> Broadcast</>
                           ) : (
-                            <><User className="w-2.5 h-2.5 text-[#1A5C5E]" /> {notif.employees?.name || 'Selected Employee'}</>
+                            <><User className="w-2.5 h-2.5 text-[#1A5C5E]" /> Targeted Admin</>
                           )}
                         </span>
                         

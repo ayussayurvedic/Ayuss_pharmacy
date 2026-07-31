@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sspharmacy-app-ff2708f9-8f92-4817-a7b4-3284230a0456';
+const CACHE_NAME = 'sspharmacy-app-c4aeb44e-74f9-46fe-a193-faf6a3a06ea7';
 const SCOPES = ['/'];
 
 // Utility to bound dynamic caches to prevent storage exhaustion
@@ -169,7 +169,7 @@ self.addEventListener('activate', (event) => {
 
 // Background Sync event handler
 self.addEventListener('sync', (event) => {
-  if (event.tag === 'attendance-sync') {
+  if (event.tag === 'order-sync') {
     event.waitUntil(
       self.clients.matchAll().then((clients) => {
         clients.forEach((client) => {

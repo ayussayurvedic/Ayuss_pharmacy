@@ -17,19 +17,19 @@ export default async function AdminNotificationsPage() {
     redirect('/admin/dashboard');
   }
 
-  // Fetch employees list and sent history in parallel
+  // Fetch admins list and sent history in parallel
   const [
-    employeesRes,
+    adminsRes,
     notificationsRes
   ] = await Promise.all([
     supabaseAdmin
-      .from('employees')
-      .select('id, name, employee_id')
-      .order('name', { ascending: true }),
+      .from('admin_users')
+      .select('id, email')
+      .order('email', { ascending: true }),
     getSentNotifications()
   ]);
 
-  const employees = employeesRes.data || [];
+  const admins = (adminsRes.data || []).map(a => ({ id: a.id, name: a.email, employee_id: 'ADMIN' }));
   const initialNotifications = notificationsRes.success ? notificationsRes.notifications : [];
 
   return (
@@ -38,11 +38,11 @@ export default async function AdminNotificationsPage() {
         <div className="space-y-1">
           <span className="text-[10px] font-bold text-[#C9943E] uppercase tracking-wider block">System Alerts</span>
           <h1 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-wide">Notification Dispatcher</h1>
-          <p className="text-slate-300 text-xs font-light">Send announcements or targeted alerts to employees and staff</p>
+          <p className="text-slate-300 text-xs font-light">Send announcements or targeted system alerts to administrators and staff</p>
         </div>
       </div>
       <AdminNotificationsClient
-        employees={employees}
+        employees={admins}
         initialNotifications={initialNotifications}
       />
     </div>
