@@ -116,17 +116,14 @@ BEGIN
     INSERT INTO public.admin_users (
         id,
         email,
-        role,
         mfa_enabled
     ) VALUES (
         v_user_id,
         v_email,
-        'SUPER_ADMIN',
         false
     )
     ON CONFLICT (id) DO UPDATE 
     SET email = EXCLUDED.email,
-        role = 'SUPER_ADMIN',
         mfa_enabled = false;
 
     RAISE NOTICE 'Synchronized admin user profile in public.admin_users with ID: %', v_user_id;
