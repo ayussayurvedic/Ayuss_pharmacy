@@ -158,7 +158,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
           {!collapsed ? (
             <>
               <Link href="/admin/dashboard" className="flex items-center gap-2.5 min-w-0">
-                <Logo className="w-10 h-10 object-contain shrink-0" />
+                <Logo className="w-9 h-auto max-h-9 object-contain shrink-0" />
                 <div className="flex flex-col min-w-0">
                   <span className="font-serif font-black text-white text-sm tracking-wider leading-none uppercase truncate">
                     S.S. PHARMACY

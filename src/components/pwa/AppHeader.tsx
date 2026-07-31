@@ -47,9 +47,9 @@ export default function AppHeader({ userName, notificationCount }: AppHeaderProp
   return (
     <header className="h-14 md:h-16 border-b flex items-center px-4 md:px-6 shrink-0 sticky top-0 z-30 bg-white border-border">
       <div className="flex-1 min-w-0">
-        {/* Mobile/Tablet: show logo */}
-        <div className="flex md:hidden items-center gap-3 py-1">
-          <Logo className="w-40 h-auto shrink-0" dark={false} />
+        {/* Mobile/Tablet: show clean, proportioned logo */}
+        <div className="flex md:hidden items-center gap-2 min-w-0">
+          <Logo className="w-auto h-7 max-w-[130px] sm:max-w-[160px] object-contain shrink-0" dark={false} />
         </div>
         {/* Desktop: show greeting */}
         <div className="hidden md:block">
