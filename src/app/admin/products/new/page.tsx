@@ -75,14 +75,6 @@ export default function NewProductForm() {
       tempErrors.sellingPrice = 'Selling Price cannot exceed MRP.';
     }
 
-    const webpRegex = /\.webp$/i;
-    ['image1', 'image2', 'image3', 'image4', 'image5'].forEach((field) => {
-      const val = (formData as any)[field].trim();
-      if (val && !webpRegex.test(val)) {
-        tempErrors[field] = 'Image URL must be in WebP (.webp) format.';
-      }
-    });
-
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -276,45 +268,7 @@ export default function NewProductForm() {
             <span className="text-[10px] text-slate-400 font-semibold font-mono">WebP / DataURL / File Upload</span>
           </div>
 
-          {/* Quick Image Preset Selector */}
-          <div className="p-4 bg-[#FDF8F0] border border-[#C9D5D5]/60 rounded-xl space-y-2">
-            <span className="text-[10px] font-bold text-[#1A5C5E] uppercase tracking-wider block">Quick Presets & Sample Asset Paths:</span>
-            <div className="flex flex-wrap gap-2 text-[10px]">
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({
-                  ...prev,
-                  image1: '/products/dr-lion-pain-cream/pain-cream-front-view.webp',
-                  image2: '/products/dr-lion-pain-cream/pain-cream-transparent-image.webp'
-                }))}
-                className="px-2.5 py-1 bg-white border border-[#C9D5D5] hover:border-[#1A5C5E] text-[#134547] rounded-lg font-bold transition-all cursor-pointer"
-              >
-                + Pain Cream Assets
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({
-                  ...prev,
-                  image1: '/products/dr-lion-pain-pills/pain-pills.webp',
-                  image2: '/products/dr-lion-pain-pills/pain-pills-transparent.webp'
-                }))}
-                className="px-2.5 py-1 bg-white border border-[#C9D5D5] hover:border-[#1A5C5E] text-[#134547] rounded-lg font-bold transition-all cursor-pointer"
-              >
-                + Pain Pills Assets
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({
-                  ...prev,
-                  image1: '/products/Moon-light/moon-cream-front-view.webp',
-                  image2: '/products/Moon-light/moon-cream-transparent.webp'
-                }))}
-                className="px-2.5 py-1 bg-white border border-[#C9D5D5] hover:border-[#1A5C5E] text-[#134547] rounded-lg font-bold transition-all cursor-pointer"
-              >
-                + Moonlight Cream Assets
-              </button>
-            </div>
-          </div>
+
 
           {/* Live Image Thumbnail Previews */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">

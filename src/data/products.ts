@@ -34,13 +34,9 @@ export const products: Product[] = [
     packSize: "100g Jar",
     mrp: 249,
     sellingPrice: 199,
-    image: "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
-    transparentImage: "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
-    galleryImages: [
-      "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
-      "/products/dr-lion-pain-cream/pain-cream-transparent-image.webp",
-      "/products/hero-section/hero-pain-cream-mobile.webp"
-    ]
+    image: "",
+    transparentImage: "",
+    galleryImages: []
   },
   {
     id: "dr-lion-pain-pills",
@@ -59,13 +55,9 @@ export const products: Product[] = [
     packSize: "60 Pills Container",
     mrp: 299,
     sellingPrice: 249,
-    image: "/products/dr-lion-pain-pills/pain-pills.webp",
-    transparentImage: "/products/dr-lion-pain-pills/pain-pills.webp",
-    galleryImages: [
-      "/products/dr-lion-pain-pills/pain-pills.webp",
-      "/products/dr-lion-pain-pills/pain-pills-transparent.webp",
-      "/products/hero-section/hero-pain-pills-mobile.webp"
-    ]
+    image: "",
+    transparentImage: "",
+    galleryImages: []
   },
   {
     id: "moon-light-cream",
@@ -84,13 +76,8 @@ export const products: Product[] = [
     packSize: "100g Jar",
     mrp: 349,
     sellingPrice: 299,
-    image: "/products/moon-light/moon-cream-front-view.webp",
-    transparentImage: "/products/moon-light/moon-cream-front-view.webp",
-    galleryImages: [
-      "/products/moon-light/moon-cream-front-view.webp",
-      "/products/moon-light/moon-cream-hero-section.webp",
-      "/products/moon-light/moon-cream-transparent.webp",
-      "/products/hero-section/hero-moon-mobile.webp"
-    ]
+    image: "",
+    transparentImage: "",
+    galleryImages: []
   }
 ];
