@@ -6,10 +6,10 @@ import { updateAdminNotificationPreferences } from '@/app/admin/profile/actions'
 import { useToast } from '@/components/ui/Toast';
 
 interface NotificationPreferences {
-  leave_approval_required: boolean;
-  attendance_issues: boolean;
-  daily_reports_submitted: boolean;
-  new_applications: boolean;
+  order_notifications: boolean;
+  inventory_alerts: boolean;
+  daily_reports: boolean;
+  distributor_inquiries: boolean;
   system_alerts: boolean;
 }
 
@@ -21,10 +21,10 @@ export default function AdminNotificationPreferences({
   const { toast } = useToast();
   const [preferences, setPreferences] = useState<NotificationPreferences>(() => {
     const defaults: NotificationPreferences = {
-      leave_approval_required: true,
-      attendance_issues: true,
-      daily_reports_submitted: true,
-      new_applications: true,
+      order_notifications: true,
+      inventory_alerts: true,
+      daily_reports: true,
+      distributor_inquiries: true,
       system_alerts: true
     };
     return initialPreferences || defaults;
@@ -68,10 +68,10 @@ export default function AdminNotificationPreferences({
       <div className="space-y-4">
         {(
           [
-            { key: 'leave_approval_required', label: 'New Customer Orders Placed' },
-            { key: 'attendance_issues', label: 'Low Stock & Inventory Alerts' },
-            { key: 'daily_reports_submitted', label: 'Daily Sales & Revenue Reports' },
-            { key: 'new_applications', label: 'New Distributor Lead Applications' },
+            { key: 'order_notifications', label: 'New Customer Orders Placed' },
+            { key: 'inventory_alerts', label: 'Low Stock & Inventory Alerts' },
+            { key: 'daily_reports', label: 'Daily Sales & Revenue Reports' },
+            { key: 'distributor_inquiries', label: 'New Distributor Lead Applications' },
             { key: 'system_alerts', label: 'System Health & Security Alerts' },
           ] as const
         ).map((item) => {

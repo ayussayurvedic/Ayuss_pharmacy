@@ -101,7 +101,7 @@ export default function PushPermissionPrompt() {
                 Enable Portal Alerts
               </h3>
               <p className="text-zinc-400 text-[11px] font-medium leading-relaxed mb-4">
-                Get instant notifications on leave approvals, daily report reminders, and company announcements directly in your device notification tray.
+                Get real-time alert notifications for new customer orders, low stock warnings, distributor inquiries, and critical system updates directly in your device notification tray.
               </p>
 
               <div className="flex gap-2">

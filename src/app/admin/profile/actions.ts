@@ -146,10 +146,10 @@ export async function updateAdminProfile(data: { name: string }) {
 }
 
 export async function updateAdminNotificationPreferences(preferences: {
-  leave_approval_required: boolean;
-  attendance_issues: boolean;
-  daily_reports_submitted: boolean;
-  new_applications: boolean;
+  order_notifications: boolean;
+  inventory_alerts: boolean;
+  daily_reports: boolean;
+  distributor_inquiries: boolean;
   system_alerts: boolean;
 }) {
   try {
