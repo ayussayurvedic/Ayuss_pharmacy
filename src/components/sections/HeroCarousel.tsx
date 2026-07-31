@@ -125,7 +125,7 @@ export default function HeroCarousel() {
               alt: dbS.title || 'S.S. Pharmacy Banner',
               eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
               title: dbS.title || '',
-              titleLine2: dbS.subtitle || '',
+              titleLine2: '',
               subtitle: dbS.subtitle || '',
               description: dbS.description || '',
               productId: dbS.link_url || 'all'
