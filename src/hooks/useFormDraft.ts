@@ -18,7 +18,10 @@ export function useFormDraft<T extends Record<string, any>>(
   saveIntervalMs = 10000
 ) {
   const currentValuesRef = useRef(currentValues);
-  currentValuesRef.current = currentValues;
+
+  useEffect(() => {
+    currentValuesRef.current = currentValues;
+  }, [currentValues]);
 
   // 1. Recover draft on mount
   useEffect(() => {
@@ -40,7 +43,7 @@ export function useFormDraft<T extends Record<string, any>>(
     } catch (err) {
       console.warn('Failed to restore form draft from localStorage', err);
     }
-  }, [storageKey]);
+  }, [storageKey, onRestore]);
 
   // 2. Periodically save draft
   useEffect(() => {
