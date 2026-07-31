@@ -97,9 +97,9 @@ INSERT INTO public.products (
   '3 Years',
   'Ayurvedic cream for external use only',
   249, 199, '100g Jar', true,
-  '/products/dr-lion-pain-cream/pain-cream-front-view.webp',
-  '/products/dr-lion-pain-cream/pain-cream-front-view.webp',
-  ARRAY['/products/dr-lion-pain-cream/pain-cream-front-view.webp', '/products/dr-lion-pain-cream/pain-cream-transparent-image.webp', '/products/hero-section/hero-pain-cream-mobile.webp']
+  NULL,
+  NULL,
+  ARRAY[]::text[]
 ),
 -- Dr. Lion Pain Pills
 (
@@ -112,9 +112,9 @@ INSERT INTO public.products (
   '2 Years',
   'Use only as directed. Consult a qualified healthcare professional for individual conditions.',
   299, 249, '60 Pills Container', true,
-  '/products/dr-lion-pain-pills/pain-pills.webp',
-  '/products/dr-lion-pain-pills/pain-pills.webp',
-  ARRAY['/products/dr-lion-pain-pills/pain-pills.webp', '/products/dr-lion-pain-pills/pain-pills-transparent.webp', '/products/hero-section/hero-pain-pills-mobile.webp']
+  NULL,
+  NULL,
+  ARRAY[]::text[]
 ),
 -- Moon Light Cream
 (
@@ -127,9 +127,9 @@ INSERT INTO public.products (
   '3 Years',
   'Ayurvedic cream for external use only',
   349, 299, '100g Jar', true,
-  '/products/moon-light/moon-cream-front-view.webp',
-  '/products/moon-light/moon-cream-front-view.webp',
-  ARRAY['/products/moon-light/moon-cream-front-view.webp', '/products/moon-light/moon-cream-hero-section.webp', '/products/moon-light/moon-cream-transparent.webp', '/products/hero-section/hero-moon-mobile.webp']
+  NULL,
+  NULL,
+  ARRAY[]::text[]
 )
 ON CONFLICT (id) DO UPDATE SET
   composition = EXCLUDED.composition,
@@ -137,9 +137,6 @@ ON CONFLICT (id) DO UPDATE SET
   usage = EXCLUDED.usage,
   shelf_life = EXCLUDED.shelf_life,
   safety_note = EXCLUDED.safety_note,
-  image = EXCLUDED.image,
-  transparent_image = EXCLUDED.transparent_image,
-  gallery_images = EXCLUDED.gallery_images,
   mrp = EXCLUDED.mrp,
   selling_price = EXCLUDED.selling_price,
   pack_size = EXCLUDED.pack_size;
@@ -152,8 +149,8 @@ INSERT INTO public.page_assets (
 (
   'hero-moon-light',
   'hero_carousel',
-  '/products/hero-section/hero-moon-desktop.webp',
-  '/products/hero-section/hero-moon-mobile.webp',
+  '',
+  '',
   'Moon Light',
   'Cream',
   'Pure Ayurvedic herbal skincare remedy formulated with Manjishta, Chandana, and Kumkuma for pimples, dark spots, tan removal, and natural glow.',
@@ -164,8 +161,8 @@ INSERT INTO public.page_assets (
 (
   'hero-pain-cream',
   'hero_carousel',
-  '/products/hero-section/hero-pain-cream-desktop.webp',
-  '/products/hero-section/hero-pain-cream-mobile.webp',
+  '',
+  '',
   'Dr. Lion',
   'Pain Cream',
   'An Ayurvedic pain relief cream formulated with powerful natural ingredients that help relieve joint pain, muscle pain, back pain, headache and body discomfort.',
@@ -176,8 +173,8 @@ INSERT INTO public.page_assets (
 (
   'hero-brand-main',
   'hero_carousel',
-  '/products/hero-section/hero-main-desktop.webp',
-  '/products/hero-section/hero-main-mobile.webp',
+  '',
+  '',
   'Ayurvedic Solutions for',
   'Modern Wellness',
   'S.S. Pharmacy manufactures licensed, quality-focused Ayurvedic medicines and herbal healthcare formulations designed to support musculoskeletal comfort and healthy-looking skin.',
@@ -188,8 +185,8 @@ INSERT INTO public.page_assets (
 (
   'hero-pain-pills',
   'hero_carousel',
-  '/products/hero-section/hero-pain-pills-desktop.webp',
-  '/products/hero-section/hero-pain-pills-mobile.webp',
+  '',
+  '',
   'Dr. Lion',
   'Pain Pills',
   'Traditional Ayurvedic proprietary medicine formulated with purified herbal extracts for deep joint mobility, muscular comfort, and natural strength.',

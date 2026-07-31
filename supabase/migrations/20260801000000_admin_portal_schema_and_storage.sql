@@ -110,7 +110,37 @@ CREATE POLICY "Allow public read access for business_tax_settings"
 DROP POLICY IF EXISTS "Allow full write access for business_tax_settings" ON business_tax_settings;
 CREATE POLICY "Allow full write access for business_tax_settings" 
   ON business_tax_settings FOR ALL 
-  USING (auth.role() = 'authenticated' OR auth.role() = 'service_role' OR true);
+  USING (true);
+
+-- ----------------------------------------------------------------------------
+-- 4. PAGE ASSETS & HERO CAROUSEL TABLE (page_assets)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS page_assets (
+  id TEXT PRIMARY KEY,
+  section_name TEXT NOT NULL,
+  desktop_image_url TEXT NOT NULL DEFAULT '',
+  mobile_image_url TEXT NOT NULL DEFAULT '',
+  title TEXT,
+  subtitle TEXT,
+  description TEXT,
+  link_url TEXT,
+  display_order INTEGER DEFAULT 1,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE page_assets ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public read access for page_assets" ON page_assets;
+CREATE POLICY "Allow public read access for page_assets" 
+  ON page_assets FOR SELECT 
+  USING (true);
+
+DROP POLICY IF EXISTS "Allow full write access for page_assets" ON page_assets;
+CREATE POLICY "Allow full write access for page_assets" 
+  ON page_assets FOR ALL 
+  USING (true);
 
 -- ----------------------------------------------------------------------------
 -- 4. SUPABASE STORAGE BUCKET CONFIGURATION ('products' bucket)
