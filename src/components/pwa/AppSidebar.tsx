@@ -161,7 +161,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
                 <Logo className="w-9 h-auto max-h-9 object-contain shrink-0" />
                 <div className="flex flex-col min-w-0">
                   <span className="font-serif font-black text-white text-sm tracking-wider leading-none uppercase truncate">
-                    S.S. PHARMACY
+                    AYU S.S. PHARMACY
                   </span>
                   <span className="text-[9px] font-bold text-[#E8C87A] uppercase tracking-widest leading-none mt-1 truncate">
                     Ayurvedic Healthcare

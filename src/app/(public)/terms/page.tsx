@@ -4,8 +4,8 @@ import { CANONICAL_DOMAIN } from '@/lib/seo';
 const path = '/terms';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | S.S. Pharmacy',
-  description: 'Terms of Service for S.S. Pharmacy. Governing law: Andhra Pradesh, India.',
+  title: 'Terms of Service | Ayu S.S. Pharmacy',
+  description: 'Terms of Service for Ayu S.S. Pharmacy. Governing law: Andhra Pradesh, India.',
   alternates: {
     canonical: `${CANONICAL_DOMAIN}${path}`,
   },
@@ -24,7 +24,7 @@ export default function TermsPage() {
         {/* Content */}
         <div className="space-y-6 text-sm text-body-text leading-relaxed">
           <p>
-            Welcome to the website of S.S. Pharmacy (&quot;S.S. Pharmacy&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;). By accessing or using this website, you agree to comply with and be bound by the following Terms of Service.
+            Welcome to the website of Ayu S.S. Pharmacy (&quot;Ayu S.S. Pharmacy&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;). By accessing or using this website, you agree to comply with and be bound by the following Terms of Service.
           </p>
 
           <h2 className="text-xl font-semibold text-ink pt-4 border-t border-hairline">

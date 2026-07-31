@@ -12,7 +12,7 @@ export const faqs: FAQItem[] = [
   {
     question: 'Are your products safe and certified?',
     answer:
-      'Yes. All S.S. Pharmacy products are manufactured in our GMP-certified facility under strict quality control. We hold AYUSH License R-1970/Ayur and follow Ayurvedic Pharmacopoeia of India (API) standards for every formulation.',
+      'Yes. All Ayu S.S. Pharmacy products are manufactured in our GMP-certified facility under strict quality control. We hold AYUSH License R-1970/Ayur and follow Ayurvedic Pharmacopoeia of India (API) standards for every formulation.',
   },
   {
     question: 'Do you offer bulk or wholesale pricing?',
@@ -30,7 +30,7 @@ export const faqs: FAQItem[] = [
       'We accept returns within 7 days of delivery for unopened, undamaged products. Damaged or defective items are eligible for immediate replacement. Contact us at support@sspharmacy.in with your order number to initiate a return.',
   },
   {
-    question: 'How do I become a distributor for S.S. Pharmacy?',
+    question: 'How do I become a distributor for Ayu S.S. Pharmacy?',
     answer:
       'Visit the "Become a Distributor" section on our website and fill out the application form. Our partnership team will review your details and respond within 48 hours with next steps and territory availability.',
   },

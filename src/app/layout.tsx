@@ -55,13 +55,13 @@ export const metadata: Metadata = {
   },
   title: {
     default: 'AYU S.S. PHARMACY - Authentic Ayurvedic Quality',
-    template: '%s | S.S. Pharmacy',
+    template: '%s | Ayu S.S. Pharmacy',
   },
   description:
-    'S.S. PHARMACY official online presence. Premium government-licensed Ayurvedic manufacturer located in Yerraguntla, Kadapa District, Andhra Pradesh.',
+    'AYU S.S. PHARMACY official online presence. Premium government-licensed Ayurvedic manufacturer located in Yerraguntla, Kadapa District, Andhra Pradesh.',
   keywords: [
     'Ayurveda',
-    'S.S. Pharmacy',
+    'Ayu S.S. Pharmacy',
     'Ayurvedic manufacturer',
     'Yerraguntla',
     'Kadapa District',
@@ -70,9 +70,9 @@ export const metadata: Metadata = {
     'Pain relief cream',
     'Authentic Ayurvedic Quality',
   ],
-  authors: [{ name: 'S.S. Pharmacy' }],
-  creator: 'S.S. Pharmacy',
-  publisher: 'S.S. Pharmacy',
+  authors: [{ name: 'Ayu S.S. Pharmacy' }],
+  creator: 'Ayu S.S. Pharmacy',
+  publisher: 'Ayu S.S. Pharmacy',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.svg',
@@ -81,28 +81,28 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'S.S. Pharmacy Portal',
+    title: 'Ayu S.S. Pharmacy Portal',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://sspharmacy.com',
-    siteName: 'S.S. Pharmacy',
+    siteName: 'Ayu S.S. Pharmacy',
     title: 'AYU S.S. PHARMACY - Authentic Ayurvedic Quality',
-    description: 'S.S. Pharmacy official online presence. Premium government-licensed Ayurvedic manufacturer located in Yerraguntla, Kadapa District, Andhra Pradesh.',
+    description: 'Ayu S.S. Pharmacy official online presence. Premium government-licensed Ayurvedic manufacturer located in Yerraguntla, Kadapa District, Andhra Pradesh.',
     images: [
       {
         url: '/products/logo/logo.webp',
         width: 1200,
         height: 630,
-        alt: 'S.S. Pharmacy — Authentic Ayurvedic Quality',
+        alt: 'Ayu S.S. Pharmacy — Authentic Ayurvedic Quality',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AYU S.S. PHARMACY - Authentic Ayurvedic Quality',
-    description: 'S.S. Pharmacy official online presence. Premium government-licensed Ayurvedic manufacturer located in Yerraguntla, Kadapa District, Andhra Pradesh.',
+    description: 'Ayu S.S. Pharmacy official online presence. Premium government-licensed Ayurvedic manufacturer located in Yerraguntla, Kadapa District, Andhra Pradesh.',
     images: ['/products/logo/logo.webp'],
   },
   robots: {
@@ -125,7 +125,7 @@ const orgSchema = {
   "@context": "https://schema.org",
   "@type": "MedicalBusiness",
   "@id": "https://sspharmacy.com/#organization",
-  "name": "S.S. Pharmacy",
+  "name": "Ayu S.S. Pharmacy",
   "url": "https://sspharmacy.com",
   "logo": "https://sspharmacy.com/products/logo/logo.webp",
   "image": "https://sspharmacy.com/products/logo/logo.webp",

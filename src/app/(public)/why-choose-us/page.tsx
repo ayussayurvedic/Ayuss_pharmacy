@@ -4,12 +4,12 @@ import SchemaMarkup from '@/components/layout/SchemaMarkup';
 
 export const metadata: Metadata = {
   title: 'Why Choose Us',
-  description: 'Why choose S.S. Pharmacy - authentic Ayurvedic sourcing, heavy metal safety limits compliance, Schedule T compliance, and complete batch traceability.',
+  description: 'Why choose Ayu S.S. Pharmacy - authentic Ayurvedic sourcing, heavy metal safety limits compliance, Schedule T compliance, and complete batch traceability.',
   alternates: {
     canonical: '/why-choose-us',
   },
   keywords: [
-    'Why Choose S.S. Pharmacy',
+    'Why Choose Ayu S.S. Pharmacy',
     'Ayurvedic quality',
     'Heavy metal safety',
     'Schedule T compliance',
@@ -17,9 +17,9 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'Why Choose Us',
-    description: 'Why choose S.S. PHARMACY - authentic Ayurvedic sourcing, zero heavy metals, and Schedule T compliance.',
+    description: 'Why choose AYU S.S. PHARMACY - authentic Ayurvedic sourcing, zero heavy metals, and Schedule T compliance.',
     url: 'https://sspharmacy.com/why-choose-us',
-    siteName: 'S.S. PHARMACY',
+    siteName: 'AYU S.S. PHARMACY',
   },
 };
 
@@ -29,15 +29,15 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Is S.S. Pharmacy a government licensed manufacturer?",
+      "name": "Is Ayu S.S. Pharmacy a government licensed manufacturer?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. S.S. Pharmacy operates under Manufacturing License No. R-1970/Ayur, issued by the Licensing Authority of Andhra Pradesh under the AYUSH Department. Our facility is subject to regular government inspections."
+        "text": "Yes. Ayu S.S. Pharmacy operates under Manufacturing License No. R-1970/Ayur, issued by the Licensing Authority of Andhra Pradesh under the AYUSH Department. Our facility is subject to regular government inspections."
       }
     },
     {
       "@type": "Question",
-      "name": "Are S.S. Pharmacy products tested for heavy metal safety?",
+      "name": "Are Ayu S.S. Pharmacy products tested for heavy metal safety?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Every batch is verified to meet strict pharmacopoeial safety limits for heavy metals including lead, mercury, arsenic, and cadmium — ensuring zero toxic heavy metal contamination above permissible levels."
@@ -53,7 +53,7 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      "name": "Where is S.S. Pharmacy located?",
+      "name": "Where is Ayu S.S. Pharmacy located?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Our manufacturing facility is located at D. No. 1-2-211 & 1-2-212, Prakash Nagar, Yerraguntla Panchayati, YSR Kadapa District, Andhra Pradesh - 516309, India."
@@ -61,7 +61,7 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      "name": "Can I become a wholesale distributor for S.S. Pharmacy?",
+      "name": "Can I become a wholesale distributor for Ayu S.S. Pharmacy?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Yes! We partner with medical shops, clinics, hospitals, and regional wholesale buyers. Contact us through our Contact page or call +91 98485 23295 to apply for regional distribution rights."

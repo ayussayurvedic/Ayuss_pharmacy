@@ -64,7 +64,7 @@ export default function ContactClient() {
           <div className="max-w-3xl">
             <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block mb-2">Get In Touch</span>
             <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-serif text-[#1A5C5E] font-semibold leading-snug uppercase mb-4">
-              Contact SS Pharmacy
+              Contact Ayu S.S. Pharmacy
             </h1>
             <p className="text-sm text-slate-600 leading-relaxed max-w-2xl font-light">
               Reach out directly for general queries, retail purchase assistance, wholesale distribution partnerships, or clinical inquiries.

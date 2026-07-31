@@ -18,8 +18,7 @@
 
 If you need details on how to resolve these issues, consult the active skill guides in your `.gemini` folder:
 
-- **UI/UX & Design**: [UI/UX Pro Max](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/skill-ui-ux-pro-max/artifacts/skill.md) | [Frontend Design](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/skill-frontend-design/artifacts/skill.md)
-- **React/Next.js Best Practices**: [Vercel React Best Practices](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/skill-vercel-react-best-practices/artifacts/rules/_sections.md)
-- **SEO Fundamentals**: [SEO Fundamentals](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/skill-seo-fundamentals/artifacts/skill.md)
-- **Error Handling**: [Error Handling Patterns](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/skill-error-handling/artifacts/skill.md)
-- **Security Auditor**: [Security Auditor](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/skill-security-auditor/artifacts/skill.md)
+- **UI/UX & Design**: [Web UI/UX Design Pack](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/packs/pack-web-ui-ux/artifacts/pack.md)
+- **React/Next.js Best Practices**: [React & Next.js Ecosystem Pack](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/packs/pack-react-next-frontend/artifacts/pack.md)
+- **SEO & Error Handling**: [Software Engineering Core Pack](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/packs/pack-core-swe/artifacts/pack.md)
+- **Security & Prevention**: [Security & Prevention Pack](file:///C:/Users/janak/.gemini/antigravity-ide/knowledge/packs/pack-security-compliance/artifacts/pack.md)

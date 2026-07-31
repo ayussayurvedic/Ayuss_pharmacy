@@ -19,8 +19,8 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 h-20 bg-[#1A5C5E] border-b border-[#2d5238] text-white z-50 shadow-sm font-sans">
       <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/products/logo/logo.webp" alt="S.S. Pharmacy Logo" className="h-14 w-auto" width={150} height={56} priority />
-          <span className="font-bold text-lg tracking-wide hidden sm:inline font-serif">S.S. PHARMACY</span>
+          <Image src="/products/logo/logo.webp" alt="Ayu S.S. Pharmacy Logo" className="h-14 w-auto" width={150} height={56} priority />
+          <span className="font-bold text-lg tracking-wide hidden sm:inline font-serif">AYU S.S. PHARMACY</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-xs font-semibold tracking-wider uppercase">

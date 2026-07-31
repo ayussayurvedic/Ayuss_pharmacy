@@ -4,8 +4,8 @@ import { CANONICAL_DOMAIN } from '@/lib/seo';
 const path = '/privacy';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | S.S. Pharmacy',
-  description: 'Privacy Policy for S.S. Pharmacy. Learn how we collect, use, and protect your information.',
+  title: 'Privacy Policy | Ayu S.S. Pharmacy',
+  description: 'Privacy Policy for Ayu S.S. Pharmacy. Learn how we collect, use, and protect your information.',
   alternates: {
     canonical: `${CANONICAL_DOMAIN}${path}`,
   },
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
         {/* Content */}
         <div className="space-y-6 text-sm text-body-text leading-relaxed">
           <p>
-            At S.S. Pharmacy, we value your privacy and are committed to protecting your personal information. This Privacy Policy details how we handle the data you provide when interacting with our public website, ordering products, or submitting inquiries.
+            At Ayu S.S. Pharmacy, we value your privacy and are committed to protecting your personal information. This Privacy Policy details how we handle the data you provide when interacting with our public website, ordering products, or submitting inquiries.
           </p>
 
           <h2 className="text-xl font-semibold text-ink pt-4 border-t border-hairline">

@@ -42,7 +42,7 @@ export default function AboutClient() {
               <span className="text-[#C9943E] italic">Driven by Quality</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl font-light">
-              S.S. Pharmacy manufactures authentic Ayurvedic formulations and herbal remedies designed to support long-term health, joint mobility, and skin comfort.
+              Ayu S.S. Pharmacy manufactures authentic Ayurvedic formulations and herbal remedies designed to support long-term health, joint mobility, and skin comfort.
             </p>
           </motion.div>
 

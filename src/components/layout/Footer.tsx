@@ -21,12 +21,12 @@ export default function Footer() {
           <div className="flex items-center gap-2.5">
             <Image 
               src="/products/logo/logo.webp" 
-              alt="S.S. Pharmacy Logo" 
+              alt="Ayu S.S. Pharmacy Logo" 
               className="h-9 w-auto" 
               width={96}
               height={36}
             />
-            <span className="font-bold text-white tracking-widest text-sm font-serif">S.S. PHARMACY</span>
+            <span className="font-bold text-white tracking-widest text-sm font-serif">AYU S.S. PHARMACY</span>
           </div>
           <p className="text-[#FDF8F0]/80 leading-relaxed font-light">
             Government-licensed Ayurvedic manufacturer located in Yerraguntla, Kadapa District, Andhra Pradesh. We formulate authentic preparations using potent botanical bio-extracts.

@@ -34,13 +34,13 @@ export default function AboutTeaser() {
         >
           <div className="flex items-center gap-2">
             <span className="w-8 h-[1px] bg-[#C9943E]" />
-            <span className="text-[12px] font-bold text-[#2A7B7E] uppercase tracking-[0.14em] block">ABOUT S.S. PHARMACY</span>
+            <span className="text-[12px] font-bold text-[#2A7B7E] uppercase tracking-[0.14em] block">ABOUT AYU S.S. PHARMACY</span>
           </div>
 
           <h2 className="text-xl sm:text-2xl md:text-3xl font-serif text-[#1A5C5E] font-bold leading-tight">Rooted in Tradition, Committed to Quality</h2>
           
           <p className="text-[15px] font-sans font-normal text-[#404040] leading-[1.7] my-3">
-            Established with a vision to make authentic Ayurvedic healing reliable and accessible, S.S. PHARMACY manufactures proprietary herbal healthcare remedies designed around everyday wellness needs.
+            Established with a vision to make authentic Ayurvedic healing reliable and accessible, AYU S.S. PHARMACY manufactures proprietary herbal healthcare remedies designed around everyday wellness needs.
           </p>
           <p className="text-[15px] font-sans font-normal text-[#404040] leading-[1.7] my-3">
             Operating out of Yerraguntla, Andhra Pradesh under official license code <strong>R-1970/Ayur</strong>, our team enforces strict quality standards from botanical raw herb inspection to final packaging.

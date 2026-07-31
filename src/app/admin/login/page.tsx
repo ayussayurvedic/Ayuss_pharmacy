@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import LoginForm from '@/components/admin/LoginForm';
 import Logo from '@/components/ui/Logo';
 
-export const metadata: Metadata = { title: 'Admin Login | S.S. Pharmacy' };
+export const metadata: Metadata = { title: 'Admin Login | Ayu S.S. Pharmacy' };
 
 export default function AdminLoginPage() {
   return (
@@ -19,7 +19,7 @@ export default function AdminLoginPage() {
           <div className="flex items-center justify-center gap-3.5 mb-6">
             <Logo className="w-14 h-14" dark={false} />
             <div className="text-left">
-              <span className="text-xl font-serif font-black tracking-wide text-[#134547] block leading-tight">S.S. PHARMACY</span>
+              <span className="text-xl font-serif font-black tracking-wide text-[#134547] block leading-tight">AYU S.S. PHARMACY</span>
               <span className="text-[9px] font-bold text-[#C9943E] tracking-widest uppercase block">Ayurvedic Medicines</span>
             </div>
           </div>
@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
 
           <div className="mt-8 pt-8 border-t border-[#C9D5D5]/40 text-center">
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-              © {new Date().getFullYear()} S.S. Pharmacy
+              © {new Date().getFullYear()} Ayu S.S. Pharmacy
             </p>
           </div>
         </div>

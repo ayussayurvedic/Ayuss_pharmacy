@@ -39,11 +39,11 @@ export default function WhyChooseUsClient() {
 
   const faqItems = [
     {
-      question: "Is S.S. Pharmacy a government licensed manufacturer?",
-      answer: "Yes. S.S. Pharmacy operates under Manufacturing License No. R-1970/Ayur, issued by the Licensing Authority of Andhra Pradesh under the AYUSH Department. Our facility is subject to regular government inspections."
+      question: "Is Ayu S.S. Pharmacy a government licensed manufacturer?",
+      answer: "Yes. Ayu S.S. Pharmacy operates under Manufacturing License No. R-1970/Ayur, issued by the Licensing Authority of Andhra Pradesh under the AYUSH Department. Our facility is subject to regular government inspections."
     },
     {
-      question: "Are S.S. Pharmacy products tested for heavy metal safety?",
+      question: "Are Ayu S.S. Pharmacy products tested for heavy metal safety?",
       answer: "Every batch is verified to meet strict pharmacopoeial safety limits for heavy metals including lead, mercury, arsenic, and cadmium — ensuring zero toxic heavy metal contamination above permissible levels."
     },
     {
@@ -51,11 +51,11 @@ export default function WhyChooseUsClient() {
       answer: "Schedule T is a set of Good Manufacturing Practice (GMP) standards specifically mandated for Ayurvedic, Siddha, and Unani medicines in India. Our facility adheres to these standards for cleanliness, equipment calibration, raw material testing, and batch documentation."
     },
     {
-      question: "Where is S.S. Pharmacy located?",
+      question: "Where is Ayu S.S. Pharmacy located?",
       answer: "Our manufacturing facility is located at D. No. 1-2-211 & 1-2-212, Prakash Nagar, Yerraguntla Panchayati, YSR Kadapa District, Andhra Pradesh - 516309, India."
     },
     {
-      question: "Can I become a wholesale distributor for S.S. Pharmacy?",
+      question: "Can I become a wholesale distributor for Ayu S.S. Pharmacy?",
       answer: "Yes! We partner with medical shops, clinics, hospitals, and regional wholesale buyers. Contact us through our Contact page or call +91 98485 23295 to apply for regional distribution rights."
     },
   ];
