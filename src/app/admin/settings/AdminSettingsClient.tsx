@@ -3,28 +3,10 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/components/ui/Toast';
-import { 
-  AdminCard, 
-  AdminStatusBadge, 
-  AdminInput, 
-  AdminSelect, 
-  AdminTextarea, 
-  AdminSkeleton 
-} from '@/components/admin/AdminPrimitives';
-import { 
-  Save, 
-  AlertTriangle, 
-  CheckSquare, 
-  Settings, 
-  Image as ImageIcon, 
-  Plus, 
-  Trash2, 
-  ArrowUp, 
-  ArrowDown,
-  Sparkles,
-  Link as LinkIcon
-} from 'lucide-react';
-import { AdminImageUploader } from '@/components/admin/AdminImageUploader';
+import { AdminSkeleton } from '@/components/admin/AdminPrimitives';
+import { TaxSettingsTab } from './components/TaxSettingsTab';
+import { CarouselBannersTab } from './components/CarouselBannersTab';
+import { ProductMediaTab } from './components/ProductMediaTab';
 
 export default function AdminSettingsClient() {
   const { toast } = useToast();
@@ -227,9 +209,9 @@ export default function AdminSettingsClient() {
       section_name: 'hero_carousel',
       desktop_image_url: '',
       mobile_image_url: '',
-      title: 'New Banner Title',
-      subtitle: 'New Banner Subtitle',
-      description: 'New Banner Description content...',
+      title: '',
+      subtitle: '',
+      description: '',
       link_url: '',
       display_order: nextOrder,
       is_active: true,
@@ -253,12 +235,10 @@ export default function AdminSettingsClient() {
     const newBanners = [...banners];
     const swapIndex = direction === 'up' ? index - 1 : index + 1;
     
-    // Swap items in state array
     const temp = newBanners[index];
     newBanners[index] = newBanners[swapIndex];
     newBanners[swapIndex] = temp;
 
-    // Recalculate display orders
     const reordered = newBanners.map((banner, idx) => ({
       ...banner,
       display_order: idx + 1
@@ -270,22 +250,7 @@ export default function AdminSettingsClient() {
   const handleSaveBanners = async () => {
     setIsSubmitting(true);
     try {
-      // Validate all banners have desktop and mobile URLs
-      for (const banner of banners) {
-        if (!banner.desktop_image_url) {
-          toast.error(`Please select or upload a desktop image for "${banner.title}"`);
-          setIsSubmitting(false);
-          return;
-        }
-        if (!banner.mobile_image_url) {
-          toast.error(`Please select or upload a mobile image for "${banner.title}"`);
-          setIsSubmitting(false);
-          return;
-        }
-      }
 
-      // 1. Delete removed banners from database first
-      // Find IDs that are currently in database but not in local state
       const { data: dbBanners } = await supabase
         .from('page_assets')
         .select('id')
@@ -304,7 +269,6 @@ export default function AdminSettingsClient() {
         if (delError) throw delError;
       }
 
-      // 2. Upsert the current banners list
       const payloads = banners.map(b => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { is_new, ...cleanPayload } = b;
@@ -399,421 +363,38 @@ export default function AdminSettingsClient() {
         </button>
       </div>
 
-      {/* ============================================================
-          TAB 1: TAX SETTINGS
-          ============================================================ */}
+      {/* Tab Panels */}
       {activeTab === 'tax' && (
-        <form onSubmit={handleSaveTaxDraft} className="space-y-5">
-          <AdminCard className="bg-white border border-[#C9D5D5]/60 p-6 rounded-2xl shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#C9D5D5]/40 pb-3 mb-3">
-              <div className="flex items-center gap-2.5">
-                <Settings className="w-5 h-5 text-[#1A5C5E]" />
-                <div>
-                  <h3 className="font-bold text-sm text-[#134547] m-0">Business Tax Safety Gate</h3>
-                  <p className="text-xs text-slate-500 m-0">Controls tax calculation rules and document generation for invoices & credit notes</p>
-                </div>
-              </div>
-                <AdminStatusBadge 
-                  status={taxSettings.configuration_status === 'VERIFIED' ? 'active' : 'draft'} 
-                />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <AdminSelect
-                label="Invoicing Tax Mode *"
-                value={taxSettings.tax_mode || 'UNCONFIGURED'}
-                onChange={(e: any) => setTaxSettings({ ...taxSettings, tax_mode: e.target.value })}
-                options={[
-                  { value: 'UNCONFIGURED', label: 'Unconfigured (Disable Taxes)' },
-                  { value: 'GST_REGISTERED', label: 'GST Registered (Indian Goods & Services Tax)' },
-                  { value: 'COMPOSITION_SCHEME', label: 'GST Composition Scheme' }
-                ]}
-              />
-
-              <AdminSelect
-                label="Pricing Base Mode *"
-                value={taxSettings.pricing_tax_mode || 'TAX_INCLUSIVE'}
-                onChange={(e: any) => setTaxSettings({ ...taxSettings, pricing_tax_mode: e.target.value })}
-                options={[
-                  { value: 'TAX_INCLUSIVE', label: 'Tax Inclusive Pricing (Standard retail)' },
-                  { value: 'TAX_EXCLUSIVE', label: 'Tax Exclusive Pricing' }
-                ]}
-              />
-            </div>
-          </AdminCard>
-
-          <AdminCard className="space-y-4 bg-white border border-[#C9D5D5]/60 p-6 rounded-2xl shadow-xs">
-            <div className="border-b border-[#C9D5D5]/40 pb-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E]">2. Legal Business registration</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <AdminInput
-                label="Legal Business Name *"
-                type="text"
-                placeholder="e.g. S.S. PHARMACY INC"
-                value={taxSettings.legal_business_name || ''}
-                onChange={(e) => setTaxSettings({ ...taxSettings, legal_business_name: e.target.value })}
-              />
-
-              <AdminInput
-                label="GSTIN (Tax Registration Number) *"
-                type="text"
-                placeholder="e.g. 37AAAAA0000A1Z1"
-                value={taxSettings.gstin || ''}
-                onChange={(e) => setTaxSettings({ ...taxSettings, gstin: e.target.value })}
-              />
-            </div>
-          </AdminCard>
-
-          <AdminCard className="space-y-4 bg-white border border-[#C9D5D5]/60 p-6 rounded-2xl shadow-xs">
-            <div className="border-b border-[#C9D5D5]/40 pb-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E]">3. Registered Address Details</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <AdminInput
-                label="Address Line 1 *"
-                type="text"
-                value={taxSettings.registered_address_line1 || ''}
-                onChange={(e) => setTaxSettings({ ...taxSettings, registered_address_line1: e.target.value })}
-              />
-
-              <AdminInput
-                label="Address Line 2"
-                type="text"
-                value={taxSettings.registered_address_line2 || ''}
-                onChange={(e) => setTaxSettings({ ...taxSettings, registered_address_line2: e.target.value })}
-              />
-
-              <AdminInput
-                label="City *"
-                type="text"
-                value={taxSettings.city || ''}
-                onChange={(e) => setTaxSettings({ ...taxSettings, city: e.target.value })}
-              />
-
-              <AdminSelect
-                label="State / Union Territory *"
-                value={taxSettings.state || ''}
-                onChange={(e: any) => setTaxSettings({ ...taxSettings, state: e.target.value })}
-                options={[
-                  { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
-                  { value: 'Telangana', label: 'Telangana' },
-                  { value: 'Tamil Nadu', label: 'Tamil Nadu' },
-                  { value: 'Karnataka', label: 'Karnataka' },
-                  { value: 'Maharashtra', label: 'Maharashtra' }
-                ]}
-              />
-
-              <AdminInput
-                label="State Numeric Code *"
-                type="text"
-                placeholder="e.g. 37 for Andhra Pradesh"
-                value={taxSettings.state_code || ''}
-                onChange={(e) => setTaxSettings({ ...taxSettings, state_code: e.target.value })}
-              />
-
-              <AdminInput
-                label="Postal PIN Code *"
-                type="text"
-                value={taxSettings.postal_code || ''}
-                onChange={(e) => setTaxSettings({ ...taxSettings, postal_code: e.target.value })}
-              />
-            </div>
-          </AdminCard>
-
-          <AdminCard className="space-y-4 bg-white border border-[#C9D5D5]/60 p-6 rounded-2xl shadow-xs">
-            <div className="border-b border-[#C9D5D5]/40 pb-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E]">4. Documents prefix & invoice terms</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <AdminInput
-                label="Invoice Number prefix"
-                type="text"
-                value={taxSettings.invoice_prefix || 'SSP'}
-                onChange={(e) => setTaxSettings({ ...taxSettings, invoice_prefix: e.target.value })}
-              />
-
-              <AdminInput
-                label="Credit Note prefix"
-                type="text"
-                value={taxSettings.credit_note_prefix || 'CN'}
-                onChange={(e) => setTaxSettings({ ...taxSettings, credit_note_prefix: e.target.value })}
-              />
-            </div>
-
-            <AdminTextarea
-              label="Standard Invoice Terms & Declarations"
-              value={taxSettings.invoice_terms || ''}
-              onChange={(e) => setTaxSettings({ ...taxSettings, invoice_terms: e.target.value })}
-              className="text-slate-800 focus:outline-none"
-            />
-          </AdminCard>
-
-          <div className="flex justify-end gap-3 pt-3 border-t border-[#C9D5D5]/40">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
-            >
-              <Save size={14} />
-              <span>Save Settings Draft</span>
-            </button>
-            <button
-              type="button"
-              disabled={isSubmitting}
-              onClick={handleVerifyTax}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1A5C5E] hover:bg-[#134547] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
-            >
-              <CheckSquare size={14} />
-              <span>Verify & Authorize</span>
-            </button>
-          </div>
-        </form>
+        <TaxSettingsTab
+          taxSettings={taxSettings}
+          setTaxSettings={setTaxSettings}
+          isSubmitting={isSubmitting}
+          onSaveDraft={handleSaveTaxDraft}
+          onVerify={handleVerifyTax}
+        />
       )}
 
-      {/* ============================================================
-          TAB 2: CAROUSEL BANNERS
-          ============================================================ */}
       {activeTab === 'carousel' && (
-        <div className="space-y-6">
-          <AdminCard className="bg-white border border-[#C9D5D5]/60 p-6 rounded-2xl shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#C9D5D5]/40 pb-3 mb-3">
-              <div className="flex items-center gap-2.5">
-                <Sparkles className="w-5 h-5 text-[#C9943E]" />
-                <div>
-                  <h3 className="font-bold text-sm text-[#134547] m-0">Homepage Carousel Banners</h3>
-                  <p className="text-xs text-slate-500 m-0">Configure title text, slide actions, and view-specific images for the main hero slider</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={handleAddBanner}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#1A5C5E] hover:bg-[#134547] text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
-              >
-                <Plus size={14} />
-                <span>Add Banner Slide</span>
-              </button>
-            </div>
-
-            {bannersLoading ? (
-              <AdminSkeleton type="table" />
-            ) : banners.length === 0 ? (
-              <div className="text-center py-10 border-2 border-dashed border-[#C9D5D5]/60 rounded-2xl bg-slate-50/50">
-                <ImageIcon size={32} className="mx-auto text-slate-400 stroke-[1.2]" />
-                <p className="text-xs font-bold text-slate-500 mt-2">No Banners Configured</p>
-                <p className="text-[10px] text-slate-400">Click the button above to add your first slide</p>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {banners.map((banner, index) => (
-                  <div 
-                    key={banner.id} 
-                    className="p-5 border border-[#C9D5D5]/50 bg-[#FDFBF7]/40 rounded-2xl relative space-y-4 hover:border-[#1A5C5E]/30 transition-colors"
-                  >
-                    {/* Header bar of slide block */}
-                    <div className="flex items-center justify-between border-b border-[#C9D5D5]/30 pb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] bg-slate-200 text-slate-600 font-bold px-2 py-0.5 rounded-md">
-                          SLIDE #{index + 1}
-                        </span>
-                        <span className="text-xs font-bold text-[#134547]">
-                          {banner.title || 'Untitled Banner'}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          disabled={index === 0}
-                          onClick={() => handleMoveBanner(index, 'up')}
-                          className="p-1 hover:bg-slate-100 rounded text-slate-600 disabled:opacity-40 cursor-pointer"
-                          title="Move Up"
-                        >
-                          <ArrowUp size={14} />
-                        </button>
-                        <button
-                          type="button"
-                          disabled={index === banners.length - 1}
-                          onClick={() => handleMoveBanner(index, 'down')}
-                          className="p-1 hover:bg-slate-100 rounded text-slate-600 disabled:opacity-40 cursor-pointer"
-                          title="Move Down"
-                        >
-                          <ArrowDown size={14} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveBanner(banner.id)}
-                          className="p-1 hover:bg-red-50 hover:text-red-600 rounded text-slate-400 cursor-pointer transition-colors"
-                          title="Delete Slide"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Form fields layout */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Left: Titles & Copy */}
-                      <div className="space-y-3">
-                        <AdminInput
-                          label="Main Title Text *"
-                          value={banner.title || ''}
-                          onChange={(e) => handleBannerChange(banner.id, 'title', e.target.value)}
-                          placeholder="e.g. Moon Light"
-                        />
-                        <AdminInput
-                          label="Subtitle / Second Line Text"
-                          value={banner.subtitle || ''}
-                          onChange={(e) => handleBannerChange(banner.id, 'subtitle', e.target.value)}
-                          placeholder="e.g. Cream"
-                        />
-                        <AdminInput
-                          label="Action Button Link (Product ID or Category)"
-                          value={banner.link_url || ''}
-                          onChange={(e) => handleBannerChange(banner.id, 'link_url', e.target.value)}
-                          placeholder="e.g. moon-light-cream"
-                        />
-                      </div>
-
-                      {/* Middle: Description copy & Display Switch */}
-                      <div className="space-y-3">
-                        <AdminTextarea
-                          label="Description Copy"
-                          value={banner.description || ''}
-                          onChange={(e) => handleBannerChange(banner.id, 'description', e.target.value)}
-                          placeholder="Short tagline context..."
-                          rows={3.5}
-                        />
-                        <AdminSelect
-                          label="Slide Status"
-                          value={banner.is_active ? 'active' : 'inactive'}
-                          onChange={(e: any) => handleBannerChange(banner.id, 'is_active', e.target.value === 'active')}
-                          options={[
-                            { value: 'active', label: 'Active (Visible on homepage)' },
-                            { value: 'inactive', label: 'Inactive (Hidden)' }
-                          ]}
-                        />
-                      </div>
-
-                      {/* Right: Responsive Image Uploaders */}
-                      <div className="space-y-3 border-l border-slate-100 pl-0 md:pl-4">
-                        <AdminImageUploader
-                          label="Desktop Banner Image (1600x680px) *"
-                          value={banner.desktop_image_url || ''}
-                          onChange={(url) => handleBannerChange(banner.id, 'desktop_image_url', url)}
-                          folder="hero-section"
-                        />
-                        <div className="border-t border-slate-100 pt-3" />
-                        <AdminImageUploader
-                          label="Mobile Banner Image (800x620px) *"
-                          value={banner.mobile_image_url || ''}
-                          onChange={(url) => handleBannerChange(banner.id, 'mobile_image_url', url)}
-                          folder="hero-section"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </AdminCard>
-
-          {/* Action Footer for Banners */}
-          <div className="flex justify-end gap-3 pt-3 border-t border-[#C9D5D5]/40">
-            <button
-              type="button"
-              disabled={isSubmitting || bannersLoading}
-              onClick={handleSaveBanners}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1A5C5E] hover:bg-[#134547] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
-            >
-              <Save size={14} />
-              <span>Save Carousel Config</span>
-            </button>
-          </div>
-        </div>
+        <CarouselBannersTab
+          banners={banners}
+          bannersLoading={bannersLoading}
+          isSubmitting={isSubmitting}
+          onAddBanner={handleAddBanner}
+          onRemoveBanner={handleRemoveBanner}
+          onBannerChange={handleBannerChange}
+          onMoveBanner={handleMoveBanner}
+          onSaveBanners={handleSaveBanners}
+        />
       )}
 
-      {/* ============================================================
-          TAB 3: PRODUCT MEDIA
-          ============================================================ */}
       {activeTab === 'products' && (
-        <div className="space-y-6">
-          <AdminCard className="bg-white border border-[#C9D5D5]/60 p-6 rounded-2xl shadow-xs">
-            <div className="border-b border-[#C9D5D5]/40 pb-3 mb-4">
-              <h3 className="font-bold text-sm text-[#134547] m-0">Product Image Assets Manager</h3>
-              <p className="text-xs text-slate-500 m-0">Quickly upload and update main images and transparent background images for all products in the catalog</p>
-            </div>
-
-            {productsLoading ? (
-              <AdminSkeleton type="table" />
-            ) : products.length === 0 ? (
-              <div className="text-center py-8 text-slate-500 text-xs">
-                No products found in catalog. Create some products first.
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {products.map((product) => (
-                  <div 
-                    key={product.id}
-                    className="p-5 border border-[#C9D5D5]/50 bg-white rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-[#1A5C5E]/30 transition-all"
-                  >
-                    {/* Product Name */}
-                    <div className="flex items-center gap-3 md:w-1/4">
-                      <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
-                        {product.image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={product.image} alt={product.name} className="w-full h-full object-contain p-0.5" />
-                        ) : (
-                          <ImageIcon size={18} className="text-slate-400" />
-                        )}
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-xs text-[#134547] m-0 leading-tight">{product.name}</h4>
-                        <span className="text-[10px] text-slate-400 font-bold block mt-0.5">ID: {product.id}</span>
-                      </div>
-                    </div>
-
-                    {/* Media Uploaders */}
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 pl-0 md:pl-6 border-l-0 md:border-l border-slate-100">
-                      <AdminImageUploader
-                        label="Main Product Card Image"
-                        value={product.image || ''}
-                        onChange={(url) => handleProductMediaChange(product.id, 'image', url)}
-                        folder={`products/${product.id}`}
-                      />
-                      <AdminImageUploader
-                        label="Transparent BG Zoom Image"
-                        value={product.transparent_image || ''}
-                        onChange={(url) => handleProductMediaChange(product.id, 'transparent_image', url)}
-                        folder={`products/${product.id}`}
-                      />
-                    </div>
-
-                    {/* Quick Save button per product */}
-                    <div className="flex items-center justify-end md:w-32 border-t md:border-t-0 border-slate-100 pt-3 md:pt-0">
-                      <button
-                        type="button"
-                        disabled={productSavingId === product.id}
-                        onClick={() => handleSaveProductMedia(product.id)}
-                        className="w-full md:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-3xs"
-                      >
-                        {productSavingId === product.id ? (
-                          <span className="w-3.5 h-3.5 border-2 border-slate-500 border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <Save size={13} />
-                        )}
-                        <span>Save Media</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </AdminCard>
-        </div>
+        <ProductMediaTab
+          products={products}
+          productsLoading={productsLoading}
+          productSavingId={productSavingId}
+          onProductMediaChange={handleProductMediaChange}
+          onSaveProductMedia={handleSaveProductMedia}
+        />
       )}
     </div>
   );

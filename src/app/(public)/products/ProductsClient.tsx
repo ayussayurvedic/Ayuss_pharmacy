@@ -30,28 +30,34 @@ export default function ProductsClient() {
 
         if (data && data.length > 0) {
           const mapped: Product[] = data.map((dbP: any) => {
-            const staticP = products.find(p => p.id === dbP.id);
             return {
               id: dbP.id,
               name: dbP.name || '',
               category: dbP.category || '',
-              composition: dbP.composition || staticP?.composition || '',
-              benefits: dbP.benefits || staticP?.benefits || [],
-              usage: dbP.usage || staticP?.usage || '',
-              shelfLife: dbP.shelf_life || staticP?.shelfLife || '3 Years',
-              safetyNote: dbP.safety_note || staticP?.safetyNote || 'Ayurvedic formulation',
-              packSize: dbP.pack_size || staticP?.packSize || '',
-              mrp: Number(dbP.mrp || staticP?.mrp || 0),
-              sellingPrice: Number(dbP.selling_price || staticP?.sellingPrice || 0),
-              image: dbP.image || staticP?.image || '',
-              transparentImage: dbP.transparent_image || staticP?.transparentImage || '',
-              galleryImages: dbP.gallery_images || staticP?.galleryImages || []
+              composition: dbP.composition || '',
+              benefits: dbP.benefits || [],
+              usage: dbP.usage || '',
+              shelfLife: dbP.shelf_life || '3 Years',
+              safetyNote: dbP.safety_note || 'Ayurvedic formulation',
+              packSize: dbP.pack_size || '',
+              mrp: Number(dbP.mrp || 0),
+              sellingPrice: Number(dbP.selling_price || 0),
+              image: dbP.image || '',
+              transparentImage: dbP.transparent_image || '',
+              galleryImages: dbP.gallery_images || []
             };
           });
           setProductList(mapped);
         }
       } catch (err) {
         console.error('Error loading products from Supabase, loading local fallbacks:', err);
+        const githubProducts = products.map(p => ({
+          ...p,
+          image: p.image ? (p.image.startsWith('http') ? p.image : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${p.image}`) : '',
+          transparentImage: p.transparentImage ? (p.transparentImage.startsWith('http') ? p.transparentImage : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${p.transparentImage}`) : '',
+          galleryImages: (p.galleryImages || []).map(img => img.startsWith('http') ? img : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${img}`)
+        }));
+        setProductList(githubProducts);
       } finally {
         setLoading(false);
       }

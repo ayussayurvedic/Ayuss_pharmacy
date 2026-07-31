@@ -25,6 +25,41 @@ import {
 
 type DateFilter = 'today' | '7days' | '30days' | 'this_month';
 
+interface DashboardAttentionItems {
+  pendingOrders: number;
+  confirmedOrders: number;
+  processingOrders: number;
+  shippedOrders: number;
+  unreadEnquiries: number;
+  pendingDistributors: number;
+}
+
+interface DashboardStatsData {
+  revenue: number;
+  ordersCount: number;
+  aov: number;
+  enquiriesCount: number;
+  leadsCount: number;
+  attentionItems: DashboardAttentionItems;
+}
+
+export interface RecentOrderRecord {
+  id: string;
+  order_number: string;
+  customer_name: string;
+  total_amount: number;
+  order_status: string;
+}
+
+export interface RecentLeadRecord {
+  id: string;
+  company_name: string;
+  contact_person: string;
+  city: string;
+  expected_monthly_volume?: string;
+  status: string;
+}
+
 export default function AdminDashboard() {
   const { toast } = useToast();
   const router = useRouter();
@@ -34,7 +69,7 @@ export default function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState<DateFilter>('30days');
 
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<DashboardStatsData>({
     revenue: 0,
     ordersCount: 0,
     aov: 0,
@@ -50,9 +85,9 @@ export default function AdminDashboard() {
     }
   });
 
-  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [recentOrders, setRecentOrders] = useState<RecentOrderRecord[]>([]);
   const [recentEnquiries, setRecentEnquiries] = useState<any[]>([]);
-  const [recentLeads, setRecentLeads] = useState<any[]>([]);
+  const [recentLeads, setRecentLeads] = useState<RecentLeadRecord[]>([]);
   const [allOrders, setAllOrders] = useState<any[]>([]);
 
   const fetchDashboardData = async () => {

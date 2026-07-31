@@ -16,28 +16,34 @@ async function fetchProduct(id: string) {
       .maybeSingle();
 
     if (!error && data) {
-      const staticP = products.find(p => p.id === id);
       return {
         id: data.id,
         name: data.name || '',
         category: data.category || '',
-        composition: data.composition || staticP?.composition || '',
-        benefits: data.benefits || staticP?.benefits || [],
-        usage: data.usage || staticP?.usage || '',
-        shelfLife: data.shelf_life || staticP?.shelfLife || '3 Years',
-        safetyNote: data.safety_note || staticP?.safetyNote || 'Ayurvedic formulation',
-        packSize: data.pack_size || staticP?.packSize || '',
-        mrp: Number(data.mrp || staticP?.mrp || 0),
-        sellingPrice: Number(data.selling_price || staticP?.sellingPrice || 0),
-        image: data.image || staticP?.image || '',
-        transparentImage: data.transparent_image || staticP?.transparentImage || '',
-        galleryImages: data.gallery_images || staticP?.galleryImages || []
+        composition: data.composition || '',
+        benefits: data.benefits || [],
+        usage: data.usage || '',
+        shelfLife: data.shelf_life || '3 Years',
+        safetyNote: data.safety_note || 'Ayurvedic formulation',
+        packSize: data.pack_size || '',
+        mrp: Number(data.mrp || 0),
+        sellingPrice: Number(data.selling_price || 0),
+        image: data.image || '',
+        transparentImage: data.transparent_image || '',
+        galleryImages: data.gallery_images || []
       };
     }
   } catch (err) {
     console.error('Error fetching product from DB server-side, loading fallback:', err);
   }
-  return products.find(p => p.id === id);
+  const fallback = products.find(p => p.id === id);
+  if (!fallback) return undefined;
+  return {
+    ...fallback,
+    image: fallback.image ? (fallback.image.startsWith('http') ? fallback.image : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${fallback.image}`) : '',
+    transparentImage: fallback.transparentImage ? (fallback.transparentImage.startsWith('http') ? fallback.transparentImage : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${fallback.transparentImage}`) : '',
+    galleryImages: (fallback.galleryImages || []).map(img => img.startsWith('http') ? img : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${img}`)
+  };
 }
 
 export async function generateMetadata({ 

@@ -18,6 +18,24 @@ import {
 import { AdminConfirmDialog } from '@/components/admin/AdminConfirmDialog';
 import { Plus, Eye, Copy, Trash } from 'lucide-react';
 
+interface DbProductRow {
+  id: string;
+  name: string | null;
+  category: string | null;
+  mrp: number | null;
+  selling_price: number | null;
+  pack_size: string | null;
+  is_active: boolean;
+  composition: string | null;
+  benefits: string[] | null;
+  usage: string | null;
+  shelf_life: string | null;
+  safety_note: string | null;
+  image: string | null;
+  transparent_image: string | null;
+  gallery_images: string[] | null;
+}
+
 export default function AdminProducts() {
   const { toast } = useToast();
   const router = useRouter();
@@ -46,24 +64,24 @@ export default function AdminProducts() {
       
       if (dbErr) throw dbErr;
 
-      const mapped: Product[] = (data || []).map((dbP: any) => {
-        const staticP = initialProducts.find(p => p.id === dbP.id);
+      const rawRows = (data || []) as DbProductRow[];
+      const mapped: Product[] = rawRows.map((dbP) => {
         return {
           id: dbP.id,
           name: dbP.name || '',
           category: dbP.category || '',
-          mrp: Number(dbP.mrp || staticP?.mrp || 0),
-          sellingPrice: Number(dbP.selling_price || staticP?.sellingPrice || 0),
-          packSize: dbP.pack_size || staticP?.packSize || '',
+          mrp: Number(dbP.mrp || 0),
+          sellingPrice: Number(dbP.selling_price || 0),
+          packSize: dbP.pack_size || '',
           isActive: dbP.is_active,
-          composition: dbP.composition || staticP?.composition || '',
-          benefits: dbP.benefits || staticP?.benefits || [],
-          usage: dbP.usage || staticP?.usage || '',
-          shelfLife: dbP.shelf_life || staticP?.shelfLife || '3 Years',
-          safetyNote: dbP.safety_note || staticP?.safetyNote || 'Ayurvedic formulation',
-          image: dbP.image || staticP?.image || '',
-          transparentImage: dbP.transparent_image || staticP?.transparentImage || '',
-          galleryImages: dbP.gallery_images || staticP?.galleryImages || []
+          composition: dbP.composition || '',
+          benefits: dbP.benefits || [],
+          usage: dbP.usage || '',
+          shelfLife: dbP.shelf_life || '3 Years',
+          safetyNote: dbP.safety_note || 'Ayurvedic formulation',
+          image: dbP.image || '',
+          transparentImage: dbP.transparent_image || '',
+          galleryImages: dbP.gallery_images || []
         };
       });
 
@@ -126,7 +144,7 @@ export default function AdminProducts() {
 
     try {
       if (type === 'duplicate') {
-        const uniqueId = `${target.id}-copy-${Math.floor(100 + Math.random() * 900)}`;
+        const uniqueId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${target.id}-copy-${Date.now()}`;
         const newName = `${target.name} (Copy)`;
         const newProduct: Product = { ...target, id: uniqueId, name: newName, isActive: true };
 

@@ -116,16 +116,7 @@ export default function HeroCarousel() {
         if (data && data.length > 0) {
           const mapped: Slide[] = data.map((dbS: any) => {
             const desktop = dbS.desktop_image_url || '';
-            let mobile = dbS.mobile_image_url || '';
-
-            // Ensure mobile strictly resolves to a mobile .webp asset
-            if (!mobile || mobile === desktop) {
-              const lower = (dbS.id + ' ' + dbS.title + ' ' + desktop).toLowerCase();
-              if (lower.includes('moon')) mobile = '/products/hero-section/hero_section_mobile_image\'s/hero-moon-mobile.webp';
-              else if (lower.includes('cream') || lower.includes('pain-cream')) mobile = '/products/hero-section/hero_section_mobile_image\'s/hero-pain-cream-mobile.webp';
-              else if (lower.includes('pills') || lower.includes('pain-pills')) mobile = '/products/hero-section/hero_section_mobile_image\'s/hero-pain-pills-mobile.webp';
-              else mobile = '/products/hero-section/hero_section_mobile_image\'s/hero-main-mobile.webp';
-            }
+            const mobile = dbS.mobile_image_url || desktop;
 
             return {
               id: dbS.id,

@@ -78,13 +78,14 @@ export function AdminImageUploader({
 
   const handleClear = async () => {
     // If the value is a Supabase Storage URL, delete the file from storage
-    if (value && value.includes('/storage/v1/object/public/products/')) {
+    if (value && (value.includes('/storage/v1/object/public/') || value.includes('/storage/v1/object/sign/'))) {
       try {
         const supabase = createClient();
-        // Extract the file path after the bucket name
-        const storagePath = value.split('/storage/v1/object/public/products/')[1];
+        // Extract relative storage path after bucket name (e.g. /products/...)
+        const match = value.match(/\/storage\/v1\/object\/(?:public|sign)\/products\/(.+)$/);
+        const storagePath = match?.[1];
         if (storagePath) {
-          const decodedPath = decodeURIComponent(storagePath);
+          const decodedPath = decodeURIComponent(storagePath.split('?')[0]);
           const { error } = await supabase.storage
             .from('products')
             .remove([decodedPath]);

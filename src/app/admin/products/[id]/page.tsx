@@ -59,21 +59,20 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
         if (dbErr) throw dbErr;
 
         if (data) {
-          const staticP = initialProducts.find((p) => p.id === id);
-          const gallery = data.gallery_images || staticP?.galleryImages || [];
+          const gallery = Array.isArray(data.gallery_images) ? data.gallery_images : [];
           setFormData({
             id: data.id,
             name: data.name || '',
             category: data.category || '',
-            composition: data.composition || staticP?.composition || '',
-            benefits: (data.benefits || staticP?.benefits || []).join(', '),
-            usage: data.usage || staticP?.usage || '',
+            composition: data.composition || '',
+            benefits: Array.isArray(data.benefits) ? data.benefits.join(', ') : '',
+            usage: data.usage || '',
             packSize: data.pack_size || '',
-            mrp: String(data.mrp || 0),
-            sellingPrice: String(data.selling_price || 0),
+            mrp: data.mrp ? String(data.mrp) : '',
+            sellingPrice: data.selling_price ? String(data.selling_price) : '',
             isActive: data.is_active ?? true,
-            shelfLife: data.shelf_life || staticP?.shelfLife || '',
-            safetyNote: data.safety_note || staticP?.safetyNote || '',
+            shelfLife: data.shelf_life || '',
+            safetyNote: data.safety_note || '',
             image1: data.image || gallery[0] || '',
             image2: data.transparent_image || gallery[1] || '',
             image3: gallery[2] || '',
@@ -124,14 +123,6 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
     } else if (sellingPriceNum > mrpNum) {
       tempErrors.sellingPrice = 'Selling Price cannot exceed MRP.';
     }
-
-    const webpRegex = /\.webp$/i;
-    ['image1', 'image2', 'image3', 'image4', 'image5'].forEach((field) => {
-      const val = (formData as any)[field].trim();
-      if (val && !webpRegex.test(val)) {
-        tempErrors[field] = 'Image URL must be in WebP (.webp) format.';
-      }
-    });
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
