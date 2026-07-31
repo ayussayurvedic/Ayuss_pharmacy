@@ -43,7 +43,7 @@ export default function AdminDistributors() {
 
       // Filter out inquiries from wholesale partner applications
       const list = (data || []).filter(item => 
-        !item.company_name.startsWith('Enquiry:') && item.company_name !== 'General Contact Enquiry'
+        !item.company_name?.startsWith('Enquiry:') && item.company_name !== 'General Contact Enquiry'
       );
       setLeads(list);
     } catch (err: any) {
@@ -61,11 +61,11 @@ export default function AdminDistributors() {
 
   const filteredList = leads.filter((l) => {
     const matchesSearch = 
-      l.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.contact_person.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.phone.includes(searchQuery);
+      (l.company_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (l.contact_person || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (l.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (l.city || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (l.phone || '').includes(searchQuery);
 
     const matchesStatus = statusFilter === 'all' || l.status === statusFilter;
     return matchesSearch && matchesStatus;

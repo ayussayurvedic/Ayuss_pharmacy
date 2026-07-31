@@ -9,12 +9,12 @@ export const dynamic = 'force-dynamic';
 export default async function AdminNotificationsPage() {
   const session = await getSession();
   if (!session || !session.id) {
-    redirect('/employee/login');
+    redirect('/admin/login');
   }
 
-  const isAdmin = session.role === 'admin' || session.role === 'hr';
+  const isAdmin = session.role === 'admin';
   if (!isAdmin) {
-    redirect('/employee/dashboard');
+    redirect('/admin/dashboard');
   }
 
   // Fetch employees list and sent history in parallel

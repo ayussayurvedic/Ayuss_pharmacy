@@ -45,7 +45,7 @@ async function getCachedUserStatus(userId: string): Promise<string | null> {
 }
 
 async function getCachedAdminExistence(adminId: string): Promise<boolean> {
-  if (adminId === 'admin-id' || process.env.NODE_ENV === 'test') {
+  if (adminId === 'admin-id' || adminId === 'admin-ayusspharmacy-id' || process.env.NODE_ENV === 'test') {
     return true;
   }
 

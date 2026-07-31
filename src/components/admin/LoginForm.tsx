@@ -69,6 +69,20 @@ export default function LoginForm() {
         return;
       }
 
+      if (result.success) {
+        const sessionPayload = {
+          id: result.id || 'admin-ayusspharmacy-id',
+          role: result.role || 'admin',
+          name: result.name || 'Administrator',
+        };
+        try {
+          sessionStorage.setItem('sspharmacy-admin-session', JSON.stringify(sessionPayload));
+          localStorage.setItem('sspharmacy-admin-session', JSON.stringify(sessionPayload));
+        } catch {
+          // Ignore quota errors
+        }
+      }
+
       router.push('/admin/dashboard');
       router.refresh();
     } catch {

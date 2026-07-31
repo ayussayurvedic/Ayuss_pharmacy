@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useToast } from '@/components/ui/Toast';
 import { 
   Shield, 
   AlertTriangle, 
@@ -25,6 +26,7 @@ interface QualityRecall {
 }
 
 export default function RecallsClient() {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
 
   const mockRecalls: QualityRecall[] = [
@@ -68,7 +70,7 @@ export default function RecallsClient() {
           </p>
         </div>
         <button 
-          onClick={() => alert('New Quality Recall Action')}
+          onClick={() => toast.info('Initiate Quality Hold form coming soon.')}
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#C9943E] hover:bg-[#b78332] text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-md transition-all shrink-0 cursor-pointer"
         >
           <Plus size={16} />
