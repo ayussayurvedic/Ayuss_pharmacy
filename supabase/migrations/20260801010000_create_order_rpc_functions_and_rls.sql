@@ -1,34 +1,8 @@
--- ====================================================================
--- S.S. Pharmacy Portal — Custom DB Setup & Assets Initialization
--- ====================================================================
--- This file contains setup scripts for custom storage buckets and assets.
--- The legacy PrimeTek HR/Attendance migrations have been fully deprecated and removed.
--- Safe to run this block in the Supabase SQL Editor.
--- ====================================================================
-
--- 1. Create Products Storage Bucket
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('products', 'products', true)
-ON CONFLICT (id) DO NOTHING;
--- 2. Configure SELECT policy to allow anyone to read images from the public bucket
-DROP POLICY IF EXISTS "Public read products bucket" ON storage.objects;
-CREATE POLICY "Public read products bucket" ON storage.objects
-    FOR SELECT
-    USING (bucket_id = 'products');
-
--- 3. Configure ALL access policy (Insert/Update/Delete) for authenticated admin users
-DROP POLICY IF EXISTS "Admin write products bucket" ON storage.objects;
-CREATE POLICY "Admin write products bucket" ON storage.objects
-    FOR ALL
-    TO authenticated
-    USING (bucket_id = 'products' AND (public.is_admin() OR auth.role() = 'service_role'))
-    WITH CHECK (bucket_id = 'products' AND (public.is_admin() OR auth.role() = 'service_role'));
-
 -- ============================================================================
 -- Order RPC Functions, Auxiliary Tables RLS Grants, and GST Views
 -- ============================================================================
 
--- 4. Function: update_order_status
+-- 1. Function: update_order_status
 CREATE OR REPLACE FUNCTION public.update_order_status(
   p_order_id TEXT,
   p_new_status TEXT,
@@ -64,7 +38,7 @@ BEGIN
 END;
 $$;
 
--- 5. Function: cancel_order_with_refund_check
+-- 2. Function: cancel_order_with_refund_check
 CREATE OR REPLACE FUNCTION public.cancel_order_with_refund_check(
   p_order_id TEXT,
   p_reason TEXT DEFAULT 'Cancelled by Administrator'
@@ -100,7 +74,7 @@ BEGIN
 END;
 $$;
 
--- 6. Function: mark_order_shipped
+-- 3. Function: mark_order_shipped
 CREATE OR REPLACE FUNCTION public.mark_order_shipped(p_order_id TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -111,7 +85,7 @@ BEGIN
 END;
 $$;
 
--- 7. Function: mark_order_out_for_delivery
+-- 4. Function: mark_order_out_for_delivery
 CREATE OR REPLACE FUNCTION public.mark_order_out_for_delivery(p_order_id TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -122,7 +96,7 @@ BEGIN
 END;
 $$;
 
--- 8. Function: mark_order_delivered
+-- 5. Function: mark_order_delivered
 CREATE OR REPLACE FUNCTION public.mark_order_delivered(p_order_id TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -140,7 +114,7 @@ BEGIN
 END;
 $$;
 
--- 9. Function: issue_order_invoice
+-- 6. Function: issue_order_invoice
 CREATE OR REPLACE FUNCTION public.issue_order_invoice(p_order_id TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -180,7 +154,7 @@ BEGIN
 END;
 $$;
 
--- 10. Grant Execution on RPC Functions to anon, authenticated, and service_role
+-- 7. Grant Execution on RPC Functions to anon, authenticated, and service_role
 GRANT EXECUTE ON FUNCTION public.update_order_status(TEXT, TEXT, TEXT) TO anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION public.cancel_order_with_refund_check(TEXT, TEXT) TO anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION public.mark_order_shipped(TEXT) TO anon, authenticated, service_role;
@@ -188,7 +162,7 @@ GRANT EXECUTE ON FUNCTION public.mark_order_out_for_delivery(TEXT) TO anon, auth
 GRANT EXECUTE ON FUNCTION public.mark_order_delivered(TEXT) TO anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION public.issue_order_invoice(TEXT) TO anon, authenticated, service_role;
 
--- 11. Enable Public/Anon/Authenticated READ Access on returns, invoices, and views
+-- 8. Enable Public/Anon/Authenticated READ Access on returns, invoices, and views
 ALTER TABLE IF EXISTS public.returns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.return_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.invoices ENABLE ROW LEVEL SECURITY;
@@ -205,5 +179,3 @@ CREATE POLICY "Allow public read for invoices" ON public.invoices FOR SELECT USI
 GRANT ALL ON public.returns TO anon, authenticated, service_role;
 GRANT ALL ON public.return_items TO anon, authenticated, service_role;
 GRANT ALL ON public.invoices TO anon, authenticated, service_role;
-
-SELECT 'S.S. Pharmacy storage buckets initialized successfully!' AS result;

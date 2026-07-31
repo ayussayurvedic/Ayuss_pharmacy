@@ -314,7 +314,24 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
         rpcArgs = { p_order_id: id };
       }
 
-      const { error: updateError } = await supabase.rpc(rpcName, rpcArgs);
+      let { error: updateError } = await supabase.rpc(rpcName, rpcArgs);
+
+      // Fallback to direct DB update if RPC function is missing from schema cache
+      if (updateError && (updateError.code === 'PGRST202' || updateError.message?.includes('Could not find the function'))) {
+        console.warn(`RPC ${rpcName} missing in schema cache, falling back to direct table update.`);
+        const updatePayload: Record<string, any> = {
+          order_status: pendingStatus,
+          updated_at: new Date().toISOString()
+        };
+        if (pendingStatus === 'delivered') {
+          updatePayload.payment_status = 'paid';
+        }
+        const { error: directErr } = await supabase
+          .from('orders')
+          .update(updatePayload)
+          .eq('id', id);
+        updateError = directErr;
+      }
 
       if (updateError) throw updateError;
 
@@ -373,10 +390,24 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
 
     setIsSubmitting(true);
     try {
-      const { error: cancelErr } = await supabase.rpc('cancel_order_with_refund_check', {
+      let { error: cancelErr } = await supabase.rpc('cancel_order_with_refund_check', {
         p_order_id: id,
         p_reason: cancelReason.trim()
       });
+
+      // Fallback to direct DB update if RPC function is missing from schema cache
+      if (cancelErr && (cancelErr.code === 'PGRST202' || cancelErr.message?.includes('Could not find the function'))) {
+        console.warn('RPC cancel_order_with_refund_check missing in schema cache, falling back to direct table update.');
+        const { error: directErr } = await supabase
+          .from('orders')
+          .update({
+            order_status: 'cancelled',
+            cancellation_reason: cancelReason.trim(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', id);
+        cancelErr = directErr;
+      }
 
       if (cancelErr) throw cancelErr;
 

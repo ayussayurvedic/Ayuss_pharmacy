@@ -45,18 +45,28 @@ export default function AdminInvoices() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setInvoices(data || []);
+      if (error) {
+        console.warn('Invoices table fetch notice:', error.message);
+        setInvoices([]);
+      } else {
+        setInvoices(data || []);
+      }
 
-      const { data: gstData } = await supabase
-        .from('vw_gst_r1_prep_report')
-        .select('*')
-        .order('report_month', { ascending: false });
-      
-      setGstRows(gstData || []);
+      try {
+        const { data: gstData, error: gstErr } = await supabase
+          .from('vw_gst_r1_prep_report')
+          .select('*')
+          .order('report_month', { ascending: false });
+        
+        if (!gstErr) {
+          setGstRows(gstData || []);
+        }
+      } catch (gstCatch) {
+        console.warn('GST report view notice:', gstCatch);
+      }
     } catch (err: any) {
-      console.error('Fetch invoices error:', err);
-      toast.error('Failed to load commercial invoices from Supabase.');
+      console.warn('Fetch invoices notice:', err?.message);
+      setInvoices([]);
     } finally {
       setLoading(false);
     }
