@@ -16,13 +16,13 @@ export default function Navbar() {
   const shippingProgress = Math.min(100, (subtotal / freeShippingThreshold) * 100);
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 text-slate-800 z-50 shadow-xs font-sans">
+    <header className="fixed top-0 left-0 right-0 h-16 md:h-20 bg-white border-b border-slate-200/80 text-slate-800 z-50 shadow-xs font-sans">
       <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <Image src="/products/logo/logo.webp" alt="Ayu S.S. Pharmacy Logo" className="h-10 sm:h-14 w-auto object-contain" width={150} height={56} priority />
-          <div className="hidden sm:flex flex-col min-w-0">
-            <span className="font-bold text-base md:text-lg tracking-wide font-serif leading-none text-[#134547]">AYU S.S. PHARMACY</span>
-            <span className="text-[10px] md:text-[11px] font-bold text-[#C9943E] tracking-wider uppercase leading-none mt-1">One Stop Solution</span>
+        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <Image src="/products/logo/logo.webp" alt="Ayu S.S. Pharmacy Logo" className="h-9 sm:h-12 w-auto object-contain shrink-0" width={150} height={56} priority />
+          <div className="flex flex-col min-w-0">
+            <span className="font-bold text-xs sm:text-base md:text-lg tracking-tight sm:tracking-wide font-serif leading-none text-[#134547] truncate">AYU S.S. PHARMACY</span>
+            <span className="text-[8px] sm:text-[10px] md:text-[11px] font-bold text-[#C9943E] tracking-wider uppercase leading-none mt-0.5 sm:mt-1 truncate">One Stop Solution</span>
           </div>
         </Link>
 
@@ -35,16 +35,16 @@ export default function Navbar() {
           <Link href="/contact" className="hover:text-[#1A5C5E] transition-colors py-1">Contact</Link>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <button
             type="button"
             onClick={() => setIsCartOpen(!isCartOpen)}
             className="relative p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer"
             aria-label={`Shopping bag containing ${cartCount} items`}
           >
-            <ShoppingBag className="w-6 h-6" />
+            <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#C9943E] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
+              <span className="absolute -top-1 -right-1 bg-[#C9943E] text-white text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border-2 border-white">
                 {cartCount}
               </span>
             )}
@@ -158,38 +158,38 @@ export default function Navbar() {
       )}
 
       {mobileMenuOpen && (
-        <div className="md:hidden fixed top-20 left-0 right-0 bottom-0 bg-[#FDF8F0] text-slate-800 z-40 flex flex-col p-6 space-y-3 font-sans shadow-2xl border-t border-slate-200/80 animate-in slide-in-from-top duration-300">
+        <div className="md:hidden fixed top-16 md:top-20 left-0 right-0 bottom-0 bg-[#FDF8F0] text-slate-800 z-40 flex flex-col p-5 space-y-2.5 font-sans shadow-2xl border-t border-slate-200/80 overflow-y-auto animate-in slide-in-from-top duration-250">
           <div className="text-[10px] font-bold text-[#C9943E] uppercase tracking-widest px-1 mb-1">
             Navigation Menu
           </div>
-          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3.5 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
+          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
             <span>Home</span>
             <span className="text-[#C9943E] text-sm">→</span>
           </Link>
-          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3.5 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
+          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
             <span>Products</span>
             <span className="text-[#C9943E] text-sm">→</span>
           </Link>
-          <Link href="/why-choose-us" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3.5 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
+          <Link href="/why-choose-us" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
             <span>Why Choose Us</span>
             <span className="text-[#C9943E] text-sm">→</span>
           </Link>
-          <Link href="/manufacturing" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3.5 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
+          <Link href="/manufacturing" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
             <span>Manufacturing</span>
             <span className="text-[#C9943E] text-sm">→</span>
           </Link>
-          <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3.5 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
+          <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
             <span>About Us</span>
             <span className="text-[#C9943E] text-sm">→</span>
           </Link>
-          <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3.5 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
+          <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
             <span>Contact</span>
             <span className="text-[#C9943E] text-sm">→</span>
           </Link>
 
-          <div className="pt-4 mt-auto border-t border-slate-200/80 text-center">
-            <span className="text-[10px] font-bold text-[#C9943E] uppercase tracking-widest block mb-1">AYU S.S. PHARMACY</span>
-            <span className="text-[11px] text-slate-500 font-medium">One Stop Solution • Govt. Licensed Ayurvedic Manufacturer</span>
+          <div className="pt-4 mt-auto border-t border-slate-200/80 text-center shrink-0">
+            <span className="text-[10px] font-bold text-[#C9943E] uppercase tracking-widest block mb-0.5">AYU S.S. PHARMACY</span>
+            <span className="text-[10px] text-slate-500 font-medium block">One Stop Solution • Govt. Licensed Ayurvedic Manufacturer</span>
           </div>
         </div>
       )}
