@@ -83,7 +83,7 @@ export default function ProductsClient() {
   });
 
   return (
-    <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-[100dvh] font-sans overflow-hidden">
+    <div className="bg-[#FDF8F0] text-slate-800 pt-20 md:pt-24 pb-16 min-h-[100dvh] font-sans overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-6 space-y-10">
         
         {/* Header Block */}

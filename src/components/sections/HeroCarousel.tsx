@@ -22,8 +22,8 @@ interface Slide {
 const slides: Slide[] = [
   {
     id: 'moon-cream',
-    desktopImage: '',
-    mobileImage: '',
+    desktopImage: "/products/hero-section/hero_section_desktop_image's/hero-moon-desktop.webp",
+    mobileImage: "/products/hero-section/hero_section_mobile_image's/hero-moon-mobile.webp",
     alt: 'Moon Light Cream – Pure Ayurvedic Skin Care',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Moon Light',
@@ -34,8 +34,8 @@ const slides: Slide[] = [
   },
   {
     id: 'pain-cream',
-    desktopImage: '',
-    mobileImage: '',
+    desktopImage: "/products/hero-section/hero_section_desktop_image's/hero-pain-cream-desktop.webp",
+    mobileImage: "/products/hero-section/hero_section_mobile_image's/hero-pain-cream-mobile.webp",
     alt: 'Dr. Lion Pain Relief Cream – S.S. Pharmacy',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Dr. Lion',
@@ -46,8 +46,8 @@ const slides: Slide[] = [
   },
   {
     id: 'brand-main',
-    desktopImage: '',
-    mobileImage: '',
+    desktopImage: "/products/hero-section/hero_section_desktop_image's/hero-main-desktop.webp",
+    mobileImage: "/products/hero-section/hero_section_mobile_image's/hero-main-mobile.webp",
     alt: 'Ayurvedic Solutions for Modern Wellness – S.S. Pharmacy',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Ayurvedic Solutions for',
@@ -58,8 +58,8 @@ const slides: Slide[] = [
   },
   {
     id: 'pain-pills',
-    desktopImage: '',
-    mobileImage: '',
+    desktopImage: "/products/hero-section/hero_section_desktop_image's/hero-pain-pills-desktop.webp",
+    mobileImage: "/products/hero-section/hero_section_mobile_image's/hero-pain-pills-mobile.webp",
     alt: 'Dr. Lion Pain Pills – Traditional Herbal Remedy',
     eyebrow: 'TRADITIONAL HEALING • MODERN WELLNESS',
     title: 'Dr. Lion',
@@ -71,11 +71,28 @@ const slides: Slide[] = [
 ];
 
 export default function HeroCarousel() {
-  const [carouselSlides, setCarouselSlides] = useState<Slide[]>(slides);
+  const [carouselSlides, setCarouselSlides] = useState<Slide[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('ssp_hero_banners');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      } catch {
+        // Fall through to initial loading state
+      }
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState<boolean>(() => carouselSlides.length === 0);
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [imgErrors, setImgErrors] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const handleResize = () => {
@@ -87,10 +104,12 @@ export default function HeroCarousel() {
   }, []);
 
   const next = useCallback(() => {
+    if (carouselSlides.length === 0) return;
     setCurrent((prev) => (prev + 1) % carouselSlides.length);
   }, [carouselSlides.length]);
 
   const prev = useCallback(() => {
+    if (carouselSlides.length === 0) return;
     setCurrent((prev) => (prev - 1 + carouselSlides.length) % carouselSlides.length);
   }, [carouselSlides.length]);
 
@@ -126,13 +145,25 @@ export default function HeroCarousel() {
             };
           });
 
+          // Save to sessionStorage for 0-flicker instant rendering on refresh
+          try {
+            sessionStorage.setItem('ssp_hero_banners', JSON.stringify(mapped));
+          } catch {
+            // Ignore storage quota errors
+          }
+
           setCarouselSlides((prev) => {
             if (JSON.stringify(prev) === JSON.stringify(mapped)) return prev;
             return mapped;
           });
+        } else {
+          setCarouselSlides((prev) => (prev.length > 0 ? prev : slides));
         }
       } catch (err) {
         console.error('Failed to load page assets from Supabase:', err);
+        setCarouselSlides((prev) => (prev.length > 0 ? prev : slides));
+      } finally {
+        setLoading(false);
       }
     }
     loadBanners();
@@ -160,26 +191,45 @@ export default function HeroCarousel() {
     setTouchStart(null);
   };
 
-  const activeSlide = carouselSlides[current] || slides[0];
+  const handleImageError = (id: string) => {
+    setImgErrors((prev) => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1
+    }));
+  };
 
-  if (isMobile === null) {
+  const getRetrySrc = (id: string, originalSrc: string) => {
+    const errorCount = imgErrors[id] || 0;
+    if (errorCount === 0 || !originalSrc) return originalSrc;
+    if (errorCount > 3) return originalSrc;
+    const delimiter = originalSrc.includes('?') ? '&' : '?';
+    return `${originalSrc}${delimiter}retry=${errorCount}`;
+  };
+
+  const activeSlide = carouselSlides[current] || carouselSlides[0];
+
+  if (isMobile === null || (loading && carouselSlides.length === 0)) {
     return (
-      <section className="relative w-full bg-[#FDFBF7] pt-20">
-        <div className="w-full h-[320px] md:h-[620px] lg:h-[680px] bg-slate-100/50 animate-pulse" />
+      <section className="relative w-full bg-[#FDFBF7] pt-16 md:pt-20">
+        <div className="w-full aspect-[1280/1342] md:h-[620px] lg:h-[680px] bg-slate-100/50 animate-pulse" />
       </section>
     );
   }
 
+  if (!activeSlide || carouselSlides.length === 0) {
+    return null;
+  }
+
   return (
     <section 
-      className="relative w-full bg-[#FDFBF7] overflow-hidden font-sans select-none pt-20"
+      className="relative w-full bg-[#FDFBF7] overflow-hidden font-sans select-none pt-16 md:pt-20"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {isMobile ? (
-        /* Mobile View: Fixed aspect ratio, smooth crossfade without height jumps or layout shift */
+        /* Mobile View: High-res full mobile banner display matching 1280x1342 natural ratio */
         <div 
-          className="w-full relative aspect-[800/620] overflow-hidden bg-[#FDFBF7] touch-pan-y"
+          className="w-full relative aspect-[1280/1342] overflow-hidden bg-[#FDFBF7] touch-pan-y"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -191,9 +241,10 @@ export default function HeroCarousel() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4, ease: 'easeInOut' }}
-                src={activeSlide.mobileImage || activeSlide.desktopImage}
+                src={getRetrySrc(activeSlide.id, activeSlide.mobileImage || activeSlide.desktopImage)}
+                onError={() => handleImageError(activeSlide.id)}
                 alt={activeSlide.alt}
-                className="w-full h-full object-cover block"
+                className="w-full h-full object-cover object-center block"
               />
             </AnimatePresence>
           </div>
@@ -227,7 +278,8 @@ export default function HeroCarousel() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5, ease: 'easeInOut' }}
-                src={activeSlide.desktopImage}
+                src={getRetrySrc(activeSlide.id, activeSlide.desktopImage)}
+                onError={() => handleImageError(activeSlide.id)}
                 alt={activeSlide.alt}
                 className="w-full h-full object-cover object-right"
               />
