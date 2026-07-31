@@ -62,19 +62,25 @@ export default function Navbar() {
       </div>
 
       {isCartOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex justify-end">
-          <div className="w-full max-w-md bg-[#FDF8F0] text-slate-800 h-full flex flex-col p-6 shadow-xl relative animate-in slide-in-from-right">
-            <button
-              type="button"
-              onClick={() => setIsCartOpen(false)}
-              className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-850 bg-transparent border-0 cursor-pointer"
-              aria-label="Close Shopping Bag"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <h3 className="font-bold text-sm text-[#1A5C5E] border-b pb-4 mb-3 uppercase tracking-wider">Your Shopping Bag</h3>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[100] flex justify-end">
+          <div className="w-full max-w-md bg-[#FDF8F0] text-slate-800 h-full flex flex-col p-6 shadow-2xl relative animate-in slide-in-from-right">
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#C9D5D5]/80 shrink-0">
+              <div>
+                <h3 className="font-bold text-sm text-[#134547] font-serif uppercase tracking-wider">Your Shopping Bag</h3>
+                <p className="text-[11px] text-slate-500 font-medium">{cartCount} {cartCount === 1 ? 'item' : 'items'} in cart</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCartOpen(false)}
+                className="p-2 text-slate-500 hover:text-slate-900 bg-white hover:bg-slate-100 rounded-full border border-slate-200 transition-colors cursor-pointer"
+                aria-label="Close Shopping Bag"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-            <div className="bg-white p-3 rounded-xl border border-[#C9D5D5]/80 mb-4 shadow-xs">
+            <div className="bg-white p-3 rounded-xl border border-[#C9D5D5]/80 mb-4 shadow-xs shrink-0">
               <div className="flex items-center gap-2 text-xs font-semibold text-[#1A5C5E] mb-1.5">
                 <Truck className="w-4 h-4 text-[#C9943E] shrink-0" />
                 {amountForFreeShipping > 0 ? (
@@ -91,7 +97,7 @@ export default function Navbar() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1 min-h-0">
               {cartItems.length === 0 ? (
                 <p className="text-xs text-slate-500 text-center py-12">Your bag is empty.</p>
               ) : (
@@ -137,7 +143,7 @@ export default function Navbar() {
             </div>
 
             {cartItems.length > 0 && (
-              <div className="border-t pt-4 space-y-3">
+              <div className="border-t pt-4 space-y-3 shrink-0">
                 <div className="flex justify-between text-xs font-bold text-slate-900">
                   <span>Subtotal:</span>
                   <span>₹{subtotal}</span>
