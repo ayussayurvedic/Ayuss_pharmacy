@@ -76,11 +76,35 @@ export function AdminImageUploader({
     }
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
+    // If the value is a Supabase Storage URL, delete the file from storage
+    if (value && value.includes('/storage/v1/object/public/products/')) {
+      try {
+        const supabase = createClient();
+        // Extract the file path after the bucket name
+        const storagePath = value.split('/storage/v1/object/public/products/')[1];
+        if (storagePath) {
+          const decodedPath = decodeURIComponent(storagePath);
+          const { error } = await supabase.storage
+            .from('products')
+            .remove([decodedPath]);
+          if (error) {
+            console.error('Storage delete error:', error);
+            toast.error('Failed to delete image from storage.');
+            return;
+          }
+        }
+      } catch (err: any) {
+        console.error('Delete error:', err);
+        toast.error('Failed to delete image.');
+        return;
+      }
+    }
     onChange('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    toast.success('Image removed.');
   };
 
   return (
