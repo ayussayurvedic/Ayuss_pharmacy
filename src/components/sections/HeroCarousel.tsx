@@ -324,18 +324,20 @@ export default function HeroCarousel() {
         </div>
       )}
 
-      {/* Navigation Dot Indicators */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-        {carouselSlides.map((slide, i) => (
-          <button
-            key={slide.id}
-            type="button"
-            className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer border-0 ${i === current ? 'bg-[#C9943E] w-6' : 'bg-slate-400/50'}`}
-            onClick={() => setCurrent(i)}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
-      </div>
+      {/* Navigation Dot Indicators (Desktop) */}
+      {!isMobile && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+          {carouselSlides.map((slide, i) => (
+            <button
+              key={slide.id}
+              type="button"
+              className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer border-0 ${i === current ? 'bg-[#C9943E] w-6' : 'bg-slate-400/50'}`}
+              onClick={() => setCurrent(i)}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
