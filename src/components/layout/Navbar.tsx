@@ -19,7 +19,7 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 h-20 bg-[#1A5C5E] border-b border-[#2d5238] text-white z-50 shadow-sm font-sans">
       <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
-          <Image src="/products/logo/logo.webp" alt="Ayu S.S. Pharmacy Logo" className="h-14 sm:h-16 w-auto object-contain" width={150} height={56} priority />
+          <Image src="/products/logo/logo.webp" alt="Ayu S.S. Pharmacy Logo" className="h-10 sm:h-14 w-auto object-contain" width={150} height={56} priority />
           <div className="hidden sm:flex flex-col min-w-0">
             <span className="font-bold text-base md:text-lg tracking-wide font-serif leading-none">AYU S.S. PHARMACY</span>
             <span className="text-[10px] md:text-[11px] font-semibold text-[#E8C87A] tracking-wider uppercase leading-none mt-1">One Stop Solution</span>
