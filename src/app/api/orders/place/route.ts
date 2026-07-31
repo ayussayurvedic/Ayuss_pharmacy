@@ -58,6 +58,42 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 2.1. Basic Pincode Verification (Indian pincodes are 6 digits)
+    const cleanPincode = pincode.replace(/\s+/g, '');
+    if (!/^\d{6}$/.test(cleanPincode)) {
+      return NextResponse.json({ error: 'Invalid Indian Pincode format. Must be exactly 6 digits.' }, { status: 400 });
+    }
+
+    // 2.2. Fraud Check (Count orders from same phone within the last hour)
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count: recentCount } = await supabaseAdmin
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('customer_phone', phone)
+      .gte('created_at', oneHourAgo);
+
+    let fraudScore = 0;
+    if ((recentCount || 0) >= 2) {
+      fraudScore += 50; // Flag high rate
+    }
+    // Additional signal: COD payment + same IP placing multiple orders
+    if (paymentMethod === 'cod' && (recentCount || 0) >= 1) {
+      const { count: ipCount } = await supabaseAdmin
+        .from('orders')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', oneHourAgo);
+      if ((ipCount || 0) >= 2) {
+        fraudScore += 30; // COD abuse from same network
+      }
+    }
+    const isFlagged = fraudScore >= 50;
+
+    // 2.3. Dynamic Estimated Delivery Date Calculation
+    const isMetro = ['110001', '400001', '560001', '600001', '500001', '700001'].includes(cleanPincode);
+    const deliveryDays = isMetro ? 3 : 5;
+    const deliveryDate = new Date();
+    deliveryDate.setDate(deliveryDate.getDate() + deliveryDays);
+
     // Check if checkout_attempt_id has already generated an order (idempotency)
     if (checkoutAttemptId) {
       const { data: existingOrder } = await supabaseAdmin
@@ -115,7 +151,11 @@ export async function POST(request: NextRequest) {
         payment_method: paymentMethod,
         payment_status: paymentMethod === 'cod' ? 'cod_pending' : 'pending',
         order_status: 'new',
-        checkout_attempt_id: checkoutAttemptId || null
+        checkout_attempt_id: checkoutAttemptId || null,
+        estimated_delivery_date: deliveryDate.toISOString().split('T')[0],
+        gift_message: body.giftMessage || null,
+        is_flagged: isFlagged,
+        fraud_score: fraudScore
       })
       .select()
       .single();

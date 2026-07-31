@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { AdminCard, AdminInput, AdminTextarea } from '@/components/admin/AdminPrimitives';
 import { AdminConfirmDialog } from '@/components/admin/AdminConfirmDialog';
 import { ChevronLeft, Save } from 'lucide-react';
+import { AdminImageUploader } from '@/components/admin/AdminImageUploader';
 
 export default function NewProductForm() {
   const router = useRouter();
@@ -349,88 +350,55 @@ export default function NewProductForm() {
             })}
           </div>
 
-          <div className="space-y-3 pt-2">
-            <div>
-              <AdminInput
-                label="Image 1 (Main / Hero View) *"
-                name="image1"
-                value={formData.image1}
-                onChange={handleInputChange}
-                error={errors.image1}
-                placeholder="URL or Upload below"
-                required
-              />
-              <div className="mt-1 flex items-center gap-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        setFormData(prev => ({ ...prev, image1: reader.result as string }));
-                        setIsDirty(true);
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }}
-                  className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-[#1A5C5E]/10 file:text-[#1A5C5E] hover:file:bg-[#1A5C5E]/20 cursor-pointer"
-                />
-              </div>
-            </div>
+          <div className="space-y-4 pt-2">
+            <AdminImageUploader
+              label="Image 1 (Main / Hero View) *"
+              value={formData.image1}
+              onChange={(url) => {
+                setFormData(prev => ({ ...prev, image1: url }));
+                setIsDirty(true);
+              }}
+              folder={`products/${formData.id || 'new'}`}
+            />
 
-            <div>
-              <AdminInput
-                label="Image 2 (Transparent View) *"
-                name="image2"
-                value={formData.image2}
-                onChange={handleInputChange}
-                error={errors.image2}
-                placeholder="URL or Upload below"
-                required
-              />
-              <div className="mt-1 flex items-center gap-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        setFormData(prev => ({ ...prev, image2: reader.result as string }));
-                        setIsDirty(true);
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }}
-                  className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-[#1A5C5E]/10 file:text-[#1A5C5E] hover:file:bg-[#1A5C5E]/20 cursor-pointer"
-                />
-              </div>
-            </div>
+            <AdminImageUploader
+              label="Image 2 (Transparent View) *"
+              value={formData.image2}
+              onChange={(url) => {
+                setFormData(prev => ({ ...prev, image2: url }));
+                setIsDirty(true);
+              }}
+              folder={`products/${formData.id || 'new'}`}
+            />
 
-            <AdminInput
+            <AdminImageUploader
               label="Image 3 (Gallery View 1)"
-              name="image3"
               value={formData.image3}
-              onChange={handleInputChange}
-              error={errors.image3}
-              placeholder="e.g. /products/hero-section/hero-pain-cream-mobile.webp"
+              onChange={(url) => {
+                setFormData(prev => ({ ...prev, image3: url }));
+                setIsDirty(true);
+              }}
+              folder={`products/${formData.id || 'new'}/gallery`}
             />
-            <AdminInput
+
+            <AdminImageUploader
               label="Image 4 (Gallery View 2)"
-              name="image4"
               value={formData.image4}
-              onChange={handleInputChange}
-              error={errors.image4}
+              onChange={(url) => {
+                setFormData(prev => ({ ...prev, image4: url }));
+                setIsDirty(true);
+              }}
+              folder={`products/${formData.id || 'new'}/gallery`}
             />
-            <AdminInput
+
+            <AdminImageUploader
               label="Image 5 (Gallery View 3)"
-              name="image5"
               value={formData.image5}
-              onChange={handleInputChange}
-              error={errors.image5}
+              onChange={(url) => {
+                setFormData(prev => ({ ...prev, image5: url }));
+                setIsDirty(true);
+              }}
+              folder={`products/${formData.id || 'new'}/gallery`}
             />
           </div>
         </AdminCard>

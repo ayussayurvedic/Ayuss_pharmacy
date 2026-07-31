@@ -6,7 +6,13 @@ import {
   ChevronRight, 
   Search, 
   AlertTriangle, 
-  Eye 
+  Eye,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  TrendingUp,
+  TrendingDown,
+  Check
 } from 'lucide-react';
 import {
   Table,
@@ -38,7 +44,7 @@ export function AdminCard({
   const style = topAccent ? { borderTop: `4px solid ${accentColor}` } : undefined;
   return (
     <div 
-      className={`admin-card ${className} ${topAccent ? 'has-accent' : ''}`}
+      className={`admin-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-within:ring-2 focus-within:ring-[#1A5C5E] ${className} ${topAccent ? 'has-accent' : ''}`}
       style={style}
     >
       {children}
@@ -56,6 +62,10 @@ interface AdminStatCardProps {
   icon: React.ReactNode;
   actionUrl?: string;
   actionLabel?: string;
+  trend?: {
+    value: string;
+    isPositive?: boolean;
+  };
 }
 
 export function AdminStatCard({
@@ -64,7 +74,8 @@ export function AdminStatCard({
   subtext,
   icon,
   actionUrl,
-  actionLabel
+  actionLabel,
+  trend
 }: AdminStatCardProps) {
   const CardContent = (
     <div className="admin-stat-card-body">
@@ -72,7 +83,17 @@ export function AdminStatCard({
         <span className="admin-stat-card-label">{label}</span>
         <div className="admin-stat-card-icon">{icon}</div>
       </div>
-      <div className="admin-stat-card-value font-mono">{value}</div>
+      <div className="flex items-baseline gap-2 mt-1">
+        <div className="admin-stat-card-value font-mono text-xl font-bold">{value}</div>
+        {trend && (
+          <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+            trend.isPositive !== false ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
+          }`}>
+            {trend.isPositive !== false ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+            <span>{trend.value}</span>
+          </span>
+        )}
+      </div>
       {subtext && <p className="admin-stat-card-subtext">{subtext}</p>}
       {actionUrl && actionLabel && (
         <span className="admin-stat-card-action">
@@ -126,12 +147,17 @@ export function AdminStatusBadge({ status, type }: AdminStatusBadgeProps) {
 }
 
 // ==========================================
-// 4. ADMIN DATA TABLE (DESKTOP)
+// 4. ADMIN DATA TABLE (DESKTOP WITH SORTING)
+// ==========================================
+// ==========================================
+// 4. ADMIN DATA TABLE (DESKTOP WITH SORTING, PERSISTENCE, SELECTION & CSV EXPORT)
 // ==========================================
 interface Column<T> {
   header: string;
   render: (item: T) => React.ReactNode;
   className?: string;
+  sortable?: boolean;
+  sortKey?: keyof T | ((item: T) => any);
 }
 
 interface AdminDataTableProps<T> {
@@ -139,41 +165,300 @@ interface AdminDataTableProps<T> {
   data: T[];
   keyExtractor: (item: T) => string | number;
   onRowClick?: (item: T) => void;
+  storageKey?: string;
+  enableSelection?: boolean;
+  selectedRows?: T[];
+  onSelectionChange?: (selected: T[]) => void;
+  enableColumnVisibility?: boolean;
+  enableCSVExport?: boolean;
+  csvFileName?: string;
+  tableName?: string;
 }
 
 export function AdminDataTable<T>({
   columns,
   data,
   keyExtractor,
-  onRowClick
+  onRowClick,
+  storageKey,
+  enableSelection = false,
+  selectedRows = [],
+  onSelectionChange,
+  enableColumnVisibility = false,
+  enableCSVExport = false,
+  csvFileName = 'table-export',
+  tableName = 'data table'
 }: AdminDataTableProps<T>) {
+  const [sortColIndex, setSortColIndex] = React.useState<number | null>(() => {
+    if (typeof window !== 'undefined' && storageKey) {
+      const saved = sessionStorage.getItem(`${storageKey}_sortColIndex`);
+      return saved !== null ? Number(saved) : null;
+    }
+    return null;
+  });
+
+  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>(() => {
+    if (typeof window !== 'undefined' && storageKey) {
+      const saved = sessionStorage.getItem(`${storageKey}_sortDirection`);
+      return (saved as 'asc' | 'desc') || 'asc';
+    }
+    return 'asc';
+  });
+
+  const [visibleColumns, setVisibleColumns] = React.useState<boolean[]>(() => {
+    return columns.map(() => true);
+  });
+
+  const [isColMenuOpen, setIsColMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (storageKey) {
+      if (sortColIndex !== null) {
+        sessionStorage.setItem(`${storageKey}_sortColIndex`, String(sortColIndex));
+      } else {
+        sessionStorage.removeItem(`${storageKey}_sortColIndex`);
+      }
+      sessionStorage.setItem(`${storageKey}_sortDirection`, sortDirection);
+    }
+  }, [sortColIndex, sortDirection, storageKey]);
+
+  const announceChange = (msg: string) => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('admin-announce', { detail: msg }));
+    }
+  };
+
+  const handleHeaderClick = (idx: number, col: Column<T>) => {
+    if (!col.sortable || !col.sortKey) return;
+
+    if (sortColIndex === idx) {
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+        announceChange(`Sorted table by ${col.header} descending`);
+      } else {
+        setSortColIndex(null);
+        setSortDirection('asc');
+        announceChange(`Cleared sort on table`);
+      }
+    } else {
+      setSortColIndex(idx);
+      setSortDirection('asc');
+      announceChange(`Sorted table by ${col.header} ascending`);
+    }
+  };
+
+  const sortedData = React.useMemo(() => {
+    if (sortColIndex === null) return data;
+    const col = columns[sortColIndex];
+    if (!col || !col.sortKey) return data;
+
+    const getValue = (item: T) => {
+      if (typeof col.sortKey === 'function') {
+        return col.sortKey(item);
+      }
+      return item[col.sortKey as keyof T];
+    };
+
+    return [...data].sort((a, b) => {
+      const valA = getValue(a);
+      const valB = getValue(b);
+
+      if (valA === valB) return 0;
+      if (valA === null || valA === undefined) return 1;
+      if (valB === null || valB === undefined) return -1;
+
+      const compareRes = valA < valB ? -1 : 1;
+      return sortDirection === 'asc' ? compareRes : -compareRes;
+    });
+  }, [data, columns, sortColIndex, sortDirection]);
+
+  const isAllSelected = data.length > 0 && selectedRows.length === data.length;
+  const isSomeSelected = selectedRows.length > 0 && selectedRows.length < data.length;
+
+  const handleSelectAll = (checked: boolean) => {
+    if (!onSelectionChange) return;
+    if (checked) {
+      onSelectionChange([...data]);
+      announceChange(`Selected all ${data.length} rows`);
+    } else {
+      onSelectionChange([]);
+      announceChange(`Deselected all rows`);
+    }
+  };
+
+  const handleSelectRow = (item: T, checked: boolean) => {
+    if (!onSelectionChange) return;
+    if (checked) {
+      onSelectionChange([...selectedRows, item]);
+      announceChange(`Selected 1 row`);
+    } else {
+      onSelectionChange(selectedRows.filter(r => keyExtractor(r) !== keyExtractor(item)));
+      announceChange(`Deselected 1 row`);
+    }
+  };
+
+  const handleExportCSV = () => {
+    const visibleCols = columns.filter((_, idx) => visibleColumns[idx]);
+    const headers = visibleCols.map(c => c.header).join(',');
+    
+    const rows = data.map(item => {
+      return visibleCols.map(col => {
+        let val = '';
+        if (col.sortKey && typeof col.sortKey === 'string') {
+          val = String(item[col.sortKey as keyof T] || '');
+        } else if (typeof col.sortKey === 'function') {
+          val = String(col.sortKey(item) || '');
+        } else {
+          val = col.header;
+        }
+        return `"${val.replace(/"/g, '""')}"`;
+      }).join(',');
+    });
+
+    const csvContent = [headers, ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${csvFileName}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    announceChange(`Exported ${data.length} rows as CSV`);
+  };
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          {columns.map((col, idx) => (
-            <TableHead key={idx} className={col.className}>
-              {col.header}
-            </TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data.map((item) => (
-          <TableRow 
-            key={keyExtractor(item)}
-            onClick={() => onRowClick && onRowClick(item)}
-            className={onRowClick ? 'cursor-pointer' : ''}
-          >
-            {columns.map((col, idx) => (
-              <TableCell key={idx} className={col.className}>
-                {col.render(item)}
-              </TableCell>
-            ))}
+    <div className="w-full space-y-2">
+      {(enableColumnVisibility || enableCSVExport) && (
+        <div className="flex items-center justify-between gap-3 p-3 bg-slate-50 border-b border-slate-200 rounded-t-lg">
+          <span className="text-xs font-semibold text-slate-600">{tableName} Options</span>
+          <div className="flex items-center gap-2">
+            {enableColumnVisibility && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsColMenuOpen(prev => !prev)}
+                  className="px-2.5 py-1.5 border border-slate-300 bg-white rounded-lg text-[11px] font-semibold text-slate-700 hover:bg-slate-50 focus:ring-2 focus:ring-[#1A5C5E] cursor-pointer"
+                >
+                  Columns
+                </button>
+                {isColMenuOpen && (
+                  <div className="absolute right-0 mt-1 w-48 bg-white border border-slate-200 rounded-xl shadow-lg z-30 p-2 space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 py-1">Toggle Columns</p>
+                    {columns.map((col, idx) => (
+                      <label key={idx} className="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg text-xs font-medium text-slate-700 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={visibleColumns[idx]}
+                          onChange={(e) => {
+                            const updated = [...visibleColumns];
+                            updated[idx] = e.target.checked;
+                            setVisibleColumns(updated);
+                          }}
+                          className="rounded-sm border-slate-350 text-[#1A5C5E] focus:ring-[#1A5C5E]"
+                        />
+                        <span>{col.header}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {enableCSVExport && (
+              <button
+                type="button"
+                onClick={handleExportCSV}
+                className="px-2.5 py-1.5 border border-[#1A5C5E] bg-[#1A5C5E] text-white rounded-lg text-[11px] font-semibold hover:bg-[#134446] focus:ring-2 focus:ring-[#1A5C5E] cursor-pointer"
+              >
+                Export CSV
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {enableSelection && (
+              <TableHead className="w-12 text-center">
+                <input
+                  type="checkbox"
+                  checked={isAllSelected}
+                  ref={(el) => {
+                    if (el) {
+                      el.indeterminate = isSomeSelected;
+                    }
+                  }}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  className="rounded-sm border-slate-300 text-[#1A5C5E] focus:ring-[#1A5C5E]"
+                  aria-label="Select all rows"
+                />
+              </TableHead>
+            )}
+            {columns.map((col, idx) => {
+              if (!visibleColumns[idx]) return null;
+              const isSorted = sortColIndex === idx;
+              return (
+                <TableHead 
+                  key={idx} 
+                  className={`${col.className || ''} ${col.sortable ? 'cursor-pointer select-none hover:text-[#1A5C5E]' : ''}`}
+                  onClick={() => handleHeaderClick(idx, col)}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>{col.header}</span>
+                    {col.sortable && (
+                      <span className="shrink-0 text-slate-400">
+                        {isSorted ? (
+                          sortDirection === 'asc' ? (
+                            <ArrowUp className="w-3.5 h-3.5 text-[#1A5C5E]" />
+                          ) : (
+                            <ArrowDown className="w-3.5 h-3.5 text-[#1A5C5E]" />
+                          )
+                        ) : (
+                          <ArrowUpDown className="w-3 opacity-60 hover:opacity-100" />
+                        )}
+                      </span>
+                    )}
+                  </div>
+                </TableHead>
+              );
+            })}
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {sortedData.map((item) => {
+            const isRowSelected = selectedRows.some(r => keyExtractor(r) === keyExtractor(item));
+            return (
+              <TableRow 
+                key={keyExtractor(item)}
+                onClick={() => onRowClick && onRowClick(item)}
+                className={`${onRowClick ? 'cursor-pointer hover:bg-slate-50/80 transition-colors' : ''} ${isRowSelected ? 'bg-slate-50/50' : ''}`}
+              >
+                {enableSelection && (
+                  <TableCell className="w-12 text-center" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={isRowSelected}
+                      onChange={(e) => handleSelectRow(item, e.target.checked)}
+                      className="rounded-sm border-slate-300 text-[#1A5C5E] focus:ring-[#1A5C5E]"
+                      aria-label="Select row"
+                    />
+                  </TableCell>
+                )}
+                {columns.map((col, idx) => {
+                  if (!visibleColumns[idx]) return null;
+                  return (
+                    <TableCell key={idx} className={col.className}>
+                      {col.render(item)}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 
@@ -199,16 +484,16 @@ export function AdminMobileRecord({
 }: AdminMobileRecordProps) {
   const CardContent = (
     <div className="admin-mobile-record-body space-y-2 p-3">
-      <div className="flex justify-between items-start gap-2">
-        <div>
-          <h4 className="font-semibold text-xs text-[var(--admin-text-primary)] m-0">{title}</h4>
-          {subtitle && <p className="text-[var(--admin-font-xs)] text-[var(--admin-text-secondary)] m-0 mt-0.5">{subtitle}</p>}
+      <div className="flex justify-between items-start gap-2 min-w-0">
+        <div className="min-w-0 flex-1">
+          <h4 className="font-semibold text-xs text-[var(--admin-text-primary)] m-0 truncate" title={typeof title === 'string' ? title : undefined}>{title}</h4>
+          {subtitle && <p className="text-[var(--admin-font-xs)] text-[var(--admin-text-secondary)] m-0 mt-0.5 truncate" title={typeof subtitle === 'string' ? subtitle : undefined}>{subtitle}</p>}
         </div>
         {badge && <div className="shrink-0">{badge}</div>}
       </div>
-      <div className="flex justify-between items-center pt-2 border-t border-[#f4f4f0] text-[var(--admin-font-xs)] text-[var(--admin-text-secondary)]">
-        <div>{meta}</div>
-        <Eye className="w-3.5 h-3.5 text-[var(--admin-text-secondary)]" />
+      <div className="flex justify-between items-center pt-2 border-t border-[#f4f4f0] text-[var(--admin-font-xs)] text-[var(--admin-text-secondary)] min-w-0">
+        <div className="truncate">{meta}</div>
+        <Eye className="w-3.5 h-3.5 text-[var(--admin-text-secondary)] shrink-0 ml-2" />
       </div>
     </div>
   );
@@ -298,6 +583,9 @@ interface AdminPaginationProps {
   totalRecords: number;
   recordsPerPage: number;
   onPageChange: (page: number) => void;
+  recordsPerPageOptions?: number[];
+  onRecordsPerPageChange?: (perPage: number) => void;
+  storageKey?: string;
 }
 
 export function AdminPagination({
@@ -305,24 +593,64 @@ export function AdminPagination({
   totalPages,
   totalRecords,
   recordsPerPage,
-  onPageChange
+  onPageChange,
+  recordsPerPageOptions = [10, 25, 50, 100],
+  onRecordsPerPageChange,
+  storageKey
 }: AdminPaginationProps) {
-  if (totalPages <= 1) return null;
+  React.useEffect(() => {
+    if (storageKey && onRecordsPerPageChange) {
+      const saved = sessionStorage.getItem(`${storageKey}_recordsPerPage`);
+      if (saved) {
+        onRecordsPerPageChange(Number(saved));
+      }
+    }
+  }, [storageKey]);
+
+  const handlePerPageChange = (val: number) => {
+    if (onRecordsPerPageChange) {
+      if (storageKey) {
+        sessionStorage.setItem(`${storageKey}_recordsPerPage`, String(val));
+      }
+      onRecordsPerPageChange(val);
+      onPageChange(1);
+    }
+  };
+
+  if (totalRecords <= 0) return null;
 
   const startRecord = (currentPage - 1) * recordsPerPage + 1;
   const endRecord = Math.min(currentPage * recordsPerPage, totalRecords);
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-2">
-      <p className="text-[var(--admin-text-secondary)] m-0">
-        Showing <span className="font-mono font-semibold text-[var(--admin-text-primary)]">{startRecord}</span> to <span className="font-mono font-semibold text-[var(--admin-text-primary)]">{endRecord}</span> of <span className="font-mono font-semibold text-[var(--admin-text-primary)]">{totalRecords}</span> entries
-      </p>
+      <div className="flex items-center gap-3">
+        <p className="text-[var(--admin-text-secondary)] m-0">
+          Showing <span className="font-mono font-semibold text-[var(--admin-text-primary)]">{startRecord}</span> to <span className="font-mono font-semibold text-[var(--admin-text-primary)]">{endRecord}</span> of <span className="font-mono font-semibold text-[var(--admin-text-primary)]">{totalRecords}</span> entries
+        </p>
+        {onRecordsPerPageChange && (
+          <div className="flex items-center gap-1 text-slate-500">
+            <span className="text-[11px]">Per page:</span>
+            <select
+              value={recordsPerPage}
+              onChange={(e) => handlePerPageChange(Number(e.target.value))}
+              className="px-2 py-1 border border-slate-200 rounded-md text-xs font-mono bg-white text-slate-700 cursor-pointer focus:ring-2 focus:ring-[#1A5C5E]"
+            >
+              {recordsPerPageOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
 
       <div className="flex items-center gap-1">
         <button
           type="button"
           onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
+          disabled={currentPage <= 1}
           className="admin-btn-secondary !p-2 !min-h-[36px] disabled:opacity-40"
           aria-label="Previous page"
         >
@@ -348,7 +676,7 @@ export function AdminPagination({
         <button
           type="button"
           onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          disabled={currentPage >= totalPages}
           className="admin-btn-secondary !p-2 !min-h-[36px] disabled:opacity-40"
           aria-label="Next page"
         >
@@ -388,6 +716,28 @@ export function AdminInput({ label, helperText, error, className = '', ...props 
         <p className="text-[var(--admin-font-xs)] text-[var(--admin-text-secondary)] m-0">{helperText}</p>
       ) : null}
     </div>
+  );
+}
+
+interface AdminCheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+  label?: string;
+}
+
+export function AdminCheckbox({ label, className = '', checked, ...props }: AdminCheckboxProps) {
+  return (
+    <label className="inline-flex items-center gap-2 cursor-pointer text-xs select-none min-h-[44px]">
+      <div className="relative flex items-center justify-center">
+        <input
+          type="checkbox"
+          checked={checked}
+          {...props}
+          className="peer sr-only"
+        />
+        <div className={`w-4 h-4 rounded-md border border-slate-300 bg-white transition-all peer-checked:bg-[#1A5C5E] peer-checked:border-[#1A5C5E] peer-focus-visible:ring-2 peer-focus-visible:ring-[#1A5C5E]/40 ${className}`} />
+        <Check className="w-3 h-3 text-white absolute pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" />
+      </div>
+      {label && <span className="font-semibold text-slate-700">{label}</span>}
+    </label>
   );
 }
 

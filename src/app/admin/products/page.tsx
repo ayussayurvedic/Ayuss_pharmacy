@@ -122,11 +122,17 @@ export default function AdminProducts() {
       return;
     }
 
+    const previousProducts = [...productList];
+
     try {
       if (type === 'duplicate') {
         const uniqueId = `${target.id}-copy-${Math.floor(100 + Math.random() * 900)}`;
         const newName = `${target.name} (Copy)`;
-        
+        const newProduct: Product = { ...target, id: uniqueId, name: newName, isActive: true };
+
+        // Optimistic UI update: insert copy at top of list
+        setProductList([newProduct, ...productList]);
+
         const { error: insertErr } = await supabase
           .from('products')
           .insert({
@@ -139,20 +145,27 @@ export default function AdminProducts() {
             is_active: true
           });
 
-        if (insertErr) throw insertErr;
+        if (insertErr) {
+          setProductList(previousProducts); // Rollback on error
+          throw insertErr;
+        }
 
         toast.success(`Duplicated "${target.name}" successfully.`);
-        await fetchProducts();
       } else if (type === 'archive') {
+        // Optimistic UI update: mark product inactive immediately
+        setProductList(productList.map(p => p.id === productId ? { ...p, isActive: false } : p));
+
         const { error: updateErr } = await supabase
           .from('products')
           .update({ is_active: false })
           .eq('id', productId);
 
-        if (updateErr) throw updateErr;
+        if (updateErr) {
+          setProductList(previousProducts); // Rollback on error
+          throw updateErr;
+        }
 
         toast.success(`Archived "${target.name}" successfully.`);
-        await fetchProducts();
       }
     } catch (err: any) {
       console.error(`Failed to execute ${type} action:`, err);

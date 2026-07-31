@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/components/ui/Toast';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { 
   AdminCard, 
   AdminStatusBadge, 
@@ -26,6 +27,7 @@ export default function AdminOrders() {
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const [statusFilter, setStatusFilter] = useState('all');
   
   // Pagination State
@@ -56,16 +58,16 @@ export default function AdminOrders() {
     fetchOrders();
   }, []);
 
-  // Filter logic
+  // Filter logic with debounced search query
   const filteredOrders = orders.filter((o) => {
     const orderNo = o.order_number || '';
     const custName = o.customer_name || '';
     const custPhone = o.customer_phone || '';
     
     const matchesSearch = 
-      orderNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      custName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      custPhone.includes(searchQuery);
+      orderNo.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      custName.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      custPhone.includes(debouncedSearch);
 
     const matchesStatus = statusFilter === 'all' || o.order_status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -110,10 +112,14 @@ export default function AdminOrders() {
   const columns = [
     { 
       header: 'Order #', 
+      sortable: true,
+      sortKey: 'order_number' as keyof any,
       render: (o: any) => <span className="font-mono font-bold text-[#C9943E]">{o.order_number}</span> 
     },
     { 
       header: 'Customer', 
+      sortable: true,
+      sortKey: 'customer_name' as keyof any,
       render: (o: any) => (
         <div className="flex flex-col">
           <span className="font-bold text-[#1A5C5E]">{o.customer_name}</span>
@@ -123,6 +129,8 @@ export default function AdminOrders() {
     },
     { 
       header: 'Date', 
+      sortable: true,
+      sortKey: 'created_at' as keyof any,
       render: (o: any) => (
         <span className="text-xs text-slate-500 font-medium">
           {new Date(o.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -131,6 +139,8 @@ export default function AdminOrders() {
     },
     { 
       header: 'Payment', 
+      sortable: true,
+      sortKey: 'payment_status' as keyof any,
       render: (o: any) => (
         <div className="flex flex-col items-start gap-1">
           <span className="uppercase text-[10px] font-bold text-slate-400">
@@ -142,10 +152,14 @@ export default function AdminOrders() {
     },
     { 
       header: 'Fulfillment Status', 
+      sortable: true,
+      sortKey: 'order_status' as keyof any,
       render: (o: any) => <AdminStatusBadge status={o.order_status} /> 
     },
     { 
       header: 'Total', 
+      sortable: true,
+      sortKey: ((o: any) => Number(o.total_amount) || 0),
       render: (o: any) => <span className="font-mono font-bold text-[#1A5C5E]">₹{o.total_amount?.toLocaleString('en-IN')}</span> 
     },
     { 
@@ -168,10 +182,20 @@ export default function AdminOrders() {
   return (
     <div className="space-y-6 font-sans">
       <div className="bg-[#134547] text-white p-6 rounded-2xl border border-[#1A5C5E] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md">
-        <div className="space-y-1">
-          <span className="text-[10px] font-bold text-[#C9943E] uppercase tracking-wider block">Order Management Workspace</span>
-          <h1 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-wide">Customer Orders</h1>
-          <p className="text-slate-300 text-xs font-light">Review, process, and update customer order lifecycles</p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold text-[#C9943E] uppercase tracking-wider block">Order Management Workspace</span>
+            <h1 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-wide">Customer Orders</h1>
+            <p className="text-slate-300 text-xs font-light">Review, process, and update customer order lifecycles</p>
+          </div>
+          
+          <button
+            type="button"
+            onClick={() => window.open('/api/admin/orders/export', '_blank')}
+            className="self-start md:self-auto px-4 py-2 bg-[#C9943E] hover:bg-[#b08130] text-white rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer uppercase tracking-wider"
+          >
+            Export Orders CSV
+          </button>
         </div>
 
         {/* Category Summary Count Pills */}

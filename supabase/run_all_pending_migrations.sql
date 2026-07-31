@@ -2107,6 +2107,27 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+
+-- ============================================================
+-- MIGRATION 19: Create products storage bucket and RLS policies
+-- ============================================================
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('products', 'products', true)
+ON CONFLICT (id) DO NOTHING;
+
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public read products bucket" ON storage.objects
+    FOR SELECT
+    USING (bucket_id = 'products');
+
+CREATE POLICY "Admin write products bucket" ON storage.objects
+    FOR ALL
+    TO authenticated
+    USING (bucket_id = 'products' AND (public.is_admin() OR auth.role() = 'service_role'))
+    WITH CHECK (bucket_id = 'products' AND (public.is_admin() OR auth.role() = 'service_role'));
+
+
 -- ====================================================================
 -- DONE — All migrations applied successfully
 -- ====================================================================

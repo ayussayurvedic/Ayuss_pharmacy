@@ -69,6 +69,26 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
     reason: ''
   });
 
+  // Edit Modal States
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    customerName: '',
+    customerPhone: '',
+    shippingAddress: '',
+    giftMessage: ''
+  });
+
+  useEffect(() => {
+    if (order) {
+      setEditForm({
+        customerName: order.customer_name || '',
+        customerPhone: order.customer_phone || '',
+        shippingAddress: order.shipping_address || order.shipping_address_line1 || '',
+        giftMessage: order.gift_message || ''
+      });
+    }
+  }, [order]);
+
   const fetchOrderDetail = async () => {
     if (!id) return;
     setLoading(true);
@@ -189,6 +209,46 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
     }
   };
 
+  const handleEditOrderSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/admin/orders/edit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: order.id,
+          customerName: editForm.customerName,
+          customerPhone: editForm.customerPhone,
+          shippingAddress: editForm.shippingAddress,
+          giftMessage: editForm.giftMessage,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to update order details.');
+      }
+
+      setOrder((prev: any) => ({
+        ...prev,
+        customer_name: editForm.customerName,
+        customer_phone: editForm.customerPhone,
+        shipping_address: editForm.shippingAddress,
+        gift_message: editForm.giftMessage,
+      }));
+
+      toast.success('Order details updated successfully.');
+      setIsEditModalOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update order.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleMarkAsPaid = async () => {
     if (!id) return;
     setIsSubmitting(true);
@@ -286,6 +346,13 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
 
       await fetchOrderDetail();
       toast.success(`Order updated to ${pendingStatus.toUpperCase()} successfully.`);
+
+      // Trigger SMS and Webhook notifications asynchronously in the background
+      fetch('/api/admin/orders/notify-transition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: id, newStatus: pendingStatus })
+      }).catch(err => console.error('Failed to send status transition notifications:', err));
     } catch (err: any) {
       console.error('Update status error:', err);
       toast.error(err.message || 'Failed to write changes to Supabase.');
@@ -316,6 +383,13 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
       toast.success('Order cancelled successfully.');
       setIsCancelModalOpen(false);
       await fetchOrderDetail();
+
+      // Trigger SMS and Webhook notifications asynchronously in the background
+      fetch('/api/admin/orders/notify-transition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: id, newStatus: 'cancelled' })
+      }).catch(err => console.error('Failed to send cancellation notifications:', err));
     } catch (err: any) {
       console.error('Cancel order error:', err);
       toast.error(err.message || 'Failed to cancel purchase order.');
@@ -348,6 +422,13 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
 
       toast.success('Shipment log created successfully.');
       setIsShipmentModalOpen(false);
+
+      // Trigger SMS and Webhook notifications asynchronously in the background
+      fetch('/api/admin/orders/notify-transition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: id, newStatus: 'shipped' })
+      }).catch(err => console.error('Failed to send shipment notifications:', err));
 
       // Auto-issue invoice on shipment if it hasn't been issued yet
       if (!invoice) {
@@ -425,9 +506,18 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
         <div className="lg:col-span-2 space-y-6">
           {/* Customer Details */}
           <AdminCard className="space-y-4 bg-white border border-[#C9D5D5]/60 p-6 rounded-2xl shadow-xs">
-            <div className="flex items-center gap-2 border-b border-[#C9D5D5]/40 pb-2">
-              <User className="w-4 h-4 text-[#1A5C5E]" />
-              <h3 className="font-bold text-xs uppercase tracking-wider text-[#1A5C5E]">Customer Identity</h3>
+            <div className="flex items-center justify-between border-b border-[#C9D5D5]/40 pb-2">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-[#1A5C5E]" />
+                <h3 className="font-bold text-xs uppercase tracking-wider text-[#1A5C5E]">Customer Identity</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                className="text-xs text-[#1A5C5E] hover:underline font-semibold bg-transparent border-0 cursor-pointer"
+              >
+                Edit details
+              </button>
             </div>
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
@@ -493,11 +583,17 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
             </div>
             <div className="text-xs space-y-1.5 text-slate-650 font-semibold">
               <p className="font-bold text-slate-800">{order.shipping_name || order.customer_name}</p>
-              <p>{order.shipping_address_line1}</p>
+              <p>{order.shipping_address || order.shipping_address_line1}</p>
               {order.shipping_address_line2 && <p>{order.shipping_address_line2}</p>}
               <p>
-                {order.shipping_city}, {order.shipping_state} - <span className="font-mono text-slate-800 font-bold">{order.shipping_pincode}</span>
+                {order.city || order.shipping_city}, {order.state || order.shipping_state} - <span className="font-mono text-slate-800 font-bold">{order.pincode || order.shipping_pincode}</span>
               </p>
+              {order.gift_message && (
+                <div className="mt-3 p-3 bg-amber-50/50 border border-amber-250/30 rounded-xl text-[11px] text-amber-900">
+                  <span className="font-bold block text-xs text-amber-950 uppercase tracking-wide mb-1">🎁 Gift Message Included:</span>
+                  &ldquo;{order.gift_message}&rdquo;
+                </div>
+              )}
             </div>
           </AdminCard>
         </div>
@@ -763,6 +859,63 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
                   className="admin-btn-primary"
                 >
                   {isSubmitting ? 'Saving...' : 'Dispatch Shipment'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Edit Order Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-[#1e293b] rounded-xl max-w-md w-full p-5 border border-slate-800 space-y-3.5 shadow-xl text-xs text-slate-200">
+            <div className="border-b border-slate-800 pb-2">
+              <h3 className="font-semibold text-sm text-slate-100">
+                Edit Order Details: {order.order_number}
+              </h3>
+            </div>
+            <form onSubmit={handleEditOrderSubmit} className="space-y-3">
+              <AdminInput
+                label="Customer Name *"
+                required
+                value={editForm.customerName}
+                onChange={(e) => setEditForm(prev => ({ ...prev, customerName: e.target.value }))}
+                placeholder="Customer display name"
+              />
+              <AdminInput
+                label="Contact Phone *"
+                required
+                value={editForm.customerPhone}
+                onChange={(e) => setEditForm(prev => ({ ...prev, customerPhone: e.target.value }))}
+                placeholder="Phone number"
+              />
+              <AdminTextarea
+                label="Shipping Address *"
+                required
+                value={editForm.shippingAddress}
+                onChange={(e) => setEditForm(prev => ({ ...prev, shippingAddress: e.target.value }))}
+                placeholder="Shipping address destination"
+              />
+              <AdminTextarea
+                label="Gift Message (Optional)"
+                value={editForm.giftMessage}
+                onChange={(e) => setEditForm(prev => ({ ...prev, giftMessage: e.target.value }))}
+                placeholder="Gift message content"
+              />
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="admin-btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="admin-btn-primary"
+                >
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>

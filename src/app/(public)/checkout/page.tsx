@@ -15,6 +15,7 @@ export default function CheckoutPage() {
   const checkoutAttemptId = useRef('');
 
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'online_razorpay'>('cod');
+  const [giftMessage, setGiftMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(false);
 
@@ -124,6 +125,7 @@ export default function CheckoutPage() {
           subtotal,
           total,
           checkoutAttemptId: checkoutAttemptId.current,
+          giftMessage: giftMessage || undefined,
         }),
       });
 
@@ -353,6 +355,17 @@ export default function CheckoutPage() {
                     className="w-full border border-[#C9D5D5] p-3 rounded-xl min-h-[44px] text-xs font-sans outline-none focus:border-[#1A5C5E]" 
                   />
                 </div>
+              </div>
+              
+              <div>
+                <label className="block text-slate-700 mb-1 font-semibold text-xs">Gift Message (Optional)</label>
+                <textarea 
+                  rows={2}
+                  placeholder="Write a custom gift card message here..."
+                  value={giftMessage} 
+                  onChange={e => setGiftMessage(e.target.value)} 
+                  className="w-full border border-[#C9D5D5] p-3 rounded-xl text-xs font-sans outline-none focus:border-[#1A5C5E]" 
+                />
               </div>
             </div>
 

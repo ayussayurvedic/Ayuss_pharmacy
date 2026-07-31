@@ -40,6 +40,10 @@ export default function AppHeader({ userName, notificationCount }: AppHeaderProp
 
   const displayCount = notifications ? notifications.unreadCount : (notificationCount || 0);
 
+  const triggerCommandPalette = () => {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }));
+  };
+
   return (
     <header className="h-14 md:h-16 border-b flex items-center px-4 md:px-6 shrink-0 sticky top-0 z-30 bg-white border-border">
       <div className="flex-1 min-w-0">
@@ -56,6 +60,18 @@ export default function AppHeader({ userName, notificationCount }: AppHeaderProp
       </div>
 
       <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={triggerCommandPalette}
+          className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 hover:text-slate-700 hover:border-slate-300 text-xs font-medium cursor-pointer transition-colors shadow-xs"
+          aria-label="Search Command Palette (Cmd+K)"
+        >
+          <span className="text-[11px]">Search...</span>
+          <kbd className="px-1.5 py-0.5 text-[9px] font-mono font-bold text-slate-500 bg-white rounded-md border border-slate-200">
+            ⌘K
+          </kbd>
+        </button>
+
         <button 
           onClick={handleNotificationClick}
           className="relative p-2 rounded-xl transition-colors text-gray-400 hover:text-navy-900 hover:bg-surface-alt border-0 cursor-pointer" 
