@@ -7,10 +7,8 @@ import { logAuditAction } from '@/lib/audit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '@/lib/env';
 
-async function recordFailedAttempt(ipKey: string, accountKey: string, fromOfficeNetwork: boolean) {
-  if (!fromOfficeNetwork) {
-    await loginRateLimiter.consume(ipKey).catch(() => null);
-  }
+async function recordFailedAttempt(ipKey: string, accountKey: string) {
+  await loginRateLimiter.consume(ipKey).catch(() => null);
   await loginRateLimiter.consume(accountKey).catch(() => null);
 }
 
@@ -28,7 +26,7 @@ export async function POST(request: NextRequest) {
     const { email, password, fingerprint, portal } = body;
     
     // Validate portal parameter explicitly
-    if (portal !== 'admin' && portal !== 'employee') {
+    if (portal && portal !== 'admin') {
       // Dummy bcrypt operation to prevent timing attacks
       await bcrypt.compare(password, '$2a$12$L8n8GvU.Y2d7b4OdfGkY3.2SDFs67asdfaHsklj123HjkasdfHj12');
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
@@ -44,10 +42,7 @@ export async function POST(request: NextRequest) {
     const ipRateLimitRes = await loginRateLimiter.get(ipKey);
     const accountRateLimitRes = await loginRateLimiter.get(accountKey);
 
-    // If request comes from the office network (shared WiFi), skip IP-based blocking.
-    const fromOfficeNetwork = false;
-
-    const isIpBlocked = !fromOfficeNetwork && (ipRateLimitRes && ipRateLimitRes.remainingPoints <= 0);
+    const isIpBlocked = ipRateLimitRes && ipRateLimitRes.remainingPoints <= 0;
     const isAccountBlocked = accountRateLimitRes && accountRateLimitRes.remainingPoints <= 0;
 
     if (isIpBlocked || isAccountBlocked) {
@@ -62,14 +57,14 @@ export async function POST(request: NextRequest) {
     // For CAPTCHA threshold: use account-based count for office network, IP-based for external
     const ipFailed = ipRateLimitRes ? (5 - ipRateLimitRes.remainingPoints) : 0;
     const accountFailed = accountRateLimitRes ? (5 - accountRateLimitRes.remainingPoints) : 0;
-    const maxFailedAttempts = fromOfficeNetwork ? accountFailed : Math.max(ipFailed, accountFailed);
+    const maxFailedAttempts = Math.max(ipFailed, accountFailed);
     const isCaptchaRequired = maxFailedAttempts >= CAPTCHA_THRESHOLD;
 
     if (isCaptchaRequired) {
       const { captchaToken, captchaAnswer, captchaNonce } = body || {};
       if (!captchaToken || captchaAnswer === undefined || captchaAnswer === null || !captchaNonce) {
         // Increment rate limit attempts for missing captcha
-        await recordFailedAttempt(ipKey, accountKey, fromOfficeNetwork);
+        await recordFailedAttempt(ipKey, accountKey);
         const captcha = await generateCaptchaChallenge();
         return NextResponse.json({
           error: 'Security verification required. Please solve the CAPTCHA.',
@@ -81,7 +76,7 @@ export async function POST(request: NextRequest) {
       const isValid = await verifyCaptchaToken(captchaToken, Number(captchaAnswer), captchaNonce);
       if (!isValid) {
         // Increment rate limit attempts for incorrect captcha
-        await recordFailedAttempt(ipKey, accountKey, fromOfficeNetwork);
+        await recordFailedAttempt(ipKey, accountKey);
         const captcha = await generateCaptchaChallenge();
         return NextResponse.json({
           error: 'Incorrect CAPTCHA answer. Please try again.',
@@ -120,7 +115,7 @@ export async function POST(request: NextRequest) {
           portal: 'admin'
         });
 
-        await recordFailedAttempt(ipKey, accountKey, fromOfficeNetwork);
+        await recordFailedAttempt(ipKey, accountKey);
 
         const currentRes = await loginRateLimiter.get(ipKey);
         const failedAttempts = 5 - (currentRes?.remainingPoints || 5);
@@ -151,7 +146,7 @@ export async function POST(request: NextRequest) {
           email: cleanEmail 
         }, { id: record.id, role: 'admin' });
 
-        await recordFailedAttempt(ipKey, accountKey, fromOfficeNetwork);
+        await recordFailedAttempt(ipKey, accountKey);
 
         const currentRes = await loginRateLimiter.get(ipKey);
         const failedAttempts = 5 - (currentRes?.remainingPoints || 5);
@@ -177,7 +172,7 @@ export async function POST(request: NextRequest) {
             email: cleanEmail 
           }, { id: authData.user.id, role: 'admin' });
 
-          await recordFailedAttempt(ipKey, accountKey, fromOfficeNetwork);
+          await recordFailedAttempt(ipKey, accountKey);
           return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
         }
 
