@@ -164,7 +164,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
                     AYU S.S. PHARMACY
                   </span>
                   <span className="text-[9px] font-bold text-[#E8C87A] uppercase tracking-widest leading-none mt-1 truncate">
-                    Ayurvedic Healthcare
+                    One Stop Solution
                   </span>
                 </div>
               </Link>

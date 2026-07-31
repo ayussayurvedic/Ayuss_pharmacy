@@ -47,9 +47,13 @@ export default function AppHeader({ userName, notificationCount }: AppHeaderProp
   return (
     <header className="h-14 md:h-16 border-b flex items-center px-4 md:px-6 shrink-0 sticky top-0 z-30 bg-white border-border">
       <div className="flex-1 min-w-0">
-        {/* Mobile/Tablet: show clean, proportioned logo */}
+        {/* Mobile/Tablet: show prominent logo & motto */}
         <div className="flex md:hidden items-center gap-2 min-w-0">
-          <Logo className="w-auto h-7 max-w-[130px] sm:max-w-[160px] object-contain shrink-0" dark={false} />
+          <Logo className="h-10 sm:h-11 w-auto max-w-[140px] sm:max-w-[170px] object-contain shrink-0" dark={false} />
+          <div className="flex flex-col min-w-0">
+            <span className="font-bold text-[11px] text-[#134547] font-serif leading-none truncate">AYU S.S. PHARMACY</span>
+            <span className="text-[8px] font-bold text-[#C9943E] uppercase tracking-wider leading-none mt-1 truncate">One Stop Solution</span>
+          </div>
         </div>
         {/* Desktop: show greeting */}
         <div className="hidden md:block">

@@ -26,7 +26,10 @@ export default function Footer() {
               width={96}
               height={36}
             />
-            <span className="font-bold text-white tracking-widest text-sm font-serif">AYU S.S. PHARMACY</span>
+            <div className="flex flex-col min-w-0">
+              <span className="font-bold text-white tracking-widest text-sm font-serif leading-none">AYU S.S. PHARMACY</span>
+              <span className="text-[10px] font-bold text-[#E8C87A] uppercase tracking-widest leading-none mt-1">One Stop Solution</span>
+            </div>
           </div>
           <p className="text-[#FDF8F0]/80 leading-relaxed font-light">
             Government-licensed Ayurvedic manufacturer located in Yerraguntla, Kadapa District, Andhra Pradesh. We formulate authentic preparations using potent botanical bio-extracts.
