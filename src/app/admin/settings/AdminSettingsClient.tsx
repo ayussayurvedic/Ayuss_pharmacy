@@ -413,19 +413,16 @@ export default function AdminSettingsClient() {
                   <p className="text-xs text-slate-500 m-0">Controls tax calculation rules and document generation for invoices & credit notes</p>
                 </div>
               </div>
-              <div>
                 <AdminStatusBadge 
-                  status={taxSettings.configuration_status === 'VERIFIED' ? 'active' : 'inactive'} 
-                  customLabel={taxSettings.configuration_status === 'VERIFIED' ? 'VERIFIED & ACTIVE' : 'DRAFT / UNCONFIGURED'} 
+                  status={taxSettings.configuration_status === 'VERIFIED' ? 'active' : 'draft'} 
                 />
-              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <AdminSelect
                 label="Invoicing Tax Mode *"
                 value={taxSettings.tax_mode || 'UNCONFIGURED'}
-                onChange={(value) => setTaxSettings({ ...taxSettings, tax_mode: value })}
+                onChange={(e: any) => setTaxSettings({ ...taxSettings, tax_mode: e.target.value })}
                 options={[
                   { value: 'UNCONFIGURED', label: 'Unconfigured (Disable Taxes)' },
                   { value: 'GST_REGISTERED', label: 'GST Registered (Indian Goods & Services Tax)' },
@@ -436,7 +433,7 @@ export default function AdminSettingsClient() {
               <AdminSelect
                 label="Pricing Base Mode *"
                 value={taxSettings.pricing_tax_mode || 'TAX_INCLUSIVE'}
-                onChange={(value) => setTaxSettings({ ...taxSettings, pricing_tax_mode: value })}
+                onChange={(e: any) => setTaxSettings({ ...taxSettings, pricing_tax_mode: e.target.value })}
                 options={[
                   { value: 'TAX_INCLUSIVE', label: 'Tax Inclusive Pricing (Standard retail)' },
                   { value: 'TAX_EXCLUSIVE', label: 'Tax Exclusive Pricing' }
@@ -499,7 +496,7 @@ export default function AdminSettingsClient() {
               <AdminSelect
                 label="State / Union Territory *"
                 value={taxSettings.state || ''}
-                onChange={(value) => setTaxSettings({ ...taxSettings, state: value })}
+                onChange={(e: any) => setTaxSettings({ ...taxSettings, state: e.target.value })}
                 options={[
                   { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
                   { value: 'Telangana', label: 'Telangana' },
@@ -693,7 +690,7 @@ export default function AdminSettingsClient() {
                         <AdminSelect
                           label="Slide Status"
                           value={banner.is_active ? 'active' : 'inactive'}
-                          onChange={(val) => handleBannerChange(banner.id, 'is_active', val === 'active')}
+                          onChange={(e: any) => handleBannerChange(banner.id, 'is_active', e.target.value === 'active')}
                           options={[
                             { value: 'active', label: 'Active (Visible on homepage)' },
                             { value: 'inactive', label: 'Inactive (Hidden)' }
