@@ -127,9 +127,25 @@ export default function HeroCarousel() {
         if (error) throw error;
 
         if (data && data.length > 0) {
+          const normalizeBannerUrl = (url: string, type: 'desktop' | 'mobile') => {
+            if (!url) return '';
+            if (url.startsWith('http://') || url.startsWith('https://')) return url;
+            if (url.includes('hero_section_')) return url;
+            if (type === 'desktop' && url.includes('/products/hero-section/')) {
+              return url.replace('/products/hero-section/', "/products/hero-section/hero_section_desktop_image's/");
+            }
+            if (type === 'mobile' && url.includes('/products/hero-section/')) {
+              return url.replace('/products/hero-section/', "/products/hero-section/hero_section_mobile_image's/");
+            }
+            return url;
+          };
+
           const mapped: Slide[] = data.map((dbS: any) => {
-            const desktop = dbS.desktop_image_url || '';
-            const mobile = dbS.mobile_image_url || desktop;
+            const rawDesktop = dbS.desktop_image_url || '';
+            const rawMobile = dbS.mobile_image_url || rawDesktop;
+
+            const desktop = normalizeBannerUrl(rawDesktop, 'desktop');
+            const mobile = normalizeBannerUrl(rawMobile, 'mobile');
 
             return {
               id: dbS.id,
