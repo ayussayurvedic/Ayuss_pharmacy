@@ -71,7 +71,7 @@ export default function LoginForm() {
 
       if (result.success) {
         const sessionPayload = {
-          id: result.id || 'admin-ayusspharmacy-id',
+          id: result.id || '',
           role: result.role || 'admin',
           name: result.name || 'Administrator',
         };

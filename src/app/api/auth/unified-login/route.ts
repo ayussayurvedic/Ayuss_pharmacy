@@ -88,38 +88,6 @@ export async function POST(request: NextRequest) {
 
     // 3. ADMIN PORTAL PIPELINE
     if (portal === 'admin') {
-      if (cleanEmail === 'ayusspharmacy@admin.com' && cleanPassword === 'admin123') {
-        await loginRateLimiter.delete(ipKey);
-        await loginRateLimiter.delete(accountKey);
-
-        const token = await createToken({
-          id: 'admin-ayusspharmacy-id',
-          email: 'ayusspharmacy@admin.com',
-          role: 'admin',
-          name: 'AYU S.S. Pharmacy Administrator',
-        });
-
-        const response = NextResponse.json({ 
-          success: true, 
-          role: 'admin',
-          id: 'admin-ayusspharmacy-id',
-          name: 'AYU S.S. Pharmacy Administrator' 
-        });
-
-        response.cookies.set('admin-auth-token', token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 8 * 60 * 60,
-        });
-
-        response.cookies.delete('mfa-pending-token');
-
-        await logAuditAction('LOGIN_SUCCESS', 'admin_users', 'admin-ayusspharmacy-id', null, null, { id: 'admin-ayusspharmacy-id', role: 'admin' });
-        return response;
-      }
-
       // Admin lookup - database-first
       const { data: record, error: dbErr } = await supabaseAdmin
         .from('admin_users')
