@@ -360,7 +360,9 @@ export default function AdminInvoices() {
           ) : totalRecords === 0 ? (
             <AdminEmptyState
               title="No Invoices Issued"
-              description="Tax invoices will populate once orders are shipped."
+              description="Tax invoices will populate once customer orders are shipped."
+              actionLabel="View Active Orders"
+              onActionClick={() => router.push('/admin/orders')}
             />
           ) : (
             <div className="space-y-4">

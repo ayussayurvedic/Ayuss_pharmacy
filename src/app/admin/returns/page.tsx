@@ -191,6 +191,8 @@ export default function AdminReturns() {
         <AdminEmptyState
           title="No Return Requests Found"
           description="No customer return requests match your search and filter parameters."
+          actionLabel="View Active Orders"
+          onActionClick={() => router.push('/admin/orders')}
         />
       ) : (
         <div className="space-y-4">

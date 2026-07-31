@@ -109,6 +109,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
     { href: '/admin/distributors', icon: Building2, label: 'Distributors', section: 'Catalogue & Supply' },
     { href: '/admin/expirations', icon: Clock, label: 'Expirations', section: 'Quality & Compliance' },
     { href: '/admin/recalls', icon: Shield, label: 'Recalls', section: 'Quality & Compliance' },
+    { href: '/admin/audit', icon: FileText, label: 'Audit Logs', section: 'Quality & Compliance' },
     { href: '/admin/invoices', icon: FileText, label: 'Invoices', section: 'Finance & System' },
     { href: '/admin/settings', icon: Settings, label: 'Settings', section: 'Finance & System' },
     { href: '/admin/profile', icon: UserCircle, label: 'Profile', section: 'Finance & System' },
