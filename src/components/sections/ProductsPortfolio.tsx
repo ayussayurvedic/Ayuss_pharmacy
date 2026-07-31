@@ -180,15 +180,24 @@ export default function ProductsPortfolio() {
                     <div>
                       <span className="text-[9.5px] font-bold text-slate-400 block uppercase tracking-wider">Best Price</span>
                       <div className="flex items-baseline gap-2 mt-0.5">
-                        <span className="text-lg font-bold text-[#1A5C5E]">₹{product.sellingPrice || product.mrp}</span>
-                        {product.mrp && product.sellingPrice && product.sellingPrice < product.mrp && (
-                          <>
-                            <span className="line-through text-xs text-slate-400 font-normal">₹{product.mrp}</span>
-                            <span className="text-[9px] text-[#C9943E] bg-[#C9943E]/5 px-1.5 py-0.5 rounded font-bold">
-                              {Math.round(((product.mrp - product.sellingPrice) / product.mrp) * 100)}% OFF
-                            </span>
-                          </>
-                        )}
+                        {(() => {
+                          const displayPrice = product.sellingPrice && product.sellingPrice > 0 ? product.sellingPrice : product.mrp;
+                          const hasDiscount = Boolean(product.mrp && displayPrice && displayPrice < product.mrp);
+                          const discountPct = hasDiscount ? Math.round(((product.mrp! - displayPrice!) / product.mrp!) * 100) : 0;
+                          return (
+                            <>
+                              <span className="text-lg font-bold text-[#1A5C5E]">₹{displayPrice?.toLocaleString('en-IN')}</span>
+                              {hasDiscount && (
+                                <>
+                                  <span className="line-through text-xs text-slate-400 font-normal">₹{product.mrp?.toLocaleString('en-IN')}</span>
+                                  <span className="text-[9px] text-[#C9943E] bg-[#C9943E]/5 px-1.5 py-0.5 rounded font-bold">
+                                    {discountPct}% OFF
+                                  </span>
+                                </>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                     <span className="text-[#2D5016] text-[10.5px] font-bold uppercase tracking-wider bg-[#EDF5F5] px-2 py-0.5 rounded">In Stock</span>

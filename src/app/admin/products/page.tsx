@@ -220,7 +220,14 @@ export default function AdminProducts() {
     },
     { header: 'Category', render: (p: Product) => <span className="text-xs text-slate-700 font-medium">{p.category}</span> },
     { header: 'Pack Size', render: (p: Product) => <span className="font-mono text-xs text-slate-500 font-semibold">{p.packSize || '100g Jar'}</span> },
-    { header: 'MRP Price', render: (p: Product) => <span className="font-mono font-bold text-[#1A5C5E]">{p.mrp ? `₹${p.mrp.toLocaleString('en-IN')}` : '₹249'}</span> },
+    { 
+      header: 'Selling Price', 
+      render: (p: Product) => (
+        <span className="font-mono font-bold text-[#1A5C5E]">
+          {p.sellingPrice ? `₹${p.sellingPrice.toLocaleString('en-IN')}` : p.mrp ? `₹${p.mrp.toLocaleString('en-IN')}` : '₹199'}
+        </span>
+      ) 
+    },
     { header: 'Status', render: (p: Product) => <AdminStatusBadge status={p.isActive ? 'active' : 'archived'} /> },
     { 
       header: 'Actions', 
