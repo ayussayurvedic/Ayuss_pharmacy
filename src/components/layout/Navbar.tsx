@@ -16,7 +16,7 @@ export default function Navbar() {
   const shippingProgress = Math.min(100, (subtotal / freeShippingThreshold) * 100);
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-20 bg-[#1A5C5E] border-b border-[#2d5238] text-white z-50 shadow-sm font-sans">
+    <header className="fixed top-0 left-0 right-0 h-20 bg-[#0F2C2E]/95 backdrop-blur-md border-b border-[#C9943E]/25 text-white z-50 shadow-md font-sans">
       <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
           <Image src="/products/logo/logo.webp" alt="Ayu S.S. Pharmacy Logo" className="h-10 sm:h-14 w-auto object-contain" width={150} height={56} priority />
@@ -27,24 +27,24 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-xs font-semibold tracking-wider uppercase">
-          <Link href="/" className="hover:text-[#C9943E] transition-colors">Home</Link>
-          <Link href="/products" className="hover:text-[#C9943E] transition-colors">Products</Link>
-          <Link href="/why-choose-us" className="hover:text-[#C9943E] transition-colors">Why Choose Us</Link>
-          <Link href="/manufacturing" className="hover:text-[#C9943E] transition-colors">Manufacturing</Link>
-          <Link href="/about" className="hover:text-[#C9943E] transition-colors">About Us</Link>
-          <Link href="/contact" className="hover:text-[#C9943E] transition-colors">Contact</Link>
+          <Link href="/" className="hover:text-[#E8C87A] transition-colors">Home</Link>
+          <Link href="/products" className="hover:text-[#E8C87A] transition-colors">Products</Link>
+          <Link href="/why-choose-us" className="hover:text-[#E8C87A] transition-colors">Why Choose Us</Link>
+          <Link href="/manufacturing" className="hover:text-[#E8C87A] transition-colors">Manufacturing</Link>
+          <Link href="/about" className="hover:text-[#E8C87A] transition-colors">About Us</Link>
+          <Link href="/contact" className="hover:text-[#E8C87A] transition-colors">Contact</Link>
         </nav>
 
         <div className="flex items-center gap-4">
           <button
             type="button"
             onClick={() => setIsCartOpen(!isCartOpen)}
-            className="relative p-2 text-white hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer"
+            className="relative p-2 text-white hover:text-[#E8C87A] transition-colors bg-transparent border-0 cursor-pointer"
             aria-label={`Shopping bag containing ${cartCount} items`}
           >
             <ShoppingBag className="w-6 h-6" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#C9943E] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#1A5C5E]">
+              <span className="absolute -top-1 -right-1 bg-[#C9943E] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#0F2C2E]">
                 {cartCount}
               </span>
             )}
@@ -53,7 +53,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-white hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer"
+            className="md:hidden p-2 text-white hover:text-[#E8C87A] transition-colors bg-transparent border-0 cursor-pointer"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -152,13 +152,13 @@ export default function Navbar() {
       )}
 
       {mobileMenuOpen && (
-        <div className="md:hidden fixed top-20 left-0 right-0 bottom-0 bg-[#1A5C5E]/95 z-40 flex flex-col p-6 space-y-4 text-xs font-bold tracking-widest uppercase">
-          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Home</Link>
-          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Products</Link>
-          <Link href="/why-choose-us" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Why Choose Us</Link>
-          <Link href="/manufacturing" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Manufacturing</Link>
-          <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">About Us</Link>
-          <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#C9943E] transition-colors border-b border-[#2d5238] pb-2">Contact</Link>
+        <div className="md:hidden fixed top-20 left-0 right-0 bottom-0 bg-[#0F2C2E]/98 backdrop-blur-xl z-40 flex flex-col p-6 space-y-4 text-xs font-bold tracking-widest uppercase border-t border-[#C9943E]/20">
+          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#E8C87A] transition-colors border-b border-white/10 pb-3">Home</Link>
+          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#E8C87A] transition-colors border-b border-white/10 pb-3">Products</Link>
+          <Link href="/why-choose-us" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#E8C87A] transition-colors border-b border-white/10 pb-3">Why Choose Us</Link>
+          <Link href="/manufacturing" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#E8C87A] transition-colors border-b border-white/10 pb-3">Manufacturing</Link>
+          <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#E8C87A] transition-colors border-b border-white/10 pb-3">About Us</Link>
+          <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#E8C87A] transition-colors border-b border-white/10 pb-3">Contact</Link>
         </div>
       )}
     </header>
