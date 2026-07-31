@@ -21,8 +21,8 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-2 sm:gap-2.5 min-w-0">
           <Image src="/products/logo/logo.webp" alt="Ayu S.S. Pharmacy Logo" className="h-9 sm:h-12 w-auto object-contain shrink-0" width={150} height={56} priority />
           <div className="flex flex-col min-w-0">
-            <span className="font-bold text-xs sm:text-base md:text-lg tracking-tight sm:tracking-wide font-serif leading-none text-[#134547] truncate">AYU S.S. PHARMACY</span>
-            <span className="text-[8px] sm:text-[10px] md:text-[11px] font-bold text-[#C9943E] tracking-wider uppercase leading-none mt-0.5 sm:mt-1 truncate">One Stop Solution</span>
+            <span className="font-bold text-sm sm:text-lg md:text-xl tracking-tight sm:tracking-wide font-serif leading-none text-[#134547] truncate">AYU S.S. PHARMACY</span>
+            <span className="text-[7px] sm:text-[9px] md:text-[10px] font-semibold text-[#C9943E] tracking-normal leading-none mt-0.5 sm:mt-1 truncate">One Stop Solution</span>
           </div>
         </Link>
 

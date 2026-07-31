@@ -28,7 +28,7 @@ export default function Footer() {
             />
             <div className="flex flex-col min-w-0">
               <span className="font-bold text-white tracking-widest text-sm font-serif leading-none">AYU S.S. PHARMACY</span>
-              <span className="text-[10px] font-bold text-[#E8C87A] uppercase tracking-widest leading-none mt-1">One Stop Solution</span>
+              <span className="text-[10px] font-semibold text-[#E8C87A] tracking-normal leading-none mt-1">One Stop Solution</span>
             </div>
           </div>
           <p className="text-[#FDF8F0]/80 leading-relaxed font-light">
