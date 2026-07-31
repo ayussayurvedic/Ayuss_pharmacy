@@ -75,6 +75,7 @@ export default function HeroCarousel() {
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -95,21 +96,14 @@ export default function HeroCarousel() {
 
   useEffect(() => {
     async function loadBanners() {
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Database fetch timed out')), 3500)
-      );
-
       try {
         const supabase = createClient();
-        const dbPromise = supabase
+        const { data, error } = await supabase
           .from('page_assets')
           .select('*')
           .eq('section_name', 'hero_carousel')
           .eq('is_active', true)
           .order('display_order', { ascending: true });
-
-        const result: any = await Promise.race([dbPromise, timeoutPromise]);
-        const { data, error } = result;
 
         if (error) throw error;
 
@@ -132,35 +126,13 @@ export default function HeroCarousel() {
             };
           });
 
-          // Only update if array actually changed to prevent initial hydration blinking
           setCarouselSlides((prev) => {
             if (JSON.stringify(prev) === JSON.stringify(mapped)) return prev;
             return mapped;
           });
-          return;
         }
-
-        throw new Error('Database returned empty banner assets');
       } catch (err) {
-        console.error('Failed to load page assets from Supabase. Trying GitHub Raw fallback...', err);
-        try {
-          const githubSlides: Slide[] = slides.map(s => {
-            const desktopFilename = s.desktopImage.split('/').pop();
-            const mobileFilename = s.mobileImage.split('/').pop();
-            return {
-              ...s,
-              desktopImage: `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public/products/hero-section/hero_section_desktop_image's/${desktopFilename}`,
-              mobileImage: `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public/products/hero-section/hero_section_mobile_image's/${mobileFilename}`
-            };
-          });
-          setCarouselSlides((prev) => {
-            if (JSON.stringify(prev) === JSON.stringify(githubSlides)) return prev;
-            return githubSlides;
-          });
-        } catch (gitErr) {
-          console.error('GitHub Raw fallback failed. Loading local public assets...', gitErr);
-          setCarouselSlides(slides);
-        }
+        console.error('Failed to load page assets from Supabase:', err);
       }
     }
     loadBanners();
@@ -171,6 +143,22 @@ export default function HeroCarousel() {
     const timer = setInterval(next, 6000);
     return () => clearInterval(timer);
   }, [isPaused, next]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    const currentTouch = e.changedTouches[0].clientX;
+    const diff = touchStart - currentTouch;
+    if (diff > 40) {
+      next();
+    } else if (diff < -40) {
+      prev();
+    }
+    setTouchStart(null);
+  };
 
   const activeSlide = carouselSlides[current] || slides[0];
 
@@ -189,20 +177,43 @@ export default function HeroCarousel() {
       onMouseLeave={() => setIsPaused(false)}
     >
       {isMobile ? (
-        /* Mobile View: No Text, height is natural image height. Renders ONLY the mobile image. */
-        <div className="w-full relative">
-          <AnimatePresence mode="popLayout">
-            <motion.img
-              key={activeSlide.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, ease: 'linear' }}
-              src={activeSlide.mobileImage}
-              alt={activeSlide.alt}
-              className="w-full h-auto object-cover block m-0 p-0"
-            />
-          </AnimatePresence>
+        /* Mobile View: Fixed aspect ratio, smooth crossfade without height jumps or layout shift */
+        <div 
+          className="w-full relative aspect-[800/620] overflow-hidden bg-[#FDFBF7] touch-pan-y"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="absolute inset-0 z-0">
+            <AnimatePresence mode="popLayout">
+              <motion.img
+                key={activeSlide.id || current}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+                src={activeSlide.mobileImage || activeSlide.desktopImage}
+                alt={activeSlide.alt}
+                className="w-full h-full object-cover block"
+              />
+            </AnimatePresence>
+          </div>
+
+          {/* Mobile Navigation Dots */}
+          {carouselSlides.length > 1 && (
+            <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center gap-1.5 pointer-events-none">
+              {carouselSlides.map((s, idx) => (
+                <button
+                  key={s.id || idx}
+                  type="button"
+                  onClick={() => setCurrent(idx)}
+                  className={`h-1.5 rounded-full transition-all duration-300 pointer-events-auto cursor-pointer ${
+                    current === idx ? 'w-6 bg-[#1A5C5E]' : 'w-1.5 bg-white/70 shadow-xs'
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         /* Desktop View: Text overlays, standard fixed height. Renders ONLY the desktop image. */
