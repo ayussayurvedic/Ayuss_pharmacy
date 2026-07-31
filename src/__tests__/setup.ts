@@ -111,19 +111,6 @@ export async function createTestAdmin() {
     userId = authData.user.id;
   }
 
-  // Ensure active session exists in DB
-  await supabaseAdmin.from('active_sessions').delete().eq('user_id', userId);
-  const { error: sessionError } = await supabaseAdmin.from('active_sessions').insert({
-    user_id: userId,
-    user_role: 'admin',
-    is_valid: true,
-    ip_address: '127.0.0.1',
-    user_agent: 'Vitest Agent',
-  });
-  if (sessionError) {
-    throw new Error(`Failed to create admin active session: ${sessionError.message}`);
-  }
-
   // Ensure public.admin_users record exists
   const { data: existing } = await supabaseAdmin
     .from('admin_users')

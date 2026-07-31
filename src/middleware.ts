@@ -67,18 +67,7 @@ async function getCachedAdminExistence(adminId: string): Promise<boolean> {
 
       if (error) throw error;
 
-      // Check if a valid session exists in active_sessions table
-      const { data: activeSession, error: sessionError } = await supabaseAdmin
-        .from('active_sessions')
-        .select('id')
-        .eq('user_id', adminId)
-        .eq('is_valid', true)
-        .limit(1)
-        .maybeSingle();
-
-      if (sessionError) throw sessionError;
-
-      const exists = !!adminData && !!activeSession;
+      const exists = !!adminData;
       if (adminCache.size >= 500) {
         adminCache.clear();
       }
