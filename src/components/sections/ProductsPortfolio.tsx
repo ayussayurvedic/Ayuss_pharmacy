@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -7,6 +8,7 @@ import Image from 'next/image';
 import { Leaf, ShieldCheck, Star, ShoppingBag, CheckCircle2, ArrowRight } from 'lucide-react';
 import { products, type Product } from '@/data/products';
 import { useCart } from '@/context/CartContext';
+import { createClient } from '@/lib/supabase/client';
 
 // Clean helper to extract herbal names with guaranteed spacing
 function getCleanIngredients(composition: string): string[] {
@@ -33,6 +35,45 @@ function getCleanIngredients(composition: string): string[] {
 export default function ProductsPortfolio() {
   const router = useRouter();
   const { handleAddToCart } = useCart();
+  const [productList, setProductList] = useState<Product[]>(products);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .order('name', { ascending: true });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const mapped: Product[] = data.map((dbP: any) => ({
+            id: dbP.id,
+            name: dbP.name || '',
+            category: dbP.category || '',
+            composition: dbP.composition || '',
+            benefits: dbP.benefits || [],
+            usage: dbP.usage || '',
+            shelfLife: dbP.shelf_life || '3 Years',
+            safetyNote: dbP.safety_note || 'Ayurvedic formulation',
+            packSize: dbP.pack_size || '',
+            mrp: Number(dbP.mrp || 0),
+            sellingPrice: Number(dbP.selling_price || 0),
+            image: dbP.image || '',
+            transparentImage: dbP.transparent_image || '',
+            galleryImages: dbP.gallery_images || []
+          }));
+          setProductList(mapped);
+        }
+      } catch (err) {
+        console.error('Failed to fetch homepage portfolio products from Supabase:', err);
+      }
+    }
+    loadProducts();
+  }, []);
 
   const handleBuyNow = (product: Product) => {
     handleAddToCart(product, 1);
@@ -58,7 +99,7 @@ export default function ProductsPortfolio() {
 
       {/* Grid of Product Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {products.map((product) => {
+        {productList.map((product) => {
           const actives = getCleanIngredients(product.composition);
 
           return (
