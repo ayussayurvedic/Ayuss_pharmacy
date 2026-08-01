@@ -17,7 +17,7 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 right-0 h-16 md:h-20 bg-white border-b border-slate-200/80 text-slate-800 z-50 shadow-xs font-sans">
-      <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between">
+      <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between relative">
         <Link href="/" className="flex items-center gap-2 sm:gap-2.5 min-w-0">
           <Image src="/products/logo/logo.webp" alt="Ayu S.S. Pharmacy Logo" className="h-9 sm:h-12 w-auto object-contain shrink-0" width={150} height={56} priority />
           <div className="flex flex-col min-w-0">
@@ -26,7 +26,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-xs font-bold tracking-wider uppercase text-slate-700">
+        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-xs font-bold tracking-wider uppercase text-slate-700">
           <Link href="/" className="hover:text-[#1A5C5E] transition-colors py-1">Home</Link>
           <Link href="/products" className="hover:text-[#1A5C5E] transition-colors py-1">Products</Link>
           <Link href="/why-choose-us" className="hover:text-[#1A5C5E] transition-colors py-1">Why Choose Us</Link>
