@@ -161,6 +161,26 @@ CREATE TABLE IF NOT EXISTS public.payment_transactions (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- 10. Customer Inquiries Table
+CREATE TABLE IF NOT EXISTS public.inquiries (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    phone VARCHAR(50),
+    company VARCHAR(255),
+    message TEXT NOT NULL,
+    status VARCHAR(50) DEFAULT 'new',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS & Policies
+ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow public contact inquiry insertion" ON public.inquiries;
+DROP POLICY IF EXISTS "Allow admin full access to inquiries" ON public.inquiries;
+CREATE POLICY "Allow public contact inquiry insertion" ON public.inquiries FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow admin full access to inquiries" ON public.inquiries FOR ALL USING (auth.role() = 'service_role' OR (auth.jwt() ->> 'role') = 'admin');
+
 -- ============================================================================
 -- Order RPC Stored Procedures
 -- ============================================================================
