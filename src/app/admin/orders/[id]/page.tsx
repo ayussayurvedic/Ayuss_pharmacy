@@ -23,7 +23,9 @@ import {
   RefreshCw, 
   Send, 
   Receipt, 
-  Download 
+  Download,
+  FileText,
+  XCircle 
 } from 'lucide-react';
 
 export default function AdminOrderDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -518,6 +520,15 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
               Invoice Issued
             </span>
           ) : (
+             <Link 
+            href={`/admin/invoices/${id}`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#054432] hover:bg-[#032e22] text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs"
+          >
+            <FileText size={14} />
+            <span>Print A4 Tax Invoice</span>
+          </Link>
+          )}
+          {!invoice && (
             <button 
               type="button" 
               onClick={handleIssueInvoice}
@@ -525,7 +536,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 border border-[#C9D5D5] disabled:opacity-50 text-[#1A5C5E] rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs"
             >
               <Receipt size={14} />
-              <span>Issue Invoice</span>
+              <span>Issue Official GST Record</span>
             </button>
           )}
         </div>

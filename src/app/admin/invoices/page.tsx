@@ -197,6 +197,13 @@ export default function AdminInvoices() {
       header: 'Actions', 
       render: (inv: any) => (
         <div className="flex items-center justify-end gap-2">
+          <Link
+            href={`/admin/invoices/${inv.order_id || inv.id}`}
+            className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#054432] hover:bg-[#032e22] text-white rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer"
+          >
+            <FileText size={12} />
+            <span>Print Invoice</span>
+          </Link>
           {inv.pdf_status === 'generated' && (
             <button
               type="button"
