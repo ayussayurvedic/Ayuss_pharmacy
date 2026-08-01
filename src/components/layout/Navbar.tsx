@@ -26,13 +26,13 @@ export default function Navbar() {
           </div>
         </Link>
 
-        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-xs font-bold tracking-wider uppercase text-slate-700">
-          <Link href="/" className="hover:text-[#1A5C5E] transition-colors py-1">Home</Link>
-          <Link href="/products" className="hover:text-[#1A5C5E] transition-colors py-1">Products</Link>
-          <Link href="/why-choose-us" className="hover:text-[#1A5C5E] transition-colors py-1">Why Choose Us</Link>
-          <Link href="/manufacturing" className="hover:text-[#1A5C5E] transition-colors py-1">Manufacturing</Link>
-          <Link href="/about" className="hover:text-[#1A5C5E] transition-colors py-1">About Us</Link>
-          <Link href="/contact" className="hover:text-[#1A5C5E] transition-colors py-1">Contact</Link>
+        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-4 lg:gap-8 text-xs font-bold tracking-wider uppercase text-slate-700 whitespace-nowrap">
+          <Link href="/" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Home</Link>
+          <Link href="/products" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Products</Link>
+          <Link href="/why-choose-us" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Why Choose Us</Link>
+          <Link href="/manufacturing" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Manufacturing</Link>
+          <Link href="/about" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">About Us</Link>
+          <Link href="/contact" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Contact</Link>
         </nav>
 
         <div className="flex items-center gap-3 sm:gap-4">
