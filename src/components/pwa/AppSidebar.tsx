@@ -72,6 +72,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
     // ─── Operations ───
     { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Overview', section: 'Operations' },
     { href: '/admin/orders', icon: ClipboardList, label: 'Orders', section: 'Operations' },
+    { href: '/admin/inquiries', icon: MessageSquare, label: 'Customer Inquiries', section: 'Operations' },
     { href: '/admin/returns', icon: Clock, label: 'Returns', section: 'Operations' },
     
     // ─── Catalogue & Supply ───
@@ -98,11 +99,12 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
   const mobileAdminBottom = [
     { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/admin/orders', icon: ClipboardList, label: 'Orders' },
-    { href: '/admin/returns', icon: Clock, label: 'Returns' },
+    { href: '/admin/inquiries', icon: MessageSquare, label: 'Inquiries' },
     { href: '/admin/products', icon: Briefcase, label: 'Products' },
   ];
 
   const mobileAdminMore = [
+    { href: '/admin/returns', icon: Clock, label: 'Returns', section: 'Operations' },
     { href: '/admin/inventory', icon: Activity, label: 'Inventory', section: 'Catalogue & Supply' },
     { href: '/admin/suppliers', icon: Users, label: 'Suppliers', section: 'Catalogue & Supply' },
     { href: '/admin/procurement', icon: CheckSquare, label: 'Procurement', section: 'Catalogue & Supply' },

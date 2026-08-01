@@ -235,24 +235,24 @@ export default function AdminDashboard() {
           <span className="text-[9px] font-bold text-slate-500 uppercase block">Shipped</span>
           <span className="text-base font-bold font-mono text-[#1A5C5E]">{stats.attentionItems.shippedOrders}</span>
         </div>
-        <div className="p-3 bg-[#FDF8F0] border border-[#C9D5D5]/50 rounded-xl text-center">
+        <Link href="/admin/inquiries" className="p-3 bg-[#FDF8F0] border border-[#C9D5D5]/50 hover:border-[#C9943E] rounded-xl text-center transition-colors block">
           <span className="text-[9px] font-bold text-slate-500 uppercase block">New Inquiries</span>
           <span className="text-base font-bold font-mono text-[#1A5C5E]">{stats.attentionItems.unreadEnquiries}</span>
-        </div>
+        </Link>
         <div className="p-3 bg-[#FDF8F0] border border-[#C9D5D5]/50 rounded-xl text-center">
           <span className="text-[9px] font-bold text-slate-500 uppercase block">Pending B2B</span>
           <span className="text-base font-bold font-mono text-[#1A5C5E]">{stats.attentionItems.pendingDistributors}</span>
         </div>
       </div>
 
-      {/* 2-Column Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* 3-Column Section for Orders, Leads, and Customer Inquiries */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Orders */}
         <div className="bg-white p-6 rounded-2xl border border-[#C9D5D5]/60 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-[#C9D5D5]/40 pb-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E] flex items-center gap-2">
               <ShoppingBag className="w-4 h-4 text-[#C9943E]" />
-              <span>Recent Customer Orders</span>
+              <span>Recent Orders</span>
             </h3>
             <Link href="/admin/orders" className="text-[11px] font-bold text-[#C9943E] hover:underline">
               View All
@@ -282,12 +282,44 @@ export default function AdminDashboard() {
           )}
         </div>
 
+        {/* Customer Contact Inquiries */}
+        <div className="bg-white p-6 rounded-2xl border border-[#C9D5D5]/60 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-[#C9D5D5]/40 pb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E] flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-[#C9943E]" />
+              <span>Customer Inquiries</span>
+            </h3>
+            <Link href="/admin/inquiries" className="text-[11px] font-bold text-[#C9943E] hover:underline">
+              View All
+            </Link>
+          </div>
+          {recentEnquiries.length === 0 ? (
+            <p className="text-xs text-slate-400 text-center py-6">No customer inquiries submitted recently.</p>
+          ) : (
+            <div className="space-y-2.5">
+              {recentEnquiries.map(inq => (
+                <div 
+                  key={inq.id}
+                  onClick={() => router.push('/admin/inquiries')}
+                  className="p-3 bg-[#FDF8F0] border border-[#C9D5D5]/40 hover:border-[#C9943E] rounded-xl flex items-center justify-between text-xs cursor-pointer transition-colors"
+                >
+                  <div>
+                    <span className="font-bold text-[#1A5C5E] block">{inq.name}</span>
+                    <span className="text-[11px] text-slate-500 truncate max-w-[180px] block">{inq.requirement || inq.message}</span>
+                  </div>
+                  <AdminStatusBadge status={inq.status || 'new'} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Recent B2B leads */}
         <div className="bg-white p-6 rounded-2xl border border-[#C9D5D5]/60 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-[#C9D5D5]/40 pb-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E] flex items-center gap-2">
               <Building2 className="w-4 h-4 text-[#C9943E]" />
-              <span>Wholesale Distributor Leads</span>
+              <span>Distributor Leads</span>
             </h3>
             <Link href="/admin/distributors" className="text-[11px] font-bold text-[#C9943E] hover:underline">
               View All
