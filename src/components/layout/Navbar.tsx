@@ -16,35 +16,50 @@ export default function Navbar() {
   const shippingProgress = Math.min(100, (subtotal / freeShippingThreshold) * 100);
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 md:h-20 bg-white border-b border-slate-200/80 text-slate-800 z-50 shadow-xs font-sans">
-      <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between relative">
-        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-          <Image src="/products/logo/logo.webp" alt="Ayu S.S. Pharmacy Logo" className="h-9 sm:h-12 w-auto object-contain shrink-0" width={150} height={56} priority />
-          <div className="flex flex-col min-w-0">
-            <span className="font-bold text-sm sm:text-lg md:text-xl tracking-tight sm:tracking-wide font-serif leading-none text-[#134547] truncate">AYU S.S. PHARMACY</span>
-            <span className="text-[7px] sm:text-[9px] md:text-[10px] font-semibold text-[#C9943E] tracking-normal leading-none mt-0.5 sm:mt-1 truncate">One Stop Solution</span>
-          </div>
-        </Link>
+    <header className="fixed top-0 left-0 right-0 h-16 lg:h-20 bg-white border-b border-slate-200/80 text-slate-800 z-50 shadow-xs font-sans">
+      <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between">
+        
+        {/* Left: Logo & Company Name (w-1/4) */}
+        <div className="w-1/4 flex justify-start min-w-0">
+          <Link href="/" className="flex items-center gap-2 min-w-0 shrink-0">
+            <Image 
+              src="/products/logo/logo.webp" 
+              alt="Ayu S.S. Pharmacy Logo" 
+              className="h-9 lg:h-11 w-auto object-contain shrink-0" 
+              width={150} 
+              height={56} 
+              priority 
+            />
+            <div className="flex flex-col min-w-0">
+              <span className="font-bold text-xs sm:text-sm lg:text-base tracking-tight font-serif leading-none text-[#134547] truncate">AYU S.S. PHARMACY</span>
+              <span className="text-[7px] sm:text-[8px] lg:text-[9px] font-semibold text-[#C9943E] tracking-normal leading-none mt-0.5 sm:mt-1 truncate">One Stop Solution</span>
+            </div>
+          </Link>
+        </div>
 
-        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-4 lg:gap-8 text-xs font-bold tracking-wider uppercase text-slate-700 whitespace-nowrap">
-          <Link href="/" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Home</Link>
-          <Link href="/products" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Products</Link>
-          <Link href="/why-choose-us" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Why Choose Us</Link>
-          <Link href="/manufacturing" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Manufacturing</Link>
-          <Link href="/about" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">About Us</Link>
-          <Link href="/contact" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Contact</Link>
-        </nav>
+        {/* Middle: Centered Navigation (w-1/2) */}
+        <div className="w-1/2 flex justify-center">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-8 text-xs font-bold tracking-wider uppercase text-slate-700 whitespace-nowrap">
+            <Link href="/" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Home</Link>
+            <Link href="/products" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Products</Link>
+            <Link href="/why-choose-us" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Why Choose Us</Link>
+            <Link href="/manufacturing" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Manufacturing</Link>
+            <Link href="/about" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">About Us</Link>
+            <Link href="/contact" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Contact</Link>
+          </nav>
+        </div>
 
-        <div className="flex items-center gap-3 sm:gap-4">
+        {/* Right: Actions / Cart (w-1/4) */}
+        <div className="w-1/4 flex justify-end gap-3 sm:gap-4 shrink-0">
           <button
             type="button"
             onClick={() => setIsCartOpen(!isCartOpen)}
             className="relative p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer"
             aria-label={`Shopping bag containing ${cartCount} items`}
           >
-            <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
+            <ShoppingBag className="w-5 h-5 lg:w-6 lg:h-6" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#C9943E] text-white text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center border-2 border-white">
+              <span className="absolute -top-1 -right-1 bg-[#C9943E] text-white text-[10px] font-bold w-4 h-4 lg:w-5 lg:h-5 rounded-full flex items-center justify-center border-2 border-white">
                 {cartCount}
               </span>
             )}
@@ -53,12 +68,13 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer"
+            className="lg:hidden p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
+
       </div>
 
       {isCartOpen && (
@@ -89,9 +105,9 @@ export default function Navbar() {
                   <span className="text-emerald-700 font-bold">🎉 You unlocked FREE Express Delivery!</span>
                 )}
               </div>
-              <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-[#1A5C5E] to-[#C9943E] transition-all duration-300"
+              <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/50">
+                <div
+                  className="bg-[#C9943E] h-full rounded-full transition-all duration-500"
                   style={{ width: `${shippingProgress}%` }}
                 />
               </div>
@@ -118,7 +134,7 @@ export default function Navbar() {
                         >
                           <Minus className="w-3 h-3" />
                         </button>
-                        <span className="font-bold text-xs px-1">{item.quantity}</span>
+                        <span className="w-6 text-center font-bold text-xs">{item.quantity}</span>
                         <button
                           type="button"
                           onClick={() => handleUpdateCartQuantity(item.product.id, item.quantity + 1)}
@@ -132,8 +148,8 @@ export default function Navbar() {
                     <button
                       type="button"
                       onClick={() => handleRemoveFromCart(item.product.id)}
-                      className="text-red-500 hover:text-red-700 bg-transparent border-0 cursor-pointer p-1"
-                      aria-label="Remove item"
+                      className="p-2 text-slate-400 hover:text-red-650 hover:bg-red-50 rounded-full transition-colors cursor-pointer border-0 bg-transparent"
+                      aria-label={`Remove ${item.product.name} from bag`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -143,10 +159,10 @@ export default function Navbar() {
             </div>
 
             {cartItems.length > 0 && (
-              <div className="border-t pt-4 space-y-3 shrink-0">
-                <div className="flex justify-between text-xs font-bold text-slate-900">
-                  <span>Subtotal:</span>
-                  <span>₹{subtotal}</span>
+              <div className="pt-4 border-t border-[#C9D5D5]/80 space-y-4 shrink-0">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Subtotal</span>
+                  <span className="text-lg font-black text-[#134547]">₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
                 <Link href="/checkout" onClick={() => setIsCartOpen(false)} className="w-full bg-[#1A5C5E] hover:bg-[#134547] text-white text-center py-3 rounded-full text-xs font-bold block transition-colors uppercase tracking-wider shadow-md">
                   Proceed to Checkout
@@ -158,7 +174,7 @@ export default function Navbar() {
       )}
 
       {mobileMenuOpen && (
-        <div className="md:hidden fixed top-16 md:top-20 left-0 right-0 bottom-0 bg-[#FDF8F0] text-slate-800 z-40 flex flex-col p-5 space-y-2.5 font-sans shadow-2xl border-t border-slate-200/80 overflow-y-auto animate-in slide-in-from-top duration-250">
+        <div className="lg:fixed lg:hidden fixed top-16 lg:top-20 left-0 right-0 bottom-0 bg-[#FDF8F0] text-slate-800 z-40 flex flex-col p-5 space-y-2.5 font-sans shadow-2xl border-t border-slate-200/80 overflow-y-auto animate-in slide-in-from-top duration-250">
           <div className="text-[10px] font-bold text-[#C9943E] uppercase tracking-widest px-1 mb-1">
             Navigation Menu
           </div>
