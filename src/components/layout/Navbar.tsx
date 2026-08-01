@@ -159,7 +159,9 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="lg:hidden fixed inset-0 top-16 bg-black/45 backdrop-blur-xs z-30 cursor-pointer"
+              className={`lg:hidden fixed inset-0 bg-black/45 backdrop-blur-xs z-30 cursor-pointer transition-all duration-300 ${
+                isScrolled ? 'top-14' : 'top-16'
+              }`}
             />
 
             {/* Links Panel */}
@@ -168,7 +170,9 @@ export default function Navbar() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: '-10%', opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="lg:hidden fixed top-16 left-0 right-0 bg-[#FDF8F0] text-slate-800 z-40 flex flex-col p-5 space-y-2.5 font-sans shadow-2xl border-t border-slate-200/80 overflow-y-auto max-h-[calc(100vh-4rem)]"
+              className={`lg:hidden fixed left-0 right-0 bg-[#FDF8F0] text-slate-800 z-40 flex flex-col p-5 pb-12 space-y-2.5 font-sans shadow-2xl border-t border-slate-200/80 overflow-y-auto overscroll-y-contain transition-all duration-300 ${
+                isScrolled ? 'top-14 h-[calc(100dvh-3.5rem)]' : 'top-16 h-[calc(100dvh-4rem)]'
+              }`}
             >
               <div className="text-[10px] font-black text-[#C9943E] uppercase tracking-widest px-1 mb-1 font-mono">
                 Navigation Menu
