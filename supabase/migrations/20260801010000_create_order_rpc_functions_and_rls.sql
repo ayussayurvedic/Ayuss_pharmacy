@@ -4,13 +4,15 @@
 
 -- 1. Inventory Table
 CREATE TABLE IF NOT EXISTS public.inventory (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
-    stock_quantity INT NOT NULL DEFAULT 0,
-    reserved_quantity INT NOT NULL DEFAULT 0,
-    reorder_level INT DEFAULT 50,
-    batch_number TEXT,
+    product_id TEXT PRIMARY KEY REFERENCES public.products(id) ON DELETE CASCADE,
+    quantity_on_hand INT NOT NULL DEFAULT 250,
+    quantity_reserved INT NOT NULL DEFAULT 5,
+    reorder_level INT NOT NULL DEFAULT 50,
+    sku TEXT,
+    inventory_enabled BOOLEAN DEFAULT true,
+    batch_number TEXT DEFAULT 'BATCH-2026-07',
     location TEXT DEFAULT 'Warehouse Kadapa',
+    last_adjusted_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now(),
     created_at TIMESTAMPTZ DEFAULT now()
 );
@@ -30,7 +32,7 @@ CREATE TABLE IF NOT EXISTS public.returns (
 CREATE TABLE IF NOT EXISTS public.return_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     return_id UUID REFERENCES public.returns(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
+    product_id TEXT REFERENCES public.products(id) ON DELETE SET NULL,
     quantity INT NOT NULL DEFAULT 1,
     reason TEXT,
     created_at TIMESTAMPTZ DEFAULT now()
@@ -95,7 +97,7 @@ CREATE TABLE IF NOT EXISTS public.procurement_orders (
 CREATE TABLE IF NOT EXISTS public.recalls (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     recall_number TEXT UNIQUE NOT NULL,
-    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
     product_name TEXT,
     batch_number TEXT NOT NULL,
     reason TEXT,
@@ -109,7 +111,7 @@ CREATE TABLE IF NOT EXISTS public.recalls (
 -- 7. Expirations Table
 CREATE TABLE IF NOT EXISTS public.expirations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
     batch_number TEXT NOT NULL,
     expiry_date DATE NOT NULL,
     quantity INT DEFAULT 0,
