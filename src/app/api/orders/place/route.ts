@@ -40,15 +40,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required order details' }, { status: 400 });
     }
 
-    // 2. Validate Stock and Reserve Inventory transactionally using a db check
-    for (const item of cartItems) {
-      const { data: inv, error: invErr } = await supabaseAdmin
-        .from('inventory')
-        .select('quantity_on_hand, quantity_reserved')
-        .eq('product_id', item.product.id)
-        .maybeSingle();
+    // 2. Validate Stock and Reserve Inventory in a single optimized batch query
+    const productIds = cartItems.map((item: any) => item.product.id);
+    const { data: inventories, error: invsErr } = await supabaseAdmin
+      .from('inventory')
+      .select('product_id, quantity_on_hand, quantity_reserved')
+      .in('product_id', productIds);
 
-      if (invErr || !inv) {
+    if (invsErr || !inventories) {
+      return NextResponse.json({ error: 'Failed to retrieve product inventory.' }, { status: 400 });
+    }
+
+    const inventoryMap = new Map(inventories.map(inv => [inv.product_id, inv]));
+
+    for (const item of cartItems) {
+      const inv = inventoryMap.get(item.product.id);
+      if (!inv) {
         return NextResponse.json({ error: `Product ${item.product.name} has no inventory entry.` }, { status: 400 });
       }
 
@@ -200,24 +207,34 @@ export async function POST(request: NextRequest) {
     const { error: itemsErr } = await supabaseAdmin.from('order_items').insert(items);
     if (itemsErr) throw itemsErr;
 
-    // 6. Send Email Notifications
-    if (email) {
-      await sendNotificationEmail(
-        email,
-        `S.S. Pharmacy Order Confirmation - #${orderNum}`,
-        getCustomerOrderTemplate(orderNum, name, cartItems.map((c: any) => ({
-          name: c.product.name,
-          quantity: c.quantity,
-          price: c.product.sellingPrice || c.product.mrp || 0
-        })), total, `${address}, ${city}, ${state} - ${pincode}`)
-      ).catch((e) => console.error('Customer email notification failed:', e));
-    }
+    // 6. Send Email Notifications asynchronously in the background so the user gets an instant response
+    (async () => {
+      try {
+        if (email) {
+          await sendNotificationEmail(
+            email,
+            `S.S. Pharmacy Order Confirmation - #${orderNum}`,
+            getCustomerOrderTemplate(orderNum, name, cartItems.map((c: any) => ({
+              name: c.product.name,
+              quantity: c.quantity,
+              price: c.product.sellingPrice || c.product.mrp || 0
+            })), total, `${address}, ${city}, ${state} - ${pincode}`)
+          );
+        }
+      } catch (e) {
+        console.error('Customer email notification failed:', e);
+      }
 
-    await notifyAdminsIfEnabled(
-      'new_customer_orders',
-      `New Order Placed: #${orderNum}`,
-      getAdminOrderTemplate(orderNum, name, total)
-    ).catch((e) => console.error('Admin order notification failed:', e));
+      try {
+        await notifyAdminsIfEnabled(
+          'new_customer_orders',
+          `New Order Placed: #${orderNum}`,
+          getAdminOrderTemplate(orderNum, name, total)
+        );
+      } catch (e) {
+        console.error('Admin order notification failed:', e);
+      }
+    })();
 
     return NextResponse.json({
       success: true,
