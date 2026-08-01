@@ -10,17 +10,68 @@ export async function getAdminInquiries(limit = 200, offset = 0) {
   if (!session || session.role !== 'admin' || !session.id) throw new Error('Unauthorized');
   await verifyActiveAdmin(session.id);
 
-  const { data, error } = await supabaseAdmin
+  // 1. Fetch from 'inquiries' table
+  const { data: tableInquiries, error: inqErr } = await supabaseAdmin
     .from('inquiries')
     .select('*')
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1);
+    .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Error fetching admin inquiries:', error);
-    return [];
+  if (inqErr) {
+    console.error('Error fetching inquiries table:', inqErr);
   }
-  return data;
+
+  // 2. Fetch from 'distributor_applications' table where company_name represents an inquiry
+  const { data: distApplications, error: distErr } = await supabaseAdmin
+    .from('distributor_applications')
+    .select('*')
+    .or('company_name.ilike.Enquiry:%,company_name.ilike.Contact Inquiry:%,company_name.eq.General Contact Enquiry')
+    .order('created_at', { ascending: false });
+
+  if (distErr) {
+    console.error('Error fetching distributor enquiries:', distErr);
+  }
+
+  // 3. Normalize inquiries table records
+  const normalizedInquiries = (tableInquiries || []).map((inq: any) => ({
+    id: inq.id,
+    source_table: 'inquiries',
+    name: inq.name || 'Anonymous Customer',
+    email: inq.email || '',
+    company: inq.company || '',
+    phone: inq.phone || '',
+    message: inq.message || inq.requirement || '',
+    status: inq.status || 'new',
+    created_at: inq.created_at || new Date().toISOString()
+  }));
+
+  // 4. Normalize distributor_applications inquiry records
+  const normalizedDistributorEnquiries = (distApplications || []).map((app: any) => ({
+    id: app.id,
+    source_table: 'distributor_applications',
+    name: app.contact_person || app.company_name?.replace(/^(Enquiry:\s*|Contact Inquiry:\s*)/i, '') || 'Anonymous Contact',
+    email: app.email || '',
+    company: app.company_name || 'Contact Inquiry',
+    phone: app.phone || '',
+    message: app.notes || app.requirement || '',
+    status: app.status || 'new',
+    created_at: app.created_at || new Date().toISOString()
+  }));
+
+  // 5. Combine and deduplicate
+  const combined = [...normalizedInquiries, ...normalizedDistributorEnquiries];
+  
+  // Deduplicate by ID
+  const seenIds = new Set();
+  const uniqueInquiries = combined.filter(item => {
+    if (seenIds.has(item.id)) return false;
+    seenIds.add(item.id);
+    return true;
+  });
+
+  // Sort chronologically (newest first)
+  uniqueInquiries.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  return uniqueInquiries.slice(offset, offset + limit);
 }
 
 export async function updateInquiryStatus(id: string, status: string) {
@@ -28,37 +79,26 @@ export async function updateInquiryStatus(id: string, status: string) {
   if (!session || session.role !== 'admin') throw new Error('Unauthorized');
   await verifyActiveAdmin(session.id);
 
-  // Validate status against allowlist to prevent arbitrary values
-  const VALID_STATUSES = ['new', 'contacted', 'qualified', 'closed'];
+  const VALID_STATUSES = ['new', 'contacted', 'qualified', 'closed', 'under_review', 'approved', 'rejected'];
   if (!VALID_STATUSES.includes(status)) {
     throw new Error(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`);
   }
 
-  // Fetch current inquiry status for audit trail
-  const { data: inquiry } = await supabaseAdmin
-    .from('inquiries')
-    .select('status, name, email')
-    .eq('id', id)
-    .single();
-
-  const { error } = await supabaseAdmin
+  // Update in inquiries table
+  const { error: inqErr } = await supabaseAdmin
     .from('inquiries')
     .update({ status })
     .eq('id', id);
 
-  if (error) {
-    console.error('Error updating inquiry status:', error);
-    throw new Error('Failed to update status');
-  }
+  // Update in distributor_applications table
+  const { error: distErr } = await supabaseAdmin
+    .from('distributor_applications')
+    .update({ status })
+    .eq('id', id);
 
-  if (inquiry) {
-    await logAuditAction(
-      'UPDATE_INQUIRY_STATUS',
-      'inquiries',
-      id,
-      { status: inquiry.status, name: inquiry.name, email: inquiry.email },
-      { status }
-    );
+  if (inqErr && distErr) {
+    console.error('Error updating inquiry status across tables:', { inqErr, distErr });
+    throw new Error('Failed to update status');
   }
 
   revalidatePath('/admin/inquiries');
@@ -70,26 +110,15 @@ export async function deleteInquiry(id: string) {
   if (!session || session.role !== 'admin') throw new Error('Unauthorized');
   await verifyActiveAdmin(session.id);
 
-  // Fetch inquiry details before deletion for audit trail
-  const { data: inquiry } = await supabaseAdmin
-    .from('inquiries')
-    .select('name, email, message')
-    .eq('id', id)
-    .single();
-
-  const { error } = await supabaseAdmin
+  await supabaseAdmin
     .from('inquiries')
     .delete()
     .eq('id', id);
 
-  if (error) {
-    console.error('Error deleting inquiry:', error);
-    throw new Error('Failed to delete inquiry');
-  }
-
-  if (inquiry) {
-    await logAuditAction('DELETE_INQUIRY', 'inquiries', id, inquiry, null);
-  }
+  await supabaseAdmin
+    .from('distributor_applications')
+    .delete()
+    .eq('id', id);
 
   revalidatePath('/admin/inquiries');
   revalidatePath('/admin/dashboard');

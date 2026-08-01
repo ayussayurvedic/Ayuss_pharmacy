@@ -52,20 +52,65 @@ export async function GET(request: NextRequest) {
     const { data: applicationData, error: applicationsError } = await leadsQuery;
     if (applicationsError) throw applicationsError;
 
+    // Query 3: Inquiries table query
+    let inqQuery = supabaseAdmin
+      .from('inquiries')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (dateString) {
+      inqQuery = inqQuery.gte('created_at', dateString);
+    }
+
+    const { data: rawInquiriesData } = await inqQuery;
+
     const activeOrders = ordersData || [];
     const activeApplications = applicationData || [];
+    const activeTableInquiries = rawInquiriesData || [];
 
     // Financial aggregates
     const paidOrders = activeOrders.filter((o) => o.payment_status === 'paid');
     const revenueVal = paidOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
     const averageValue = paidOrders.length > 0 ? Math.round(revenueVal / paidOrders.length) : 0;
 
-    // Separate Enquiries vs. Distributor Leads
-    const enquiries = activeApplications.filter(
-      (a) => a.company_name?.startsWith('Enquiry:') || a.company_name === 'General Contact Enquiry'
+    // Separate Enquiries vs. Distributor Leads across both tables
+    const distEnquiries = activeApplications.filter(
+      (a) => a.company_name?.startsWith('Enquiry:') || a.company_name?.startsWith('Contact Inquiry:') || a.company_name === 'General Contact Enquiry'
     );
+
+    const normalizedTableInquiries = activeTableInquiries.map((inq) => ({
+      id: inq.id,
+      name: inq.name || 'Anonymous Customer',
+      email: inq.email || '',
+      phone: inq.phone || '',
+      requirement: inq.message || inq.requirement || '',
+      status: inq.status || 'new',
+      created_at: inq.created_at
+    }));
+
+    const normalizedDistEnquiries = distEnquiries.map((app) => ({
+      id: app.id,
+      name: app.contact_person || app.company_name?.replace(/^(Enquiry:\s*|Contact Inquiry:\s*)/i, '') || 'Anonymous Contact',
+      email: app.email || '',
+      phone: app.phone || '',
+      requirement: app.notes || app.requirement || '',
+      status: app.status || 'new',
+      created_at: app.created_at
+    }));
+
+    // Deduplicate combined enquiries
+    const combinedEnquiriesMap = new Map();
+    [...normalizedTableInquiries, ...normalizedDistEnquiries].forEach(item => {
+      if (!combinedEnquiriesMap.has(item.id)) {
+        combinedEnquiriesMap.set(item.id, item);
+      }
+    });
+
+    const enquiries = Array.from(combinedEnquiriesMap.values());
+    enquiries.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
     const distributorLeads = activeApplications.filter(
-      (a) => !a.company_name?.startsWith('Enquiry:') && a.company_name !== 'General Contact Enquiry'
+      (a) => !a.company_name?.startsWith('Enquiry:') && !a.company_name?.startsWith('Contact Inquiry:') && a.company_name !== 'General Contact Enquiry'
     );
 
     // Operational attention counts

@@ -6,19 +6,8 @@ export const dynamic = 'force-dynamic';
 export default async function AdminAppInquiriesPage() {
   const inquiries = await getAdminInquiries();
 
-  // Filter out test inquiries containing test keywords
-  const filteredInquiries = (inquiries || []).filter((inq: any) => {
-    const isTest = 
-      inq.name?.toLowerCase().includes('test') ||
-      inq.email?.toLowerCase().includes('test') ||
-      inq.company?.toLowerCase().includes('test') ||
-      inq.email?.toLowerCase() === 'admin@globalps.com';
-    return !isTest;
-  });
-
   // Map database fields to component expectations
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const formattedInquiries = filteredInquiries.map((inq: any) => ({
+  const formattedInquiries = (inquiries || []).map((inq: any) => ({
     id: inq.id,
     name: inq.name,
     email: inq.email,
