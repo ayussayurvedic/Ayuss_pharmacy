@@ -36,13 +36,11 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
     sellingPrice: '',
     isActive: true,
     shelfLife: '',
-    safetyNote: '',
-    image1: '',
-    image2: '',
-    image3: '',
-    image4: '',
-    image5: ''
+    safetyNote: ''
   });
+
+  const [mainImage, setMainImage] = useState('');
+  const [galleryImages, setGalleryImages] = useState<string[]>(['', '', '']);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -59,7 +57,13 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
         if (dbErr) throw dbErr;
 
         if (data) {
-          const gallery = Array.isArray(data.gallery_images) ? data.gallery_images : [];
+          const rawImages: string[] = Array.isArray(data.images) && data.images.length > 0
+            ? data.images
+            : Array.isArray(data.gallery_images) ? data.gallery_images : [];
+
+          const primary = data.image || rawImages[0] || '';
+          const gallery = rawImages.length > 0 ? rawImages.filter((img: string) => img !== primary) : (Array.isArray(data.gallery_images) ? data.gallery_images : []);
+
           setFormData({
             id: data.id,
             name: data.name || '',
@@ -73,12 +77,10 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
             isActive: data.is_active ?? true,
             shelfLife: data.shelf_life || '',
             safetyNote: data.safety_note || '',
-            image1: data.image || gallery[0] || '',
-            image2: data.transparent_image || gallery[1] || '',
-            image3: gallery[2] || '',
-            image4: gallery[3] || '',
-            image5: gallery[4] || ''
           });
+
+          setMainImage(primary);
+          setGalleryImages(gallery.length > 0 ? gallery : ['', '', '']);
         }
       } catch (err: any) {
         console.error('Failed to load product details:', err);
@@ -104,6 +106,25 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
         return copy;
       });
     }
+  };
+
+  const handleAddGalleryImage = () => {
+    setGalleryImages((prev) => [...prev, '']);
+    setIsDirty(true);
+  };
+
+  const handleRemoveGalleryImage = (index: number) => {
+    setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+    setIsDirty(true);
+  };
+
+  const handleGalleryImageChange = (index: number, url: string) => {
+    setGalleryImages((prev) => {
+      const copy = [...prev];
+      copy[index] = url;
+      return copy;
+    });
+    setIsDirty(true);
   };
 
   const validateForm = () => {
@@ -149,13 +170,9 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
     setIsSubmitDialogOpen(false);
     setIsMutating(true);
     
-    const gallery_images = [
-      formData.image1.trim(),
-      formData.image2.trim(),
-      formData.image3.trim(),
-      formData.image4.trim(),
-      formData.image5.trim()
-    ].filter(url => url !== '');
+    const validGallery = galleryImages.map(s => s.trim()).filter(Boolean);
+    const primaryImage = mainImage.trim() || validGallery[0] || null;
+    const allImages = [primaryImage, ...validGallery].filter(Boolean) as string[];
 
     const payload = {
       name: formData.name.trim(),
@@ -169,9 +186,10 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
       usage: formData.usage.trim(),
       shelf_life: formData.shelfLife.trim(),
       safety_note: formData.safetyNote.trim(),
-      image: formData.image1.trim() || null,
-      transparent_image: formData.image2.trim() || null,
-      gallery_images
+      image: primaryImage,
+      transparent_image: validGallery[0] || primaryImage,
+      images: allImages,
+      gallery_images: validGallery
     };
 
     try {
@@ -181,12 +199,12 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
         .eq('id', id);
 
       if (updateErr) throw updateErr;
-      toast.success(`Successfully updated product "${formData.name}".`);
+      toast.success(`Successfully updated formulation "${formData.name}".`);
 
       setIsDirty(false);
       router.push('/admin/products');
     } catch (err: any) {
-      console.error('Failed to save product changes:', err);
+      console.error('Failed to update product formulation:', err);
       toast.error(err.message || 'Failed to save product changes.');
     } finally {
       setIsMutating(false);
@@ -309,96 +327,126 @@ export default function EditProductForm({ params }: { params: Promise<{ id: stri
 
         <AdminCard className="space-y-5 bg-white border border-[#C9D5D5]/60 p-6 rounded-2xl shadow-xs">
           <div className="flex justify-between items-center border-b border-[#C9D5D5]/40 pb-2">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E]">4. Product Images & Visual Assets</h3>
-            <span className="text-[10px] text-slate-400 font-semibold font-mono">WebP / DataURL / File Upload</span>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5C5E]">4. Main Image & Product Gallery</h3>
+            <span className="text-[10px] text-slate-400 font-semibold font-mono">WebP / PNG / JPG</span>
           </div>
 
+          {/* Thumbnail Previews */}
+          <div className="space-y-3">
+            <h4 className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">Image Gallery Previews</h4>
+            <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
+              {/* Main Hero Card */}
+              <div className="space-y-1">
+                <div className="w-full h-24 rounded-xl border-2 border-[#1A5C5E] bg-emerald-50/50 flex flex-col items-center justify-center relative overflow-hidden group">
+                  {mainImage ? (
+                    <>
+                      <Image src={mainImage} alt="Main Hero" width={96} height={96} className="w-full h-full object-contain p-1" />
+                      <button
+                        type="button"
+                        onClick={() => setMainImage('')}
+                        className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        ✕
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-[10px] text-[#1A5C5E] font-bold">Main Hero</span>
+                  )}
+                </div>
+                <span className="text-[10px] font-extrabold text-[#1A5C5E] block text-center uppercase tracking-wider">Main Hero</span>
+              </div>
 
-
-          {/* Live Image Thumbnail Previews */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            {[
-              { key: 'image1', label: 'Main / Hero' },
-              { key: 'image2', label: 'Transparent' },
-              { key: 'image3', label: 'Gallery 1' },
-              { key: 'image4', label: 'Gallery 2' },
-              { key: 'image5', label: 'Gallery 3' }
-            ].map(({ key, label }) => {
-              const url = (formData as any)[key];
-              return (
-                <div key={key} className="space-y-1.5">
+              {/* Gallery Items */}
+              {galleryImages.map((url, idx) => (
+                <div key={idx} className="space-y-1">
                   <div className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center relative overflow-hidden group">
                     {url ? (
                       <>
-                        <Image src={url} alt={label} width={96} height={96} className="w-full h-full object-contain p-1" />
+                        <Image src={url} alt={`Gallery ${idx + 1}`} width={96} height={96} className="w-full h-full object-contain p-1" />
                         <button
                           type="button"
-                          onClick={() => setFormData(prev => ({ ...prev, [key]: '' }))}
-                          className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleRemoveGalleryImage(idx)}
+                          className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         >
                           ✕
                         </button>
                       </>
                     ) : (
-                      <span className="text-[10px] text-slate-400 font-bold">No Image</span>
+                      <span className="text-[10px] text-slate-400 font-bold">Gallery {idx + 1}</span>
                     )}
                   </div>
-                  <span className="text-[10px] font-bold text-slate-500 block text-center uppercase tracking-wider">{label}</span>
+                  <div className="flex items-center justify-between px-1">
+                    <span className="text-[10px] font-bold text-slate-500 block uppercase tracking-wider">Gallery {idx + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveGalleryImage(idx)}
+                      className="text-red-500 hover:text-red-700 text-[10px] font-bold cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
 
-          <div className="space-y-4 pt-2">
-            <AdminImageUploader
-              label="Image 1 (Main / Hero View) *"
-              value={formData.image1}
-              onChange={(url) => {
-                setFormData(prev => ({ ...prev, image1: url }));
-                setIsDirty(true);
-              }}
-              folder={`products/${id}`}
-            />
+          {/* Main Hero Image Uploader */}
+          <div className="space-y-4 pt-4 border-t border-[#C9D5D5]/40">
+            <div className="p-4 bg-emerald-50/60 rounded-xl border border-[#1A5C5E]/20 space-y-2">
+              <span className="text-xs font-bold text-[#1A5C5E] block uppercase tracking-wider">
+                Main Hero Image (Home Page & Product Hero View) *
+              </span>
+              <p className="text-[11px] text-slate-500">
+                This image will be displayed on the Home Page product cards and as the main hero banner on the product details page.
+              </p>
+              <AdminImageUploader
+                label=""
+                value={mainImage}
+                onChange={(url) => {
+                  setMainImage(url);
+                  setIsDirty(true);
+                }}
+                folder={`products/${id}`}
+              />
+            </div>
 
-            <AdminImageUploader
-              label="Image 2 (Transparent View) *"
-              value={formData.image2}
-              onChange={(url) => {
-                setFormData(prev => ({ ...prev, image2: url }));
-                setIsDirty(true);
-              }}
-              folder={`products/${id}`}
-            />
+            {/* Gallery Uploaders */}
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Product Gallery Images (Below Hero Thumbnails)
+                </span>
+                <button
+                  type="button"
+                  onClick={handleAddGalleryImage}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#1A5C5E] hover:bg-[#134547] text-white rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer"
+                >
+                  + Add More Gallery Image
+                </button>
+              </div>
 
-            <AdminImageUploader
-              label="Image 3 (Gallery View 1)"
-              value={formData.image3}
-              onChange={(url) => {
-                setFormData(prev => ({ ...prev, image3: url }));
-                setIsDirty(true);
-              }}
-              folder={`products/${id}/gallery`}
-            />
-
-            <AdminImageUploader
-              label="Image 4 (Gallery View 2)"
-              value={formData.image4}
-              onChange={(url) => {
-                setFormData(prev => ({ ...prev, image4: url }));
-                setIsDirty(true);
-              }}
-              folder={`products/${id}/gallery`}
-            />
-
-            <AdminImageUploader
-              label="Image 5 (Gallery View 3)"
-              value={formData.image5}
-              onChange={(url) => {
-                setFormData(prev => ({ ...prev, image5: url }));
-                setIsDirty(true);
-              }}
-              folder={`products/${id}/gallery`}
-            />
+              {galleryImages.map((url, idx) => (
+                <div key={idx} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="grow">
+                    <AdminImageUploader
+                      label={`Gallery Image ${idx + 1}`}
+                      value={url}
+                      onChange={(newUrl) => handleGalleryImageChange(idx, newUrl)}
+                      folder={`products/${id}/gallery`}
+                    />
+                  </div>
+                  {galleryImages.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveGalleryImage(idx)}
+                      className="px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-bold transition-colors cursor-pointer shrink-0"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </AdminCard>
 
