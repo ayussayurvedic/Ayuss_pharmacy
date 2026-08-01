@@ -357,10 +357,34 @@ GRANT ALL ON public.expirations TO anon, authenticated, service_role;
 GRANT ALL ON public.business_tax_settings TO anon, authenticated, service_role;
 GRANT ALL ON public.payment_transactions TO anon, authenticated, service_role;
 
--- Seed default Business Tax Settings row if none exists
-INSERT INTO public.business_tax_settings (id, tax_mode, configuration_status, legal_business_name, gstin)
-VALUES ('00000000-0000-0000-0000-000000000001', 'GST_REGISTERED', 'VERIFIED', 'S.S. PHARMACY Ayurvedic Pvt Ltd', '37AAAAA0000A1Z5')
-ON CONFLICT (id) DO NOTHING;
+-- ============================================================================
+-- RLS Security Hardening for Admin Users, Audit Logs, & Rate Limits
+-- ============================================================================
+ALTER TABLE IF EXISTS public.admin_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.rate_limits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.audit_logs ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow select for admin_users" ON public.admin_users;
+DROP POLICY IF EXISTS "Allow public read on admin_users" ON public.admin_users;
+DROP POLICY IF EXISTS "Allow public read for admin_users" ON public.admin_users;
+
+REVOKE ALL ON public.admin_users FROM anon;
+GRANT ALL ON public.admin_users TO authenticated, service_role;
+
+DROP POLICY IF EXISTS "Admin users private access" ON public.admin_users;
+CREATE POLICY "Admin users private access" ON public.admin_users
+    FOR ALL
+    USING (public.is_admin() OR auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Audit logs private access" ON public.audit_logs;
+CREATE POLICY "Audit logs private access" ON public.audit_logs
+    FOR ALL
+    USING (public.is_admin() OR auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Rate limits private access" ON public.rate_limits;
+CREATE POLICY "Rate limits private access" ON public.rate_limits
+    FOR ALL
+    USING (public.is_admin() OR auth.role() = 'service_role');
 
 -- Reload PostgREST Schema Cache
 NOTIFY pgrst, 'reload schema';
