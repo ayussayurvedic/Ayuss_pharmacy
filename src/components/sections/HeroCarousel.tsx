@@ -349,7 +349,7 @@ export default function HeroCarousel() {
 
                     <div className="flex items-center gap-3 pt-2">
                       <Link 
-                        href={activeSlide.productId === 'all' ? '/products' : `/products/${activeSlide.productId}`} 
+                        href={activeSlide.productId.startsWith('/') ? activeSlide.productId : (activeSlide.productId === 'all' ? '/products' : `/products/${activeSlide.productId}`)} 
                         className="inline-flex items-center justify-center gap-2 bg-[#1A5C5E] hover:bg-[#134547] hover:-translate-y-0.5 text-white font-sans text-[14px] font-semibold tracking-[0.01em] px-6 py-2.5 rounded-full border border-[#1A5C5E] cursor-pointer shadow-md transition-all min-h-[44px]"
                       >
                         <span>Explore Products</span>
