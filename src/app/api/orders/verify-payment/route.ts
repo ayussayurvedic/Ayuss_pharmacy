@@ -40,12 +40,10 @@ export async function POST(request: NextRequest) {
       // Log transaction
       const { error: txErr } = await supabaseAdmin.from('payment_transactions').insert({
         order_id: orderId,
-        payment_method: 'online_razorpay_sandbox',
-        transaction_id: `sandbox_${Date.now()}`,
-        gateway_order_id: 'sandbox_order',
+        razorpay_payment_id: `sandbox_${Date.now()}`,
+        razorpay_order_id: 'sandbox_order',
         amount: order.total_amount,
         status: 'paid',
-        raw_payload: body,
       });
       if (txErr) {
         console.error('Failed to log sandbox transaction:', txErr);
@@ -76,12 +74,11 @@ export async function POST(request: NextRequest) {
     // Log transaction
     const { error: txErr } = await supabaseAdmin.from('payment_transactions').insert({
       order_id: orderId,
-      payment_method: 'online_razorpay',
-      transaction_id: razorpayPaymentId,
-      gateway_order_id: razorpayOrderId,
+      razorpay_payment_id: razorpayPaymentId,
+      razorpay_order_id: razorpayOrderId,
+      razorpay_signature: razorpaySignature,
       amount: order.total_amount,
       status: 'paid',
-      raw_payload: body,
     });
     if (txErr) {
       console.error('Failed to log live transaction:', txErr);
