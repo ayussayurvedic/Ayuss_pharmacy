@@ -11,7 +11,6 @@ export default async function AdminAppInquiriesPage() {
     id: inq.id,
     name: inq.name,
     email: inq.email,
-    company: inq.company || '',
     phone: inq.phone || '',
     requirement: inq.message,
     status: inq.status,

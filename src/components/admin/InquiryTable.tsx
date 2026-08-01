@@ -14,7 +14,6 @@ interface Inquiry {
   id: string;
   name: string;
   email: string;
-  company: string;
   phone: string;
   requirement: string;
   status: string;
@@ -114,7 +113,7 @@ export default function InquiryTable({ inquiries, updateStatus, deleteInquiry }:
         search === '' ||
         inq.name.toLowerCase().includes(search.toLowerCase()) ||
         inq.email.toLowerCase().includes(search.toLowerCase()) ||
-        inq.company.toLowerCase().includes(search.toLowerCase());
+        inq.phone.toLowerCase().includes(search.toLowerCase());
 
       const matchesStatus = statusFilter === 'all' || inq.status === statusFilter;
 
@@ -162,11 +161,10 @@ export default function InquiryTable({ inquiries, updateStatus, deleteInquiry }:
   };
 
   const handleExportCSV = () => {
-    const headers = ['Name', 'Email', 'Company', 'Phone', 'Requirement', 'Status', 'Date'];
+    const headers = ['Name', 'Email', 'Phone', 'Requirement', 'Status', 'Date'];
     const rows = filtered.map((inq) => [
       inq.name,
       inq.email,
-      inq.company,
       inq.phone,
       `"${inq.requirement.replace(/"/g, '""')}"`,
       inq.status,
@@ -252,11 +250,8 @@ export default function InquiryTable({ inquiries, updateStatus, deleteInquiry }:
 
               <div className="grid grid-cols-2 gap-2 bg-[#FDF8F0] p-2.5 rounded-lg text-[10px] mb-3">
                 <div>
-                  <span className="text-slate-400 block mb-0.5 font-bold uppercase tracking-wider text-[8px]">Company</span>
-                  <div className="flex items-center gap-1 font-bold text-[#134547]">
-                    <Building2 className="w-3 h-3 text-[#1A5C5E]/70" />
-                    {inquiry.company || 'Private'}
-                  </div>
+                  <span className="text-slate-400 block mb-0.5 font-bold uppercase tracking-wider text-[8px]">Phone</span>
+                  <span className="font-bold text-[#134547]">{inquiry.phone || 'N/A'}</span>
                 </div>
                 <div>
                   <span className="text-slate-400 block mb-0.5 font-bold uppercase tracking-wider text-[8px]">Received</span>
@@ -323,7 +318,6 @@ export default function InquiryTable({ inquiries, updateStatus, deleteInquiry }:
             <thead>
               <tr className="border-b border-[#C9D5D5]/60 bg-[#FDF8F0]/50">
                 <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-[#1A5C5E]">Inquirer</th>
-                <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-[#1A5C5E]">Entity</th>
                 <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-[#1A5C5E]">Message Preview</th>
                 <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-[#1A5C5E]">Engagement</th>
                 <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-[#1A5C5E] text-right">Actions</th>
@@ -332,7 +326,7 @@ export default function InquiryTable({ inquiries, updateStatus, deleteInquiry }:
             <tbody className="divide-y divide-[#C9D5D5]/40">
               {paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center">
+                  <td colSpan={4} className="px-4 py-12 text-center">
                     <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-2.5">
                       <MessageSquare className="w-5 h-5 text-gray-300" />
                     </div>
@@ -349,18 +343,12 @@ export default function InquiryTable({ inquiries, updateStatus, deleteInquiry }:
                         </div>
                         <div>
                           <p className="text-xs font-bold text-[#134547] leading-tight group-hover:text-[#1A5C5E] transition-colors">{inquiry.name}</p>
-                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">{inquiry.email}</p>
+                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">{inquiry.email || inquiry.phone}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#134547] uppercase tracking-tighter">
-                        <Building2 className="w-3.5 h-3.5 text-[#1A5C5E]/70" />
-                        {inquiry.company || 'Private'}
-                      </div>
-                    </td>
                     <td className="px-4 py-3">
-                      <p className="text-xs text-slate-700 line-clamp-1 max-w-[280px] font-medium">
+                      <p className="text-xs text-slate-700 line-clamp-1 max-w-[320px] font-medium">
                         {inquiry.requirement}
                       </p>
                     </td>
@@ -466,7 +454,6 @@ export default function InquiryTable({ inquiries, updateStatus, deleteInquiry }:
                     {selectedInquiry.name.substring(0, 2).toUpperCase()}
                   </div>
                   <h3 className="text-base font-bold text-[#134547] tracking-tight">{selectedInquiry.name}</h3>
-                  <p className="text-[#1A5C5E] font-bold text-xs mt-0.5">{selectedInquiry.company || 'Independent Lead'}</p>
                 </div>
 
                 {/* 2. Contact Metadata */}

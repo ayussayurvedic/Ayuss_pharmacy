@@ -167,7 +167,6 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255),
     phone VARCHAR(50),
-    company VARCHAR(255),
     message TEXT NOT NULL,
     status VARCHAR(50) DEFAULT 'new',
     created_at TIMESTAMPTZ DEFAULT NOW(),
