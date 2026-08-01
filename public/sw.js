@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sspharmacy-app-48fc98db-cd30-475b-b70c-3028d3d4c5a5';
+const CACHE_NAME = 'sspharmacy-app-89f239bb-87f4-4f2d-89db-efd8ce51caea';
 const SCOPES = ['/'];
 
 // Utility to bound dynamic caches to prevent storage exhaustion
@@ -37,6 +37,12 @@ self.addEventListener('install', (event) => {
 // Fetch event - handle routing, dynamic cache storage, and offline fallbacks
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+
+  // Bypass service worker cache completely on localhost / development environment to prevent stale assets
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+    return;
+  }
+
   const isTargetScope = SCOPES.some(scope => url.pathname.startsWith(scope));
 
   // Skip caching for:
@@ -154,7 +160,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== 'static-assets') {
+          if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })

@@ -37,6 +37,12 @@ self.addEventListener('install', (event) => {
 // Fetch event - handle routing, dynamic cache storage, and offline fallbacks
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+
+  // Bypass service worker cache completely on localhost / development environment to prevent stale assets
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+    return;
+  }
+
   const isTargetScope = SCOPES.some(scope => url.pathname.startsWith(scope));
 
   // Skip caching for:
@@ -154,7 +160,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== 'static-assets') {
+          if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })
