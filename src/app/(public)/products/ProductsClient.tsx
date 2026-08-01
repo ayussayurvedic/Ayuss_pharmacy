@@ -172,7 +172,7 @@ export default function ProductsClient() {
               >
                 <Link href={`/products/${p.id}`} className="block relative aspect-square mb-6 bg-slate-50 rounded-xl overflow-hidden border border-slate-100">
                   <Image 
-                    src={p.image || ''} 
+                    src={p.image || "data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 1 1'%2F%3E"} 
                     alt={p.name} 
                     fill
                     className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
@@ -209,8 +209,27 @@ export default function ProductsClient() {
 
                 <div className="mt-auto flex justify-between items-center pt-4 border-t border-slate-100">
                   <div>
-                    <span className="text-[9px] text-slate-400 block uppercase font-bold tracking-wider">Price</span>
-                    <span className="font-bold text-lg text-[#1A5C5E]">₹{p.sellingPrice || p.mrp}</span>
+                    <span className="text-[9px] text-slate-400 block uppercase font-bold tracking-wider">Best Price</span>
+                    <div className="flex items-baseline gap-2 mt-0.5">
+                      {(() => {
+                        const displayPrice = p.sellingPrice && p.sellingPrice > 0 ? p.sellingPrice : p.mrp;
+                        const hasDiscount = Boolean(p.mrp && displayPrice && displayPrice < p.mrp);
+                        const discountPct = hasDiscount ? Math.round(((p.mrp! - displayPrice!) / p.mrp!) * 100) : 0;
+                        return (
+                          <>
+                            <span className="text-lg font-bold text-[#1A5C5E]">₹{displayPrice?.toLocaleString('en-IN')}</span>
+                            {hasDiscount && (
+                              <>
+                                <span className="line-through text-xs text-slate-400 font-normal">₹{p.mrp?.toLocaleString('en-IN')}</span>
+                                <span className="text-[9px] text-[#C9943E] bg-[#C9943E]/5 px-1.5 py-0.5 rounded font-bold">
+                                  {discountPct}% OFF
+                                </span>
+                              </>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
                   </div>
                   <button
                     type="button"
