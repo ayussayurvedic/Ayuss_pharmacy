@@ -65,6 +65,9 @@ SELECT
 FROM public.invoices
 GROUP BY to_char(created_at, 'YYYY-MM');
 
+-- Fix: Set view to SECURITY INVOKER to enforce querying user's RLS policies
+ALTER VIEW public.vw_gst_r1_prep_report SET (security_invoker = on);
+
 -- 4. Suppliers Table
 CREATE TABLE IF NOT EXISTS public.suppliers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
