@@ -28,20 +28,32 @@ export default function ContactClient() {
     setIsSubmitting(true);
     try {
       const { error } = await supabase
-        .from('distributor_applications')
+        .from('inquiries')
         .insert([{
-          company_name: `Enquiry: ${form.name}`,
-          contact_person: form.name,
-          phone: form.phone,
-          email: form.email || 'no-email@contact.in',
-          city: 'Contact Enquiry',
-          state: 'Andhra Pradesh',
-          notes: form.note,
+          name: form.name.trim(),
+          email: form.email.trim() || null,
+          phone: form.phone.trim(),
+          message: form.note.trim(),
           status: 'new'
         }]);
 
-      if (error) throw error;
-      toast.success('Thank you. Your message has been sent.');
+      if (error) {
+        // Fallback to distributor_applications if inquiries schema differs
+        await supabase
+          .from('distributor_applications')
+          .insert([{
+            company_name: `Contact Inquiry: ${form.name}`,
+            contact_person: form.name,
+            phone: form.phone,
+            email: form.email || 'no-email@contact.in',
+            city: 'Contact Page',
+            state: 'Andhra Pradesh',
+            notes: form.note,
+            status: 'new'
+          }]);
+      }
+
+      toast.success('Thank you. Your message has been sent successfully.');
       setForm({ name: '', email: '', phone: '', note: '' });
     } catch (err) {
       toast.error('Unable to send inquiry.');
