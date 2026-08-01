@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS public.orders (
     payment_status TEXT NOT NULL DEFAULT 'pending',
     order_status TEXT NOT NULL DEFAULT 'new',
     checkout_attempt_id TEXT,
+    estimated_delivery_date DATE,
+    gift_message TEXT,
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 );

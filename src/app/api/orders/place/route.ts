@@ -134,31 +134,53 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Create order record using service role client to bypass client RLS rules
-    const { data: insertedOrder, error: insErr } = await supabaseAdmin
+    const fullPayload: Record<string, any> = {
+      order_number: orderNum,
+      customer_name: name,
+      customer_phone: phone,
+      customer_email: email || null,
+      shipping_address: address,
+      city,
+      state,
+      pincode,
+      subtotal,
+      delivery_charge: delivery,
+      total_amount: total,
+      payment_method: paymentMethod,
+      payment_status: paymentMethod === 'cod' ? 'cod_pending' : 'pending',
+      order_status: 'new',
+      checkout_attempt_id: checkoutAttemptId || null,
+      estimated_delivery_date: deliveryDate.toISOString().split('T')[0],
+      gift_message: body.giftMessage || null,
+      is_flagged: isFlagged,
+      fraud_score: fraudScore
+    };
+
+    let insertedOrder;
+    let insErr;
+
+    const res1 = await supabaseAdmin
       .from('orders')
-      .insert({
-        order_number: orderNum,
-        customer_name: name,
-        customer_phone: phone,
-        customer_email: email || null,
-        shipping_address: address,
-        city,
-        state,
-        pincode,
-        subtotal,
-        delivery_charge: delivery,
-        total_amount: total,
-        payment_method: paymentMethod,
-        payment_status: paymentMethod === 'cod' ? 'cod_pending' : 'pending',
-        order_status: 'new',
-        checkout_attempt_id: checkoutAttemptId || null,
-        estimated_delivery_date: deliveryDate.toISOString().split('T')[0],
-        gift_message: body.giftMessage || null,
-        is_flagged: isFlagged,
-        fraud_score: fraudScore
-      })
+      .insert([fullPayload])
       .select()
       .single();
+
+    insertedOrder = res1.data;
+    insErr = res1.error;
+
+    // Fallback if estimated_delivery_date or gift_message columns are missing in live DB schema
+    if (insErr && (insErr.code === 'PGRST204' || insErr.message?.includes('estimated_delivery_date') || insErr.message?.includes('gift_message') || insErr.message?.includes('column'))) {
+      console.warn('Orders schema cache missing optional columns. Executing fallback order insert without estimated_delivery_date/gift_message...');
+      const { estimated_delivery_date, gift_message, ...fallbackPayload } = fullPayload;
+      const res2 = await supabaseAdmin
+        .from('orders')
+        .insert([fallbackPayload])
+        .select()
+        .single();
+
+      insertedOrder = res2.data;
+      insErr = res2.error;
+    }
 
     if (insErr) throw insErr;
     const orderId = insertedOrder.id;

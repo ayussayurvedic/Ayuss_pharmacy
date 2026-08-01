@@ -1,6 +1,6 @@
--- ============================================================================
--- Complete Self-Contained S.S. Pharmacy Auxiliary Tables, RPCs, & RLS Setup
--- ============================================================================
+-- 0. Update Orders schema for estimated_delivery_date and gift_message
+ALTER TABLE IF EXISTS public.orders ADD COLUMN IF NOT EXISTS estimated_delivery_date DATE;
+ALTER TABLE IF EXISTS public.orders ADD COLUMN IF NOT EXISTS gift_message TEXT;
 
 -- 1. Inventory Table
 CREATE TABLE IF NOT EXISTS public.inventory (
