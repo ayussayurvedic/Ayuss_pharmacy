@@ -103,7 +103,7 @@ export default function Navbar() {
               ) : (
                 cartItems.map((item) => (
                   <div key={item.product.id} className="flex gap-3 border-b pb-3 items-center bg-white p-3 rounded-xl border border-slate-200/60 shadow-xs">
-                    <Image src={item.product.image || ''} alt={item.product.name} className="object-contain bg-white rounded border p-1 shrink-0" width={52} height={52} />
+                    <Image src={item.product.image || "data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 1 1'%2F%3E"} alt={item.product.name} className="object-contain bg-white rounded border p-1 shrink-0" width={52} height={52} />
                     <div className="flex-1 text-xs">
                       <span className="font-bold text-slate-900 block">{item.product.name}</span>
                       <span className="text-slate-500 block text-[10px] mt-0.5">{item.product.packSize}</span>

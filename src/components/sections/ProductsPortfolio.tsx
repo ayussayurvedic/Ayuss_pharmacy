@@ -126,7 +126,7 @@ export default function ProductsPortfolio() {
                   {/* Product Image */}
                   <div className="relative w-full h-[175px] transition-transform duration-500 group-hover:scale-[1.08]">
                     <Image 
-                      src={product.transparentImage || product.image || ''} 
+                      src={product.transparentImage || product.image || "data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 1 1'%2F%3E"} 
                       alt={product.name}
                       fill
                       className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.08)]"
