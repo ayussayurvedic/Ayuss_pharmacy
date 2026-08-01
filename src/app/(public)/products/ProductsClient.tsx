@@ -77,8 +77,18 @@ export default function ProductsClient() {
       p.composition.toLowerCase().includes(search.toLowerCase());
     
     if (selectedCategory === 'all') return matchesSearch;
-    if (selectedCategory === 'musculoskeletal') return matchesSearch && p.category.toLowerCase().includes('pain');
-    if (selectedCategory === 'skincare') return matchesSearch && p.category.toLowerCase().includes('skin');
+    if (selectedCategory === 'musculoskeletal') {
+      const isPainRelief = p.category.toLowerCase().includes('pain') || 
+                           p.name.toLowerCase().includes('pain') || 
+                           p.id.toLowerCase().includes('pain');
+      return matchesSearch && isPainRelief;
+    }
+    if (selectedCategory === 'skincare') {
+      const isSkinCare = p.category.toLowerCase().includes('skin') || 
+                         p.name.toLowerCase().includes('skin') || 
+                         p.id.toLowerCase().includes('skin');
+      return matchesSearch && isSkinCare;
+    }
     return matchesSearch;
   });
 
