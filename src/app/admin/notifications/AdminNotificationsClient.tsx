@@ -12,17 +12,17 @@ import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { useToast } from '@/components/ui/Toast';
 import { SentNotification, createNotification, deleteNotification, togglePinNotification, deleteMultipleNotifications, updateNotification } from './actions';
 
-interface EmployeeSummary {
+interface AdminSummary {
   id: string;
   name: string;
-  employee_id: string;
+  admin_id: string;
 }
 
 export default function AdminNotificationsClient({
-  employees,
+  admins,
   initialNotifications
 }: {
-  employees: EmployeeSummary[];
+  admins: AdminSummary[];
   initialNotifications: SentNotification[];
 }) {
   const [notifications, setNotifications] = useState<SentNotification[]>(initialNotifications);
@@ -30,7 +30,7 @@ export default function AdminNotificationsClient({
   const [message, setMessage] = useState('');
   const [type, setType] = useState<'announcement' | 'personal' | 'alert'>('announcement');
   const [audience, setAudience] = useState<'broadcast' | 'targeted'>('broadcast');
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
+  const [selectedAdminId, setSelectedAdminId] = useState('');
   
   const [isPending, startTransition] = useTransition();
   const [deleteTarget, setDeleteTarget] = useState<SentNotification | null>(null);
@@ -51,8 +51,8 @@ export default function AdminNotificationsClient({
     setTitle(notif.title);
     setMessage(notif.message);
     setType(notif.type || 'announcement');
-    setAudience(notif.employee_id ? 'targeted' : 'broadcast');
-    setSelectedEmployeeId(notif.employee_id || '');
+    setAudience(notif.admin_id ? 'targeted' : 'broadcast');
+    setSelectedAdminId(notif.admin_id || '');
   };
 
   const handleCancelEdit = () => {
@@ -61,7 +61,7 @@ export default function AdminNotificationsClient({
     setMessage('');
     setType('announcement');
     setAudience('broadcast');
-    setSelectedEmployeeId('');
+    setSelectedAdminId('');
   };
 
   const handleSendNotification = async (e: React.FormEvent) => {
@@ -70,13 +70,13 @@ export default function AdminNotificationsClient({
       toast.error('Title and message are required.');
       return;
     }
-    if (audience === 'targeted' && !selectedEmployeeId) {
-      toast.error('Please select a recipient employee.');
+    if (audience === 'targeted' && !selectedAdminId) {
+      toast.error('Please select a recipient admin.');
       return;
     }
 
     startTransition(async () => {
-      const recipientId = audience === 'broadcast' ? null : selectedEmployeeId;
+      const recipientId = audience === 'broadcast' ? null : selectedAdminId;
       
       if (editingNotification) {
         const res = await updateNotification(editingNotification.id, title.trim(), message.trim(), type, recipientId);
@@ -84,24 +84,12 @@ export default function AdminNotificationsClient({
         if (res.success && res.notification) {
           toast.success('Notification updated successfully.');
           
-          let matchedEmp = null;
-          if (recipientId) {
-            const emp = employees.find(e => e.id === recipientId);
-            if (emp) {
-              matchedEmp = {
-                name: emp.name,
-                employee_id: emp.employee_id
-              };
-            }
-          }
-
           setNotifications(prev => prev.map(n => n.id === editingNotification.id ? {
             ...n,
             title: res.notification.title,
             message: res.notification.message,
             type: res.notification.type,
-            employee_id: res.notification.employee_id,
-            employees: matchedEmp
+            admin_id: res.notification.admin_id
           } : n));
           
           handleCancelEdit();
@@ -114,34 +102,22 @@ export default function AdminNotificationsClient({
         if (res.success && res.notification) {
           toast.success('Notification dispatched successfully.');
           
-          let matchedEmp = null;
-          if (recipientId) {
-            const emp = employees.find(e => e.id === recipientId);
-            if (emp) {
-              matchedEmp = {
-                name: emp.name,
-                employee_id: emp.employee_id
-              };
-            }
-          }
-
           const newNotif: SentNotification = {
             id: res.notification.id,
             title: res.notification.title,
             message: res.notification.message,
             type: res.notification.type,
-            employee_id: res.notification.employee_id,
+            admin_id: res.notification.admin_id,
             sender_name: res.notification.sender_name,
             is_read: res.notification.is_read,
             is_pinned: false,
-            created_at: res.notification.created_at,
-            employees: matchedEmp
+            created_at: res.notification.created_at
           };
 
           setNotifications(prev => [newNotif, ...prev]);
           setTitle('');
           setMessage('');
-          setSelectedEmployeeId('');
+          setSelectedAdminId('');
         } else {
           toast.error(res.error || 'Failed to dispatch notification');
         }
@@ -313,7 +289,7 @@ export default function AdminNotificationsClient({
                   bg: 'bg-indigo-50 border-indigo-100'
                 };
 
-                const isBroadcast = notif.employee_id === null;
+                const isBroadcast = notif.admin_id === null;
 
                 return (
                   <div
@@ -467,7 +443,9 @@ export default function AdminNotificationsClient({
                 required
                 rows={4}
               />
-            </div>             <div className="space-y-1">
+            </div>
+
+            <div className="space-y-1">
               <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block font-mono">Alert Severity</label>
               <select
                 value={type}
@@ -494,7 +472,7 @@ export default function AdminNotificationsClient({
                   )}
                 >
                   <Users className="w-3.5 h-3.5" />
-                  All Staff
+                  All Admins
                 </button>
                 <button
                   type="button"
@@ -507,24 +485,24 @@ export default function AdminNotificationsClient({
                   )}
                 >
                   <User className="w-3.5 h-3.5" />
-                  Target Staff
+                  Target Admin
                 </button>
               </div>
             </div>
 
             {audience === 'targeted' && (
               <div className="space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
-                <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block font-mono">Recipient Employee</label>
+                <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block font-mono">Recipient Admin</label>
                 <select
-                  value={selectedEmployeeId}
-                  onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                  value={selectedAdminId}
+                  onChange={(e) => setSelectedAdminId(e.target.value)}
                   className="w-full px-3.5 py-2.5 border border-[#C9D5D5] rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#1A5C5E] bg-white cursor-pointer font-semibold"
                   required
                 >
-                  <option value="">Select Employee...</option>
-                  {employees.map(emp => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.name} ({emp.employee_id})
+                  <option value="">Select Admin...</option>
+                  {admins.map(adm => (
+                    <option key={adm.id} value={adm.id}>
+                      {adm.name} ({adm.admin_id})
                     </option>
                   ))}
                 </select>
@@ -571,7 +549,7 @@ export default function AdminNotificationsClient({
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDeleteConfirm}
         title="Delete Notification Dispatch?"
-        message={`Are you sure you want to delete the notification "${deleteTarget?.title}"? Employees will no longer see this alert in their in-app notifications panel.`}
+        message={`Are you sure you want to delete the notification "${deleteTarget?.title}"? Admins will no longer see this alert in their in-app notifications panel.`}
         confirmLabel="Delete"
         cancelLabel="Keep"
         variant="danger"

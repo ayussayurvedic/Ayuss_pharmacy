@@ -10,22 +10,18 @@ export interface SentNotification {
   title: string;
   message: string;
   type: 'announcement' | 'personal' | 'alert';
-  employee_id: string | null;
+  admin_id: string | null;
   sender_name: string;
   is_read: boolean;
   is_pinned: boolean;
   created_at: string;
-  employees?: {
-    name: string;
-    employee_id: string;
-  } | null;
 }
 
 export async function getSentNotifications() {
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized', notifications: [] };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only', notifications: [] };
 
     const threeDaysAgo = new Date();
@@ -51,7 +47,7 @@ export async function createNotification(
   title: string,
   message: string,
   type: 'announcement' | 'personal' | 'alert',
-  employeeId?: string | null
+  adminId?: string | null
 ) {
   try {
     const session = await getSession();
@@ -67,7 +63,7 @@ export async function createNotification(
         title,
         message,
         type,
-        employee_id: employeeId || null,
+        admin_id: adminId || null,
         sender_name: senderName,
         is_read: false
       }])
@@ -82,7 +78,7 @@ export async function createNotification(
         title,
         message,
         type: 'company_announcement',
-        adminId: employeeId || null,
+        adminId: adminId || null,
         clickActionUrl: '/admin/notifications',
         senderName,
         skipInApp: true
@@ -105,12 +101,12 @@ export async function updateNotification(
   title: string,
   message: string,
   type: 'announcement' | 'personal' | 'alert',
-  employeeId?: string | null
+  adminId?: string | null
 ) {
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized' };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only' };
 
     const { data, error } = await supabaseAdmin
@@ -119,7 +115,7 @@ export async function updateNotification(
         title,
         message,
         type,
-        employee_id: employeeId || null
+        admin_id: adminId || null
       })
       .eq('id', id)
       .select()
@@ -127,8 +123,6 @@ export async function updateNotification(
 
     if (error) throw error;
 
-    revalidatePath('/employee/dashboard');
-    revalidatePath('/employee/attendance');
     revalidatePath('/admin/notifications');
 
     return { success: true, notification: data };
@@ -142,7 +136,7 @@ export async function deleteNotification(id: string) {
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized' };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only' };
 
     const { error } = await supabaseAdmin
@@ -152,8 +146,6 @@ export async function deleteNotification(id: string) {
 
     if (error) throw error;
 
-    revalidatePath('/employee/dashboard');
-    revalidatePath('/employee/attendance');
     revalidatePath('/admin/notifications');
 
     return { success: true };
@@ -167,7 +159,7 @@ export async function togglePinNotification(id: string) {
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized' };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only' };
 
     const { data: notif, error: fetchErr } = await supabaseAdmin
@@ -185,8 +177,6 @@ export async function togglePinNotification(id: string) {
 
     if (error) throw error;
 
-    revalidatePath('/employee/dashboard');
-    revalidatePath('/employee/attendance');
     revalidatePath('/admin/notifications');
 
     return { success: true, isPinned: !notif.is_pinned };
@@ -200,7 +190,7 @@ export async function deleteMultipleNotifications(ids: string[]) {
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized' };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only' };
 
     if (!ids || ids.length === 0) return { success: true };
@@ -212,8 +202,6 @@ export async function deleteMultipleNotifications(ids: string[]) {
 
     if (error) throw error;
 
-    revalidatePath('/employee/dashboard');
-    revalidatePath('/employee/attendance');
     revalidatePath('/admin/notifications');
 
     return { success: true };
@@ -227,7 +215,7 @@ export async function cleanupExpiredNotifications() {
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized' };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only' };
 
     const threeDaysAgo = new Date();
@@ -242,8 +230,6 @@ export async function cleanupExpiredNotifications() {
 
     if (error) throw error;
 
-    revalidatePath('/employee/dashboard');
-    revalidatePath('/employee/attendance');
     revalidatePath('/admin/notifications');
 
     return { success: true, deletedCount: count || 0 };
@@ -257,7 +243,7 @@ export async function getNotificationsForAdmin(adminId: string) {
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized', notifications: [] };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only', notifications: [] };
 
     // 1. Fetch all notifications matching admin (broadcast/admin-wide or specific admin)
@@ -317,7 +303,7 @@ export async function markAllAdminNotificationsRead(adminId: string) {
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized' };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only' };
 
     // Fetch all unread notifications for admin
@@ -343,8 +329,7 @@ export async function markAllAdminNotificationsRead(adminId: string) {
     if (broadcastIds.length > 0) {
       const insertRows = broadcastIds.map(id => ({
         notification_id: id,
-        admin_id: adminId,
-        employee_id: null
+        admin_id: adminId
       }));
 
       const { error } = await supabaseAdmin
@@ -365,7 +350,7 @@ export async function markAdminNotificationRead(id: string, adminId: string) {
   try {
     const session = await getSession();
     if (!session || !session.id) return { success: false, error: 'Unauthorized' };
-    const isAdmin = session.role === 'admin' || session.role === 'hr';
+    const isAdmin = session.role === 'admin';
     if (!isAdmin) return { success: false, error: 'Unauthorized: Admins only' };
 
     // Check if notification is targeted or broadcast
@@ -390,8 +375,7 @@ export async function markAdminNotificationRead(id: string, adminId: string) {
         .from('notification_reads')
         .insert({
           notification_id: id,
-          admin_id: adminId,
-          employee_id: null
+          admin_id: adminId
         });
       if (error) throw error;
     }

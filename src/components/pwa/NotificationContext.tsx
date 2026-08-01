@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/Toast';
 export interface AppNotification {
   id: string;
-  employee_id: string;
+  admin_id?: string;
   title: string;
   message: string;
   type: 'personal' | 'announcement' | 'alert';
@@ -37,10 +37,10 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export function NotificationProvider({ 
   children, 
-  employeeId: adminId
+  adminId
 }: { 
   children: React.ReactNode;
-  employeeId?: string;
+  adminId?: string;
   role?: string;
 }) {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);

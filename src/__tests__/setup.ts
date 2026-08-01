@@ -139,10 +139,7 @@ export async function createTestAdmin() {
   return admin;
 }
 
-/**
- * Generates a real JWT token for a given employee or admin.
- */
-export async function getTestSession(userId: string, role: string = 'employee', email: string = 'test@example.com') {
+export async function getTestSession(userId: string, role: string = 'admin', email: string = 'test@example.com') {
   return createToken({ id: userId, email, role });
 }
 

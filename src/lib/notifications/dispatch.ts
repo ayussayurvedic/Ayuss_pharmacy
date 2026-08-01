@@ -145,7 +145,7 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
   const pushPayload = JSON.stringify({
     title,
     message,
-    clickActionUrl: clickActionUrl || (adminId ? '/admin/dashboard' : '/employee/dashboard'),
+    clickActionUrl: clickActionUrl || '/admin/dashboard',
     tag: type
   });
 

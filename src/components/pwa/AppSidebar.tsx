@@ -124,7 +124,7 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
   // Check if any overflow item is currently active (to highlight the "More" button)
   const isOverflowActive = overflowItems.some((item) => pathname === item.href.split('#')[0]);
 
-  // Render bottom nav bar on all employee mobile pages
+  // Render bottom nav bar on all admin mobile pages
   const hideMobileNav = false;
 
   const handleLogout = async () => {
@@ -138,9 +138,6 @@ export default function AppSidebar({ role, userName, initialPendingCount = 0, pe
       sessionStorage.removeItem('sspharmacy-admin-session');
       localStorage.removeItem('sspharmacy-admin-session');
       localStorage.removeItem('sspharmacy-admin-token');
-      sessionStorage.removeItem('sspharmacy-employee-session');
-      localStorage.removeItem('sspharmacy-employee-session');
-      localStorage.removeItem('sspharmacy-employee-token');
       localStorage.removeItem('sspharmacy-session');
       localStorage.removeItem('sspharmacy-token');
     } catch {}

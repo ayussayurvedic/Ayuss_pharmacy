@@ -28,10 +28,26 @@ export function useFormDraft<T extends Record<string, any>>(
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) {
-        const parsed = JSON.parse(saved) as T;
+        const parsed = JSON.parse(saved);
+        let valuesToRestore: T | null = null;
+
+        if (parsed && 'values' in parsed && typeof parsed.timestamp === 'number') {
+          const age = Date.now() - parsed.timestamp;
+          const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+          if (age > maxAge) {
+            localStorage.removeItem(storageKey);
+            console.log(`[useFormDraft] Pruned expired form draft for key: ${storageKey}`);
+          } else {
+            valuesToRestore = parsed.values;
+          }
+        } else {
+          // Legacy format fallback: restore directly
+          valuesToRestore = parsed;
+        }
+
         // Verify it is not an empty object
-        if (Object.keys(parsed).length > 0) {
-          onRestore(parsed);
+        if (valuesToRestore && Object.keys(valuesToRestore).length > 0) {
+          onRestore(valuesToRestore);
           // Announce to screen readers
           window.dispatchEvent(
             new CustomEvent('admin-announce', {
@@ -51,7 +67,11 @@ export function useFormDraft<T extends Record<string, any>>(
       try {
         const values = currentValuesRef.current;
         if (values && Object.keys(values).length > 0) {
-          localStorage.setItem(storageKey, JSON.stringify(values));
+          const payload = {
+            values,
+            timestamp: Date.now(),
+          };
+          localStorage.setItem(storageKey, JSON.stringify(payload));
         }
       } catch (err) {
         console.warn('Failed to save form draft to localStorage', err);

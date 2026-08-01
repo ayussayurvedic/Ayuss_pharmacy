@@ -52,8 +52,7 @@ interface TokenPayload {
 }
 
 export async function createToken(payload: TokenPayload): Promise<string> {
-  // Admin tokens expire in 8 hours (one shift), employee/HR in 24 hours
-  const expiration = payload.role === 'admin' ? '8h' : '24h';
+  const expiration = '8h';
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -145,67 +144,10 @@ export async function verifyCaptchaToken(token: string, submittedAnswer: number,
 
 export async function getSession(): Promise<TokenPayload | null> {
   const cookieStore = await cookies();
-  let tokenCookieName: string | null = null;
-
-  try {
-    const headerStore = await headers();
-    let pathname = headerStore.get('x-pathname') || '';
-
-    if (!pathname) {
-      const referer = headerStore.get('referer');
-      const nextUrl = headerStore.get('next-url');
-
-      if (nextUrl) {
-        pathname = nextUrl;
-      } else if (referer) {
-        try {
-          pathname = new URL(referer).pathname;
-        } catch {}
-      }
-    }
-
-    if (pathname) {
-      if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
-        tokenCookieName = 'admin-auth-token';
-      } else if (pathname.startsWith('/api/mfa') || pathname.startsWith('/api/auth')) {
-        tokenCookieName = 'employee-auth-token';
-      }
-    }
-  } catch {
-    // headers() might fail in some contexts
-  }
-
-  // If we couldn't determine from headers, try both but validate role matches
-  if (!tokenCookieName) {
-    const adminToken = cookieStore.get('admin-auth-token')?.value;
-    if (adminToken) {
-      const payload = await verifyToken(adminToken);
-      if (payload && payload.role === 'admin') return payload;
-    }
-    const empToken = cookieStore.get('employee-auth-token')?.value;
-    if (empToken) {
-      const payload = await verifyToken(empToken);
-      if (payload && (payload.role === 'employee' || payload.role === 'hr')) return payload;
-    }
-    return null;
-  }
-
-  const token = cookieStore.get(tokenCookieName)?.value;
-  if (token) {
-    const payload = await verifyToken(token);
-    if (payload) return payload;
-  }
-
-  // Fallback: Verify both cookies if the specific one is missing or verification failed
   const adminToken = cookieStore.get('admin-auth-token')?.value;
   if (adminToken) {
     const payload = await verifyToken(adminToken);
     if (payload && payload.role === 'admin') return payload;
-  }
-  const empToken = cookieStore.get('employee-auth-token')?.value;
-  if (empToken) {
-    const payload = await verifyToken(empToken);
-    if (payload && (payload.role === 'employee' || payload.role === 'hr')) return payload;
   }
   return null;
 }
@@ -216,39 +158,6 @@ export function getTokenFromRequest(request: NextRequest): string | null {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     return authHeader.substring(7);
   }
-
-  const { pathname, searchParams } = request.nextUrl;
-  const referer = request.headers.get('referer');
-  const roleParam = searchParams.get('role');
-  
-  // Strict cookie selection based on route path — no fallback across roles
-  let tokenCookieName: string | null = null;
-  if (pathname.startsWith('/api/admin') || pathname.startsWith('/admin')) {
-    tokenCookieName = 'admin-auth-token';
-  } else if (pathname.startsWith('/api/mfa')) {
-    tokenCookieName = 'employee-auth-token';
-  } else if (roleParam === 'admin') {
-    tokenCookieName = 'admin-auth-token';
-  } else if (roleParam === 'employee') {
-    tokenCookieName = 'employee-auth-token';
-  } else if (referer) {
-    try {
-      const refererUrl = new URL(referer);
-      if (refererUrl.pathname.startsWith('/admin')) {
-        tokenCookieName = 'admin-auth-token';
-      } else if (refererUrl.pathname.startsWith('/employee')) {
-        tokenCookieName = 'employee-auth-token';
-      }
-    } catch {}
-  }
-
-  // If no route-based match, try both cookies (middleware will still enforce role)
-  if (!tokenCookieName) {
-    return request.cookies.get('admin-auth-token')?.value ||
-           request.cookies.get('employee-auth-token')?.value ||
-           null;
-  }
-
-  return request.cookies.get(tokenCookieName)?.value || null;
+  return request.cookies.get('admin-auth-token')?.value || null;
 }
 

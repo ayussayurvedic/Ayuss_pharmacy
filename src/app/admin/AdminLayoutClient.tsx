@@ -363,7 +363,7 @@ export default function AdminLayoutClient({
   }
 
   return (
-    <NotificationProvider employeeId={session?.id} role={session?.role}>
+    <NotificationProvider adminId={session?.id} role={session?.role}>
       <WebVitals />
       <div className="sr-only" role="status" aria-live="polite">
         {announcement}

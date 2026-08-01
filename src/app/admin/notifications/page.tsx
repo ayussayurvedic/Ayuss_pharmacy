@@ -29,7 +29,7 @@ export default async function AdminNotificationsPage() {
     getSentNotifications()
   ]);
 
-  const admins = (adminsRes.data || []).map(a => ({ id: a.id, name: a.email, employee_id: 'ADMIN' }));
+  const admins = (adminsRes.data || []).map(a => ({ id: a.id, name: a.email, admin_id: 'ADMIN' }));
   const initialNotifications = notificationsRes.success ? notificationsRes.notifications : [];
 
   return (
@@ -42,7 +42,7 @@ export default async function AdminNotificationsPage() {
         </div>
       </div>
       <AdminNotificationsClient
-        employees={admins}
+        admins={admins}
         initialNotifications={initialNotifications}
       />
     </div>

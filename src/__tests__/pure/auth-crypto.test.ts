@@ -5,7 +5,7 @@ describe('Auth Cryptography — auth.ts', () => {
   const payload = {
     id: 'test-user-id-123',
     email: 'user@example.com',
-    role: 'employee',
+    role: 'admin',
     name: 'Test User',
   };
 

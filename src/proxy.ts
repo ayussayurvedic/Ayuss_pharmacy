@@ -7,42 +7,8 @@ interface AdminCacheEntry {
   timestamp: number;
 }
 
-interface UserCacheEntry {
-  status: string | null;
-  timestamp: number;
-}
-
 const CACHE_TTL_MS = 60 * 1000; // 60 seconds
 const adminCache = new Map<string, AdminCacheEntry>();
-const userCache = new Map<string, UserCacheEntry>();
-
-async function getCachedUserStatus(userId: string): Promise<string | null> {
-  const now = Date.now();
-  const cached = userCache.get(userId);
-  if (cached && (now - cached.timestamp) < CACHE_TTL_MS) {
-    return cached.status;
-  }
-
-  try {
-    const { data: userData, error } = await supabaseAdmin
-      .from('admin_users')
-      .select('id')
-      .eq('id', userId)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    const status = userData ? 'Active' : null;
-    if (userCache.size >= 500) {
-      userCache.clear();
-    }
-    userCache.set(userId, { status, timestamp: now });
-    return status;
-  } catch (err) {
-    console.error(`[Middleware Cache] Failed to fetch user status:`, err);
-    throw err;
-  }
-}
 
 async function getCachedAdminExistence(adminId: string): Promise<boolean> {
   if (adminId === 'admin-id' || process.env.NODE_ENV === 'test') {
@@ -76,7 +42,7 @@ async function getCachedAdminExistence(adminId: string): Promise<boolean> {
     } catch (err) {
       attempts++;
       if (attempts >= maxAttempts) {
-        console.error(`[Middleware Cache Retry] Failed to fetch admin existence after ${attempts} attempts:`, err);
+        console.error(`[Proxy Cache Retry] Failed to fetch admin existence after ${attempts} attempts:`, err);
         throw err; // Fail closed by throwing error to caller
       }
       // Backoff delay: 100ms, 200ms
@@ -86,14 +52,14 @@ async function getCachedAdminExistence(adminId: string): Promise<boolean> {
   return false;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const correlationId = crypto.randomUUID();
   const nonce = btoa(crypto.randomUUID());
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-correlation-id', correlationId);
   requestHeaders.set('x-nonce', nonce);
 
-  const runMiddleware = async (): Promise<NextResponse> => {
+  const runProxy = async (): Promise<NextResponse> => {
     const { pathname } = request.nextUrl;
     requestHeaders.set('x-pathname', pathname);
 
@@ -140,6 +106,9 @@ export async function middleware(request: NextRequest) {
       pathname === '/api/auth/mfa-login' ||
       pathname === '/api/auth/unified-login' ||
       pathname === '/api/extension/auth' ||
+      pathname === '/api/orders/place' ||
+      pathname === '/api/orders/track' ||
+      pathname === '/api/orders/verify-payment' ||
       (pathname === '/api/inquiries' && request.method === 'POST') ||
       (pathname === '/api/applications' && request.method === 'POST');
 
@@ -155,13 +124,11 @@ export async function middleware(request: NextRequest) {
               return NextResponse.redirect(new URL('/admin/dashboard', request.url));
             }
           } catch (err) {
-            console.error('[Security Guard] Already logged in check failed for admin:', err);
+            console.error('[Proxy Guard] Already logged in check failed for admin:', err);
           }
         }
       }
     }
-
-
 
     // 1. Admin route protection
     if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
@@ -185,22 +152,20 @@ export async function middleware(request: NextRequest) {
       try {
         const adminExists = await getCachedAdminExistence(session.id);
         if (!adminExists) {
-          console.warn(`[Security Guard] Admin user ID ${session.id} no longer exists in database.`);
+          console.warn(`[Proxy Guard] Admin user ID ${session.id} no longer exists in database.`);
           const response = NextResponse.redirect(new URL('/admin/login?error=revoked', request.url));
           response.cookies.delete('admin-auth-token');
           return response;
         }
       } catch (err) {
-        console.error('[Security Guard] Admin account existence check failed closed:', err);
+        console.error('[Proxy Guard] Admin account existence check failed closed:', err);
         const response = NextResponse.redirect(new URL('/admin/login?error=db_error', request.url));
         response.cookies.delete('admin-auth-token');
         return response;
       }
     }
 
-
-
-    // 3. API route protection
+    // 2. API route protection
     if (pathname.startsWith('/api') && !isPublicApiRoute) {
       const token = getTokenFromRequest(request);
 
@@ -220,19 +185,12 @@ export async function middleware(request: NextRequest) {
 
       // Fail Closed API checks
       try {
-        if (session.role !== 'admin') {
-          const empStatus = await getCachedUserStatus(session.id);
-          if (empStatus !== 'Active') {
-            return NextResponse.json({ error: 'Unauthorized: Account status not active' }, { status: 401 });
-          }
-        } else {
-          const adminExists = await getCachedAdminExistence(session.id);
-          if (!adminExists) {
-            return NextResponse.json({ error: 'Unauthorized: Admin account not active' }, { status: 401 });
-          }
+        const adminExists = await getCachedAdminExistence(session.id);
+        if (!adminExists) {
+          return NextResponse.json({ error: 'Unauthorized: Admin account not active' }, { status: 401 });
         }
       } catch (err) {
-        console.error('[Security Guard] API verification check failed closed:', err);
+        console.error('[Proxy Guard] API verification check failed closed:', err);
         return NextResponse.json({ error: 'Security verification database unavailable' }, { status: 500 });
       }
     }
@@ -244,7 +202,7 @@ export async function middleware(request: NextRequest) {
     });
   };
 
-  const response = await runMiddleware();
+  const response = await runProxy();
   response.headers.set('x-correlation-id', correlationId);
 
   // Apply Content-Security-Policy (CSP) with dynamic nonce in production

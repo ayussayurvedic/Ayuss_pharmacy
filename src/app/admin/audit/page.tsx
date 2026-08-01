@@ -140,20 +140,6 @@ export default async function AuditLogsPage(props: PageProps) {
                     <span className="font-bold text-[#134547] uppercase">{log.entity_type} {log.entity_id ? `(${log.entity_id.substring(0, 8)})` : ''}</span>
                   </div>
                 </div>
-
-                {log.entity_type === 'attendance' && log.entity_id && (
-                  <div className="mt-2.5 pt-2.5 border-t border-[#C9D5D5]/40 flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <Layers className="w-3.5 h-3.5 text-violet-650" />
-                      <span className="text-[8px] font-mono font-bold text-violet-750 uppercase tracking-wider">
-                        Traceable Replay Stream
-                      </span>
-                    </div>
-                    <span className="text-[8px] font-mono font-bold text-zinc-500 bg-zinc-50 border border-zinc-200 px-1.5 py-0.5 rounded">
-                      Session: #{log.entity_id.substring(0, 8).toUpperCase()}
-                    </span>
-                  </div>
-                )}
               </div>
             );
           })
@@ -218,14 +204,7 @@ export default async function AuditLogsPage(props: PageProps) {
                       {log.entity_id ? `${log.entity_id.substring(0, 8)}...` : 'N/A'}
                     </td>
                     <td className="p-4 text-center whitespace-nowrap">
-                      {log.entity_type === 'attendance' && log.entity_id ? (
-                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-violet-50 text-violet-750 border border-violet-200/50 text-[8px] font-mono font-medium uppercase tracking-wider" title={`Traceable event-sourcing stream: Session ID: ${log.entity_id}`}>
-                          <Layers className="w-3 h-3 text-violet-500" />
-                          <span>SESSION #{log.entity_id.substring(0, 8).toUpperCase()}</span>
-                        </div>
-                      ) : (
-                        <span className="text-slate-400 font-bold font-mono">—</span>
-                      )}
+                      <span className="text-slate-400 font-bold font-mono">—</span>
                     </td>
                   </tr>
                 );

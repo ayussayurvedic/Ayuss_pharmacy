@@ -28,10 +28,6 @@ self.addEventListener('install', (event) => {
         '/manufacturing',
         '/admin/login',
         '/products/logo/logo.webp',
-        '/products/banner.webp',
-        '/products/raw-herbs-banner.webp',
-        '/products/chemist_lab.webp',
-        '/products/why_choose_us_image.webp',
         '/favicon.svg'
       ]).catch((err) => console.log('[SW] Non-critical precache item skipped:', err));
     })
@@ -201,7 +197,7 @@ self.addEventListener('push', (event) => {
       image: payload.image || undefined,       // Support rich banner image
       vibrate: payload.vibrate || [100, 50, 100],
       data: {
-        url: payload.clickActionUrl || '/employee/dashboard',
+        url: payload.clickActionUrl || '/admin/dashboard',
         actions: payload.actions || []
       },
       tag: payload.tag || 'sspharmacy-notification',
@@ -220,7 +216,7 @@ self.addEventListener('push', (event) => {
 // Notification click event handler - open/navigate client standalone window
 self.addEventListener('notificationclick', (event) => {
   const notification = event.notification;
-  const clickActionUrl = (notification.data && notification.data.url) ? notification.data.url : '/employee/dashboard';
+  const clickActionUrl = (notification.data && notification.data.url) ? notification.data.url : '/admin/dashboard';
 
   notification.close();
 

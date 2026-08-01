@@ -19,7 +19,6 @@ export async function POST() {
   };
   response.cookies.set('auth-token', '', cookieOptions);
   response.cookies.set('admin-auth-token', '', cookieOptions);
-  response.cookies.set('employee-auth-token', '', cookieOptions);
   response.cookies.set('mfa-pending-token', '', cookieOptions); // LOW-11
   return response;
 }

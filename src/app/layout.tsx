@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { Playfair_Display, Outfit, Inter, JetBrains_Mono } from 'next/font/google';
 import Script from 'next/script';
 import { headers } from 'next/headers';
 import './globals.css';
@@ -10,34 +9,6 @@ import PushPermissionPrompt from '@/components/pwa/PushPermissionPrompt';
 import { ToastProvider } from '@/components/ui/Toast';
 import { CartProvider } from '@/context/CartContext';
 import SchemaMarkup from '@/components/layout/SchemaMarkup';
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-playfair',
-  preload: true,
-});
-
-const outfit = Outfit({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-outfit',
-  preload: true,
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-  preload: true,
-});
-
-const jetbrains = JetBrains_Mono({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-jetbrains',
-  preload: true,
-});
 
 
 export const viewport: Viewport = {
@@ -160,12 +131,13 @@ export default async function RootLayout({
   const nonce = headersList.get('x-nonce') || undefined;
 
   return (
-    <html lang="en" className={`min-h-screen antialiased overflow-x-hidden ${playfair.variable} ${outfit.variable} ${inter.variable} ${jetbrains.variable}`}>
+    <html lang="en" className="min-h-screen antialiased overflow-x-hidden">
       <head>
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&family=Outfit:wght@100..900&family=Playfair+Display:wght@400..900&display=swap" rel="stylesheet" />
         {/* Google Analytics 4 */}
         {gaId && (
           <>

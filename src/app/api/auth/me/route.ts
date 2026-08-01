@@ -29,8 +29,8 @@ export async function GET(request: NextRequest) {
       response.cookies.delete('auth-token');
     }
 
-    const cookieName = responseUser.role === 'admin' ? 'admin-auth-token' : 'employee-auth-token';
-    const maxAge = responseUser.role === 'admin' ? 8 * 60 * 60 : 24 * 60 * 60;
+    const cookieName = 'admin-auth-token';
+    const maxAge = 8 * 60 * 60;
 
     // Silent token refresh: if token expires within 1 hour, issue a fresh one
     const exp = session.exp as number | undefined;
