@@ -1,214 +1,206 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
-import { ShoppingBag, Menu, X, Trash2, Plus, Minus, Truck } from 'lucide-react';
+import { ShoppingBag, Menu, X } from 'lucide-react';
+import CartDrawer from './CartDrawer';
 
 export default function Navbar() {
-  const { cartItems, cartCount, isCartOpen, setIsCartOpen, handleRemoveFromCart, handleUpdateCartQuantity } = useCart();
+  const { cartCount, isCartOpen, setIsCartOpen } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
 
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.product.sellingPrice || item.product.mrp || 0) * item.quantity, 0);
-  const freeShippingThreshold = 500;
-  const amountForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-  const shippingProgress = Math.min(100, (subtotal / freeShippingThreshold) * 100);
+  // Scroll listener to toggle glassmorphism states
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      if (!isCartOpen) {
+        document.body.style.overflow = '';
+      }
+    }
+  }, [mobileMenuOpen, isCartOpen]);
+
+  const links = [
+    { name: 'Home', href: '/' },
+    { name: 'Products', href: '/products' },
+    { name: 'Why Choose Us', href: '/why-choose-us' },
+    { name: 'Manufacturing', href: '/manufacturing' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Contact', href: '/contact' },
+  ];
+
+  const headerStyle = { willChange: 'height, background-color, border-color, box-shadow' };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 lg:h-20 bg-white border-b border-slate-200/80 text-slate-800 z-50 shadow-xs font-sans">
+    <header 
+      style={headerStyle}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 font-sans ${
+        isScrolled 
+          ? 'h-14 lg:h-16 bg-white/80 backdrop-blur-md shadow-xs border-b border-slate-200/50' 
+          : 'h-16 lg:h-20 bg-white border-b border-slate-200/80'
+      }`}
+    >
       <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between">
         
         {/* Left: Logo & Company Name (w-1/4) */}
         <div className="w-1/4 flex justify-start min-w-0">
-          <Link href="/" className="flex items-center gap-2 min-w-0 shrink-0">
+          <Link href="/" className="flex items-center gap-2 min-w-0 shrink-0 focus-visible:outline-2 focus-visible:outline-[#1A5C5E] rounded-lg">
             <Image 
               src="/products/logo/logo.webp" 
               alt="Ayu S.S. Pharmacy Logo" 
-              className="h-9 lg:h-11 w-auto object-contain shrink-0" 
+              className="h-9 lg:h-11 w-auto object-contain shrink-0 transition-all duration-300" 
               width={150} 
               height={56} 
               priority 
             />
             <div className="flex flex-col min-w-0">
               <span className="font-bold text-xs sm:text-sm lg:text-base tracking-tight font-serif leading-none text-[#134547] truncate">AYU S.S. PHARMACY</span>
-              <span className="text-[7px] sm:text-[8px] lg:text-[9px] font-semibold text-[#C9943E] tracking-normal leading-none mt-0.5 sm:mt-1 truncate">One Stop Solution</span>
+              <span className="text-[7px] sm:text-[8px] lg:text-[9px] font-semibold text-[#C9943E] tracking-normal leading-none mt-0.5 truncate">One Stop Solution</span>
             </div>
           </Link>
         </div>
 
         {/* Middle: Centered Navigation (w-1/2) */}
         <div className="w-1/2 flex justify-center">
-          <nav className="hidden lg:flex items-center gap-4 xl:gap-8 text-xs font-bold tracking-wider uppercase text-slate-700 whitespace-nowrap">
-            <Link href="/" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Home</Link>
-            <Link href="/products" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Products</Link>
-            <Link href="/why-choose-us" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Why Choose Us</Link>
-            <Link href="/manufacturing" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Manufacturing</Link>
-            <Link href="/about" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">About Us</Link>
-            <Link href="/contact" className="hover:text-[#1A5C5E] transition-colors py-1 whitespace-nowrap">Contact</Link>
+          <nav className="hidden lg:flex items-center gap-2 xl:gap-4 text-xs font-bold tracking-wider uppercase text-slate-700 whitespace-nowrap">
+            {links.map((link) => {
+              const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative hover:text-[#1A5C5E] transition-colors py-1.5 px-3.5 text-xs font-bold tracking-wider uppercase whitespace-nowrap focus-visible:outline-2 focus-visible:outline-[#1A5C5E] rounded-md ${
+                    isActive ? 'text-[#134547]' : 'text-slate-600'
+                  }`}
+                >
+                  {link.name}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavIndicator"
+                      className="absolute bottom-0 left-3.5 right-3.5 h-0.5 bg-[#C9943E] rounded-full"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
         {/* Right: Actions / Cart (w-1/4) */}
         <div className="w-1/4 flex justify-end gap-3 sm:gap-4 shrink-0">
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsCartOpen(!isCartOpen)}
-            className="relative p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer"
+            className="relative p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#1A5C5E] rounded-lg"
             aria-label={`Shopping bag containing ${cartCount} items`}
           >
             <ShoppingBag className="w-5 h-5 lg:w-6 lg:h-6" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#C9943E] text-white text-[10px] font-bold w-4 h-4 lg:w-5 lg:h-5 rounded-full flex items-center justify-center border-2 border-white">
-                {cartCount}
-              </span>
-            )}
-          </button>
+            <AnimatePresence>
+              {cartCount > 0 && (
+                <motion.span
+                  key={cartCount}
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.6, opacity: 0 }}
+                  className="absolute -top-0.5 -right-0.5 bg-[#C9943E] text-white text-[9px] lg:text-[10px] font-bold w-4 h-4 lg:w-5 lg:h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs"
+                >
+                  {cartCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer"
+            className="lg:hidden p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#1A5C5E] rounded-lg"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          </motion.button>
         </div>
 
       </div>
 
-      {isCartOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[100] flex justify-end">
-          <div className="w-full max-w-md bg-[#FDF8F0] text-slate-800 h-full flex flex-col p-6 shadow-2xl relative animate-in slide-in-from-right">
-            {/* Drawer Header */}
-            <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#C9D5D5]/80 shrink-0">
-              <div>
-                <h3 className="font-bold text-sm text-[#134547] font-serif uppercase tracking-wider">Your Shopping Bag</h3>
-                <p className="text-[11px] text-slate-500 font-medium">{cartCount} {cartCount === 1 ? 'item' : 'items'} in cart</p>
+      {/* Cart Drawer Portal */}
+      <CartDrawer />
+
+      {/* Mobile Menu Drawer */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop Scrim */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="lg:hidden fixed inset-0 top-16 bg-black/45 backdrop-blur-xs z-30 cursor-pointer"
+            />
+
+            {/* Links Panel */}
+            <motion.div
+              initial={{ y: '-10%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '-10%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="lg:hidden fixed top-16 left-0 right-0 bg-[#FDF8F0] text-slate-800 z-40 flex flex-col p-5 space-y-2.5 font-sans shadow-2xl border-t border-slate-200/80 overflow-y-auto max-h-[calc(100vh-4rem)]"
+            >
+              <div className="text-[10px] font-black text-[#C9943E] uppercase tracking-widest px-1 mb-1 font-mono">
+                Navigation Menu
               </div>
-              <button
-                type="button"
-                onClick={() => setIsCartOpen(false)}
-                className="p-2 text-slate-500 hover:text-slate-900 bg-white hover:bg-slate-100 rounded-full border border-slate-200 transition-colors cursor-pointer"
-                aria-label="Close Shopping Bag"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+              
+              {links.map((link) => {
+                const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center justify-between p-3 rounded-xl border transition-all duration-200 shadow-xs focus-visible:outline-2 focus-visible:outline-[#1A5C5E] ${
+                      isActive 
+                        ? 'bg-[#1A5C5E]/5 border-[#1A5C5E] font-bold text-[#134547]' 
+                        : 'bg-white border-slate-200/80 font-medium text-slate-700 hover:border-slate-350'
+                    }`}
+                  >
+                    <span>{link.name}</span>
+                    <span className="text-[#C9943E] text-sm">→</span>
+                  </Link>
+                );
+              })}
 
-            <div className="bg-white p-3 rounded-xl border border-[#C9D5D5]/80 mb-4 shadow-xs shrink-0">
-              <div className="flex items-center gap-2 text-xs font-semibold text-[#1A5C5E] mb-1.5">
-                <Truck className="w-4 h-4 text-[#C9943E] shrink-0" />
-                {amountForFreeShipping > 0 ? (
-                  <span>Add <strong className="text-[#C9943E]">₹{amountForFreeShipping}</strong> more for <strong>FREE Delivery</strong></span>
-                ) : (
-                  <span className="text-emerald-700 font-bold">🎉 You unlocked FREE Express Delivery!</span>
-                )}
+              <div className="pt-6 mt-4 border-t border-slate-200/80 text-center shrink-0">
+                <span className="text-[10px] font-black text-[#C9943E] uppercase tracking-widest block mb-0.5 font-mono">AYU S.S. PHARMACY</span>
+                <span className="text-[9px] text-slate-500 font-medium block">One Stop Solution • Govt. Licensed Ayurvedic Manufacturer</span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/50">
-                <div
-                  className="bg-[#C9943E] h-full rounded-full transition-all duration-500"
-                  style={{ width: `${shippingProgress}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto space-y-4 pr-1 min-h-0">
-              {cartItems.length === 0 ? (
-                <p className="text-xs text-slate-500 text-center py-12">Your bag is empty.</p>
-              ) : (
-                cartItems.map((item) => (
-                  <div key={item.product.id} className="flex gap-3 border-b pb-3 items-center bg-white p-3 rounded-xl border border-slate-200/60 shadow-xs">
-                    <Image src={item.product.image || "data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 1 1'%2F%3E"} alt={item.product.name} className="object-contain bg-white rounded border p-1 shrink-0" width={52} height={52} />
-                    <div className="flex-1 text-xs">
-                      <span className="font-bold text-slate-900 block">{item.product.name}</span>
-                      <span className="text-slate-500 block text-[10px] mt-0.5">{item.product.packSize}</span>
-                      <span className="font-bold text-[#1A5C5E] mt-1 block">₹{(item.product.sellingPrice || item.product.mrp || 0) * item.quantity}</span>
-                      
-                      <div className="flex items-center gap-2 mt-2">
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateCartQuantity(item.product.id, item.quantity - 1)}
-                          className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs cursor-pointer border border-slate-300"
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus className="w-3 h-3" />
-                        </button>
-                        <span className="w-6 text-center font-bold text-xs">{item.quantity}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateCartQuantity(item.product.id, item.quantity + 1)}
-                          className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs cursor-pointer border border-slate-300"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveFromCart(item.product.id)}
-                      className="p-2 text-slate-400 hover:text-red-650 hover:bg-red-50 rounded-full transition-colors cursor-pointer border-0 bg-transparent"
-                      aria-label={`Remove ${item.product.name} from bag`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {cartItems.length > 0 && (
-              <div className="pt-4 border-t border-[#C9D5D5]/80 space-y-4 shrink-0">
-                <div className="flex justify-between items-baseline">
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Subtotal</span>
-                  <span className="text-lg font-black text-[#134547]">₹{subtotal.toLocaleString('en-IN')}</span>
-                </div>
-                <Link href="/checkout" onClick={() => setIsCartOpen(false)} className="w-full bg-[#1A5C5E] hover:bg-[#134547] text-white text-center py-3 rounded-full text-xs font-bold block transition-colors uppercase tracking-wider shadow-md">
-                  Proceed to Checkout
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {mobileMenuOpen && (
-        <div className="lg:fixed lg:hidden fixed top-16 lg:top-20 left-0 right-0 bottom-0 bg-[#FDF8F0] text-slate-800 z-40 flex flex-col p-5 space-y-2.5 font-sans shadow-2xl border-t border-slate-200/80 overflow-y-auto animate-in slide-in-from-top duration-250">
-          <div className="text-[10px] font-bold text-[#C9943E] uppercase tracking-widest px-1 mb-1">
-            Navigation Menu
-          </div>
-          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
-            <span>Home</span>
-            <span className="text-[#C9943E] text-sm">→</span>
-          </Link>
-          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
-            <span>Products</span>
-            <span className="text-[#C9943E] text-sm">→</span>
-          </Link>
-          <Link href="/why-choose-us" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
-            <span>Why Choose Us</span>
-            <span className="text-[#C9943E] text-sm">→</span>
-          </Link>
-          <Link href="/manufacturing" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
-            <span>Manufacturing</span>
-            <span className="text-[#C9943E] text-sm">→</span>
-          </Link>
-          <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
-            <span>About Us</span>
-            <span className="text-[#C9943E] text-sm">→</span>
-          </Link>
-          <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200/80 font-bold text-xs text-[#134547] hover:border-[#1A5C5E] transition-all shadow-xs">
-            <span>Contact</span>
-            <span className="text-[#C9943E] text-sm">→</span>
-          </Link>
-
-          <div className="pt-4 mt-auto border-t border-slate-200/80 text-center shrink-0">
-            <span className="text-[10px] font-bold text-[#C9943E] uppercase tracking-widest block mb-0.5">AYU S.S. PHARMACY</span>
-            <span className="text-[10px] text-slate-500 font-medium block">One Stop Solution • Govt. Licensed Ayurvedic Manufacturer</span>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
