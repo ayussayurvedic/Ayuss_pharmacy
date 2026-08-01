@@ -83,8 +83,7 @@ export default function LoginForm() {
         }
       }
 
-      router.push('/admin/dashboard');
-      router.refresh();
+      window.location.href = '/admin/dashboard';
     } catch {
       setError('Network error. Please try again.');
     }

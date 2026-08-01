@@ -88,32 +88,26 @@ export async function POST(request: NextRequest) {
 
     // 3. ADMIN PORTAL PIPELINE
     if (portal === 'admin') {
-      // Admin lookup - database-first
+      // Single consolidated Admin lookup
       const { data: record, error: dbErr } = await supabaseAdmin
         .from('admin_users')
-        .select('id, email')
+        .select('id, email, mfa_enabled')
         .ilike('email', cleanEmail)
         .maybeSingle();
 
       if (dbErr || !record) {
         // Admin does not exist: Run mock credentials verification to match timing
-        const dummyClient = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
-          auth: {
-            autoRefreshToken: false,
-            persistSession: false,
-          },
-        });
-        await dummyClient.auth.signInWithPassword({
+        await supabaseAdmin.auth.signInWithPassword({
           email: 'nonexistent-admin-trigger-dummy@sspharmacy.in',
           password: 'dummy-password-that-will-fail-and-simulate-supabase-latency',
         }).catch(() => null);
 
-        // Internal audit log for role/user mismatch
-        await logAuditAction('LOGIN_FAILED', 'admin_users', '00000000-0000-0000-0000-000000000000', null, { 
+        // Internal audit log for role/user mismatch (non-blocking)
+        logAuditAction('LOGIN_FAILED', 'admin_users', '00000000-0000-0000-0000-000000000000', null, { 
           reason: 'invalid_role', 
           email: cleanEmail,
           portal: 'admin'
-        });
+        }).catch(() => null);
 
         await recordFailedAttempt(ipKey, accountKey);
 
@@ -128,23 +122,16 @@ export async function POST(request: NextRequest) {
       }
 
       // Authenticate with Supabase Auth
-      const authClient = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      });
-
-      const { data: authData, error: apiAuthError } = await authClient.auth.signInWithPassword({
+      const { data: authData, error: apiAuthError } = await supabaseAdmin.auth.signInWithPassword({
         email: cleanEmail,
         password: cleanPassword,
       });
 
       if (apiAuthError) {
-        await logAuditAction('LOGIN_FAILED', 'admin_users', record.id, null, { 
+        logAuditAction('LOGIN_FAILED', 'admin_users', record.id, null, { 
           reason: 'invalid_password', 
           email: cleanEmail 
-        }, { id: record.id, role: 'admin' });
+        }, { id: record.id, role: 'admin' }).catch(() => null);
 
         await recordFailedAttempt(ipKey, accountKey);
 
@@ -159,25 +146,8 @@ export async function POST(request: NextRequest) {
       }
 
       if (authData?.user) {
-        // Double check admin provisioning in database
-        const { data: freshAdmin, error: freshAdminError } = await supabaseAdmin
-          .from('admin_users')
-          .select('mfa_enabled')
-          .eq('id', authData.user.id)
-          .maybeSingle();
-
-        if (freshAdminError || !freshAdmin) {
-          await logAuditAction('LOGIN_FAILED', 'admin_users', authData.user.id, null, { 
-            reason: 'invalid_role', 
-            email: cleanEmail 
-          }, { id: authData.user.id, role: 'admin' });
-
-          await recordFailedAttempt(ipKey, accountKey);
-          return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
-        }
-
-        // Handle MFA
-        if (freshAdmin.mfa_enabled) {
+        // Handle MFA using initial record.mfa_enabled
+        if (record.mfa_enabled) {
           const tempToken = await createToken({
             id: authData.user.id,
             email: authData.user.email || email,
@@ -200,15 +170,13 @@ export async function POST(request: NextRequest) {
             maxAge: 5 * 60, // 5 minutes
           });
 
-          await logAuditAction('LOGIN_MFA_PENDING', 'admin_users', authData.user.id, null, null, { id: authData.user.id, role: 'admin' });
+          logAuditAction('LOGIN_MFA_PENDING', 'admin_users', authData.user.id, null, null, { id: authData.user.id, role: 'admin' }).catch(() => null);
           return response;
         }
 
-
-
-        // Clear rate limit key on success
-        await loginRateLimiter.delete(ipKey);
-        await loginRateLimiter.delete(accountKey);
+        // Clear rate limit key on success (non-blocking)
+        loginRateLimiter.delete(ipKey).catch(() => null);
+        loginRateLimiter.delete(accountKey).catch(() => null);
 
         const token = await createToken({
           id: authData.user.id,
@@ -233,7 +201,7 @@ export async function POST(request: NextRequest) {
 
         response.cookies.delete('mfa-pending-token');
 
-        await logAuditAction('LOGIN_SUCCESS', 'admin_users', authData.user.id, null, null, { id: authData.user.id, role: 'admin' });
+        logAuditAction('LOGIN_SUCCESS', 'admin_users', authData.user.id, null, null, { id: authData.user.id, role: 'admin' }).catch(() => null);
         return response;
       }
     }
