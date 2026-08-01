@@ -147,6 +147,20 @@ CREATE TABLE IF NOT EXISTS public.business_tax_settings (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- 9. Payment Transactions Table
+CREATE TABLE IF NOT EXISTS public.payment_transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id UUID REFERENCES public.orders(id) ON DELETE CASCADE,
+    razorpay_order_id TEXT UNIQUE,
+    razorpay_payment_id TEXT UNIQUE,
+    razorpay_signature TEXT,
+    amount NUMERIC(10,2) NOT NULL,
+    currency TEXT DEFAULT 'INR',
+    status TEXT DEFAULT 'CREATED',
+    error_message TEXT,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- ============================================================================
 -- Order RPC Stored Procedures
 -- ============================================================================
@@ -321,6 +335,7 @@ ALTER TABLE public.procurement_orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.recalls ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.expirations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.business_tax_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.payment_transactions ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Allow public read for returns" ON public.returns;
 CREATE POLICY "Allow public read for returns" ON public.returns FOR SELECT USING (true);
@@ -340,6 +355,7 @@ GRANT ALL ON public.procurement_orders TO anon, authenticated, service_role;
 GRANT ALL ON public.recalls TO anon, authenticated, service_role;
 GRANT ALL ON public.expirations TO anon, authenticated, service_role;
 GRANT ALL ON public.business_tax_settings TO anon, authenticated, service_role;
+GRANT ALL ON public.payment_transactions TO anon, authenticated, service_role;
 
 -- Seed default Business Tax Settings row if none exists
 INSERT INTO public.business_tax_settings (id, tax_mode, configuration_status, legal_business_name, gstin)
