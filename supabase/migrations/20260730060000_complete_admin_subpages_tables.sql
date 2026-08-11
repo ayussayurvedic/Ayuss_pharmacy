@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS public.inventory_movements (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     inventory_id UUID REFERENCES public.inventory(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
     movement_type TEXT NOT NULL DEFAULT 'ADJUSTMENT', -- RECEIPT, DISPATCH, ADJUSTMENT, RETURN
     quantity_changed INT NOT NULL DEFAULT 0,
     previous_quantity INT NOT NULL DEFAULT 0,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS public.inventory_movements (
 CREATE TABLE IF NOT EXISTS public.inventory_reservations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     inventory_id UUID REFERENCES public.inventory(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
     order_id UUID REFERENCES public.orders(id) ON DELETE CASCADE,
     reserved_quantity INT NOT NULL DEFAULT 0,
     status TEXT DEFAULT 'ACTIVE', -- ACTIVE, FULFILLED, CANCELLED
@@ -104,7 +104,7 @@ DO $$
 DECLARE
     tbl TEXT;
 BEGIN
-    FOR tbl IN UNNEST(ARRAY[
+    FOR tbl IN SELECT unnest(ARRAY[
         'inventory_movements', 'inventory_reservations', 'shipments', 
         'refunds', 'customer_notifications', 'return_status_history', 'cod_payouts'
     ]) LOOP

@@ -3,7 +3,7 @@
 -- 1. Inventory Table
 CREATE TABLE IF NOT EXISTS public.inventory (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
     stock_quantity INT NOT NULL DEFAULT 0,
     reserved_quantity INT NOT NULL DEFAULT 0,
     reorder_level INT DEFAULT 50,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS public.returns (
 CREATE TABLE IF NOT EXISTS public.return_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     return_id UUID REFERENCES public.returns(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
+    product_id TEXT REFERENCES public.products(id) ON DELETE SET NULL,
     quantity INT NOT NULL DEFAULT 1,
     reason TEXT,
     created_at TIMESTAMPTZ DEFAULT now()
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS public.procurement_orders (
 CREATE TABLE IF NOT EXISTS public.recalls (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     recall_number TEXT UNIQUE NOT NULL,
-    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
     product_name TEXT,
     batch_number TEXT NOT NULL,
     reason TEXT,
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS public.recalls (
 -- 7. Expirations Table
 CREATE TABLE IF NOT EXISTS public.expirations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    product_id TEXT REFERENCES public.products(id) ON DELETE CASCADE,
     batch_number TEXT NOT NULL,
     expiry_date DATE NOT NULL,
     quantity INT DEFAULT 0,
@@ -162,7 +162,7 @@ DO $$
 DECLARE
     tbl TEXT;
 BEGIN
-    FOR tbl IN UNNEST(ARRAY[
+    FOR tbl IN SELECT unnest(ARRAY[
         'inventory', 'returns', 'return_items', 'invoices', 'suppliers', 
         'procurement_orders', 'recalls', 'expirations', 'business_tax_settings'
     ]) LOOP
