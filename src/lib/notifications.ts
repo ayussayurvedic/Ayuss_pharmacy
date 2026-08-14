@@ -21,7 +21,7 @@ export async function sendNotificationEmail(
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'S.S. Pharmacy <notifications@sspharmacy.in>',
+      from: 'S.S. Pharmacy <ayuss.ayurvedic@gmail.com>',
       to,
       subject,
       html,

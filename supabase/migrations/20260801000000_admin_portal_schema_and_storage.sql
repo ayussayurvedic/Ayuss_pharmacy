@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS business_tax_settings (
   default_gst_rate NUMERIC(5, 2) DEFAULT 12.00,
   delivery_gst_rate NUMERIC(5, 2) DEFAULT 18.00,
   invoice_terms TEXT,
-  support_email TEXT DEFAULT 'support@sspharmacy.in',
+  support_email TEXT DEFAULT 'ayuss.ayurvedic@gmail.com',
   support_phone TEXT,
   verified_at TIMESTAMPTZ,
   verified_by UUID,

@@ -82,7 +82,7 @@ export default function TermsPage() {
           </p>
           <p className="font-semibold text-ink">
             S.S. Pharmacy<br />
-            Email: <a href="mailto:info@sspharmacy.com" className="text-teal-primary hover:underline">info@sspharmacy.com</a><br />
+            Email: <a href="mailto:ayuss.ayurvedic@gmail.com" className="text-teal-primary hover:underline">ayuss.ayurvedic@gmail.com</a><br />
             Address: D. No. 1-2-211 & 1-2-212, Prakash Nagar, Yerraguntla, Kadapa District, Andhra Pradesh - 516309, India
           </p>
         </div>

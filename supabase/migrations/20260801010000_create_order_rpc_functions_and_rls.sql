@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS public.business_tax_settings (
     default_gst_rate NUMERIC(5,2) DEFAULT 12.00,
     delivery_gst_rate NUMERIC(5,2) DEFAULT 18.00,
     invoice_terms TEXT DEFAULT 'Goods once sold are subject to S.S. PHARMACY terms.',
-    support_email TEXT DEFAULT 'support@sspharmacy.in',
+    support_email TEXT DEFAULT 'ayuss.ayurvedic@gmail.com',
     support_phone TEXT DEFAULT '+91 98480 12345',
     updated_at TIMESTAMPTZ DEFAULT now(),
     created_at TIMESTAMPTZ DEFAULT now()

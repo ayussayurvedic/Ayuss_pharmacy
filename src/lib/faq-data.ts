@@ -27,7 +27,7 @@ export const faqs: FAQItem[] = [
   {
     question: 'Can I return or exchange a product?',
     answer:
-      'We accept returns within 7 days of delivery for unopened, undamaged products. Damaged or defective items are eligible for immediate replacement. Contact us at support@sspharmacy.in with your order number to initiate a return.',
+      'We accept returns within 7 days of delivery for unopened, undamaged products. Damaged or defective items are eligible for immediate replacement. Contact us at ayuss.ayurvedic@gmail.com with your order number to initiate a return.',
   },
   {
     question: 'How do I become a distributor for Ayu S.S. Pharmacy?',

@@ -85,7 +85,7 @@ afterEach(() => {
 
 
 export async function createTestAdmin() {
-  const email = 'test_admin@sspharmacy.in';
+  const email = 'ayuss.ayurvedic@gmail.com';
   let userId: string;
 
   // Provision Admin in Supabase Auth

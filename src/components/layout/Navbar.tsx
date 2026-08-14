@@ -51,14 +51,15 @@ export default function Navbar() {
   const headerStyle = { willChange: 'height, background-color, border-color, box-shadow' };
 
   return (
-    <header 
-      style={headerStyle}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 font-sans ${
-        isScrolled 
-          ? 'h-14 lg:h-16 bg-white/80 backdrop-blur-md shadow-xs border-b border-slate-200/50' 
-          : 'h-16 lg:h-20 bg-white border-b border-slate-200/80'
-      }`}
-    >
+    <>
+      <header 
+        style={headerStyle}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 font-sans ${
+          isScrolled 
+            ? 'h-14 lg:h-16 bg-white/80 backdrop-blur-md shadow-xs border-b border-slate-200/50' 
+            : 'h-16 lg:h-20 bg-white border-b border-slate-200/80'
+        }`}
+      >
       <div className="max-w-[1200px] mx-auto px-4 h-full flex items-center justify-between">
         
         {/* Left: Logo & Company Name (w-1/4) */}
@@ -145,6 +146,7 @@ export default function Navbar() {
         </div>
 
       </div>
+      </header>
 
       {/* Cart Drawer Portal */}
       <CartDrawer />
@@ -205,6 +207,6 @@ export default function Navbar() {
           </>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }

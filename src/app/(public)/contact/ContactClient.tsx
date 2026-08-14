@@ -117,7 +117,7 @@ export default function ContactClient() {
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Email Inquiries</span>
-                  <a href="mailto:info@sspharmacy.co.in" className="text-xs font-bold text-[#1A5C5E] hover:underline mt-0.5 block">info@sspharmacy.co.in</a>
+                  <a href="mailto:ayuss.ayurvedic@gmail.com" className="text-xs font-bold text-[#1A5C5E] hover:underline mt-0.5 block">ayuss.ayurvedic@gmail.com</a>
                   <span className="text-[9px] text-slate-400 block font-light mt-0.5">Response within 24 hours</span>
                 </div>
               </div>

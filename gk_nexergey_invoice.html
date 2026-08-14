@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tax Invoice - GK Nexergey</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    /* Strict borderless A4 print layout to bleed headers/footers to the paper edge */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0mm !important; /* Force browser to remove default margins */
+      }
+      html, body {
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background-color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      
+      /* Maintain A4 page constraint without hardcoded child pixel heights */
+      .print-container {
+        width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        min-height: 297mm !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        background-color: white !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+      }
+      
+      .print-header {
+        height: 170px !important;
+        min-height: 170px !important;
+        box-sizing: border-box !important;
+      }
+      .print-metadata {
+        height: 70px !important;
+        min-height: 70px !important;
+        box-sizing: border-box !important;
+      }
+      .print-body {
+        flex-grow: 1 !important;
+        height: auto !important;
+        min-height: 0 !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important; /* Distribute cards evenly across A4 height */
+      }
+      .print-footer {
+        height: 110px !important;
+        min-height: 110px !important;
+        box-sizing: border-box !important;
+        margin-top: auto !important; /* Force footer to the bottom of the page naturally */
+      }
+      
+      /* Ensure background graphics print correctly in all browsers */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#081d38',     /* Deep navy blue */
+              darkLight: '#0d274a',/* Medium navy blue */
+              green: '#22c55e',    /* Vibrant green */
+              greenLight: '#f0fdf4'/* Very light green */
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100 min-h-screen py-6 print:py-0 print:bg-white">
+
+  <!-- Print Button (Hidden in Print Mode) -->
+  <div class="max-w-4xl mx-auto mb-4 flex justify-end no-print px-4 sm:px-0">
+    <button onclick="window.print()" class="flex items-center gap-2 bg-brand-dark text-white px-4 py-2 rounded-lg shadow-md hover:bg-brand-darkLight transition-colors font-medium text-xs">
+      <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print / Save as PDF
+    </button>
+  </div>
+
+  <!-- Main Quotation Container -->
+  <div class="print-container w-[800px] max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 flex flex-col justify-between min-h-[1122px] print:min-h-0">
+    
+    <!-- Header Section (Locked to 170px height) -->
+    <div class="print-header h-[170px] relative bg-brand-dark text-white py-6 px-8 print:px-10 overflow-hidden flex items-center">
+      <!-- Diagonal Stripe Overlay -->
+      <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-brand-darkLight to-transparent transform skew-x-12 origin-top opacity-50"></div>
+      <div class="absolute right-[-5%] top-[-20%] w-[40%] h-[150%] bg-[#0f2d54] opacity-20 transform -rotate-12"></div>
+      
+      <div class="relative z-10 w-full flex flex-row justify-between items-center gap-4">
+        <!-- Logo and Title -->
+        <div class="flex items-center gap-5">
+          <!-- GK Hexagon Logo -->
+          <div class="flex-shrink-0">
+            <svg class="w-14 h-14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="50,5 90,28 90,72 50,95 10,72 10,28" stroke="#22c55e" stroke-width="4.5" fill="#081d38" />
+              <polygon points="50,11 85,31 85,69 50,89 15,69 15,31" stroke="#ffffff" stroke-width="1.5" fill="none" />
+              <text x="50" y="58" fill="white" font-family="'Inter', sans-serif" font-weight="900" font-size="28" text-anchor="middle">GK</text>
+            </svg>
+          </div>
+          <!-- Title details -->
+          <div>
+            <span class="text-brand-green font-bold text-[10px] tracking-[0.2em] uppercase block mb-0.5">Commercial Invoice</span>
+            <h1 class="text-xl font-extrabold tracking-tight uppercase leading-tight">
+              Tax Invoice <br>
+              <span class="text-brand-green">Web Services & Infrastructure</span>
+            </h1>
+            <div class="h-0.5 w-24 bg-brand-green mt-1.5 mb-1"></div>
+            <p class="text-slate-300 text-xs">Standard tax invoice complying with local GST and service tax guidelines.</p>
+          </div>
+        </div>
+
+        <!-- Date and Validity (Right Side) -->
+        <div class="flex flex-col items-start gap-2 border-l border-slate-700/60 pl-6 py-1 w-auto">
+          <!-- Date -->
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-[#133054] flex items-center justify-center text-brand-green">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-[8px] text-slate-400 uppercase tracking-wider font-semibold">Invoice No</p>
+              <p class="text-xs font-bold">INV-2026-0042</p>
+            </div>
+          </div>
+          <!-- Validity -->
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-[#133054] flex items-center justify-center text-brand-green">
+              <i data-lucide="calendar" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-[8px] text-slate-400 uppercase tracking-wider font-semibold">Due Date</p>
+              <p class="text-xs font-bold">28 August 2026</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metadata Bar (Locked to 70px height - Enhanced with Tax IDs) -->
+    <div class="print-metadata h-[70px] bg-white border-b border-slate-100 py-3 px-8 print:px-10 flex items-center">
+      <div class="grid grid-cols-3 gap-2 divide-x divide-slate-100 w-full">
+        <!-- Prepared For -->
+        <div class="flex items-center gap-3 justify-start">
+          <div class="w-8 h-8 rounded-full bg-brand-dark flex items-center justify-center text-white flex-shrink-0">
+            <i data-lucide="users" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <p class="text-[9px] text-slate-500 font-semibold leading-tight">Bill To (Client)</p>
+            <p class="text-xs font-bold text-slate-800 leading-tight">Ayu ss. pharmacy</p>
+            <p class="text-[8px] text-slate-400 font-semibold">GSTIN: 27AAAAA1111A1Z1</p>
+          </div>
+        </div>
+        <!-- Prepared By -->
+        <div class="flex items-center gap-3 justify-start pl-6">
+          <div class="w-8 h-8 rounded-full bg-brand-dark flex items-center justify-center text-white flex-shrink-0">
+            <i data-lucide="user" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <p class="text-[9px] text-slate-500 font-semibold leading-tight">Issued By (Vendor)</p>
+            <p class="text-xs font-bold text-slate-800 leading-tight">Gk nexergey</p>
+            <p class="text-[8px] text-slate-400 font-semibold">GSTIN: 27BBBBB2222B2Z2</p>
+          </div>
+        </div>
+        <!-- Validity -->
+        <div class="flex items-center gap-3 justify-start pl-6">
+          <div class="w-8 h-8 rounded-full bg-brand-dark flex items-center justify-center text-white flex-shrink-0">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <p class="text-[9px] text-slate-500 font-semibold leading-tight">Terms</p>
+            <p class="text-xs font-bold text-slate-800 leading-tight">Net 15 Days</p>
+            <p class="text-[8px] text-slate-400 font-semibold">Date: 13 August 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Body Container -->
+    <div class="print-body flex-grow p-6 px-8 print:px-10 print:py-6 flex flex-col justify-between bg-white">
+      
+      <!-- Project Overview -->
+      <div>
+        <div class="flex items-center gap-2 mb-1.5">
+          <div class="w-6 h-6 rounded-full bg-[#133054] flex items-center justify-center text-white">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+          </div>
+          <h2 class="text-xs font-bold text-brand-dark uppercase tracking-wider">Scope Overview</h2>
+        </div>
+        <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed shadow-sm">
+          Fulfillment of website development services (5 responsive pages, WordPress CMS, basic SEO) and infrastructure setup on Hostinger servers.
+        </div>
+      </div>
+
+      <!-- Two-Column Grid for Deliverables and Costing -->
+      <div class="grid grid-cols-12 gap-5 items-start">
+        
+        <!-- Left: Scope & Deliverables (7 cols) -->
+        <div class="col-span-7 space-y-1.5">
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-6 h-6 rounded-full bg-[#133054] flex items-center justify-center text-white">
+              <i data-lucide="target" class="w-3.5 h-3.5"></i>
+            </div>
+            <h2 class="text-xs font-bold text-brand-dark uppercase tracking-wider">Delivered Scope Items</h2>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4 space-y-3">
+            <!-- Website Design -->
+            <div class="flex items-start gap-2">
+              <div class="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-brand-green/10 text-brand-green mt-0.5">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="flex items-start gap-2">
+                <div class="w-7 h-7 rounded bg-brand-dark flex items-center justify-center text-white flex-shrink-0">
+                  <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-slate-800">Website Design</h3>
+                  <p class="text-[10px] sm:text-[10.5px] text-slate-500 leading-tight">Up to 5 standard pages (Home, About, Services, Gallery, Contact Us).</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile Optimization -->
+            <div class="flex items-start gap-2">
+              <div class="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-brand-green/10 text-brand-green mt-0.5">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="flex items-start gap-2">
+                <div class="w-7 h-7 rounded bg-brand-dark flex items-center justify-center text-white flex-shrink-0">
+                  <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-slate-800">Mobile Optimization</h3>
+                  <p class="text-[10px] sm:text-[10.5px] text-slate-500 leading-tight">Fully responsive layout optimized across devices.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hostinger Infrastructure Setup -->
+            <div class="flex items-start gap-2">
+              <div class="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-brand-green/10 text-brand-green mt-0.5">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="flex items-start gap-2">
+                <div class="w-7 h-7 rounded bg-brand-dark flex items-center justify-center text-white flex-shrink-0">
+                  <i data-lucide="server" class="w-3.5 h-3.5"></i>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-slate-800">Hostinger Infrastructure Setup</h3>
+                  <ul class="text-[9.5px] sm:text-[10px] text-slate-500 mt-0.5 space-y-0.5 list-disc pl-3">
+                    <li>Premium Web Hosting Plan (1-Year).</li>
+                    <li>Free Domain Name & SSL Installation.</li>
+                    <li>Professional Email accounts.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content Management -->
+            <div class="flex items-start gap-2">
+              <div class="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-brand-green/10 text-brand-green mt-0.5">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="flex items-start gap-2">
+                <div class="w-7 h-7 rounded bg-brand-dark flex items-center justify-center text-white flex-shrink-0">
+                  <span class="font-black text-xs">W</span>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-slate-800">Content CMS</h3>
+                  <p class="text-[10px] sm:text-[10.5px] text-slate-500 leading-tight">Built on WordPress engine for admin panel access.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Costing (5 cols) - Enhanced with Base and GST columns -->
+        <div class="col-span-5 space-y-1.5">
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-6 h-6 rounded-full bg-[#133054] flex items-center justify-center text-white">
+              <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
+            </div>
+            <h2 class="text-xs font-bold text-brand-dark uppercase tracking-wider">Financial Breakdown</h2>
+          </div>
+
+          <div class="border border-slate-200 rounded-lg shadow-sm overflow-hidden bg-white">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-brand-dark text-white text-[8px] uppercase tracking-wider">
+                  <th class="py-2 px-2.5 font-bold w-1/2">Description</th>
+                  <th class="py-2 px-2 font-bold text-right">Base</th>
+                  <th class="py-2 px-2.5 font-bold text-right">GST 18%</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-[10px] sm:text-[10.5px]">
+                <tr>
+                  <td class="py-2.5 px-2.5 text-slate-700 leading-tight font-semibold">
+                    Developer Fee <br>
+                    <span class="text-[7.5px] text-slate-400 font-normal">Website Design & Setup</span>
+                  </td>
+                  <td class="py-2.5 px-2 text-right text-slate-600">₹12,712</td>
+                  <td class="py-2.5 px-2.5 text-right text-slate-600">₹2,288</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-2.5 text-slate-700 leading-tight font-semibold">
+                    Infrastructure <br>
+                    <span class="text-[7.5px] text-slate-400 font-normal">Hostinger 1-Yr Package</span>
+                  </td>
+                  <td class="py-2.5 px-2 text-right text-slate-600">₹2,966</td>
+                  <td class="py-2.5 px-2.5 text-right text-slate-600">₹534</td>
+                </tr>
+                <tr class="bg-brand-greenLight font-bold text-[11px]">
+                  <td class="py-3 px-2.5 text-brand-green uppercase tracking-wider text-[9px] sm:text-[10px]">Grand Total</td>
+                  <td colspan="2" class="py-3 px-2.5 text-brand-green text-right text-sm">₹18,500</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-[8px] text-slate-400 leading-tight px-1 mt-1">
+            * Inclusive of 18% GST (CGST 9% + SGST 9%) on developer services and infrastructure setup.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Payment Terms & Schedule (Enhanced with "Paid" badge for advance) -->
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-6 h-6 rounded-full bg-[#133054] flex items-center justify-center text-white">
+            <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>
+          </div>
+          <h2 class="text-xs font-bold text-brand-dark uppercase tracking-wider">Milestone Payments</h2>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Milestone 1 -->
+          <div class="flex items-stretch border border-slate-200 rounded-lg overflow-hidden shadow-sm bg-white">
+            <div class="w-10 bg-brand-dark text-white flex flex-col justify-center items-center font-bold text-sm flex-shrink-0">
+              01
+            </div>
+            <div class="p-3 flex-grow relative">
+              <!-- Paid Badge -->
+              <span class="absolute top-2.5 right-3 bg-brand-green text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">PAID</span>
+              <div class="flex justify-between items-start gap-4 mb-0.5 pr-8">
+                <h3 class="text-xs font-bold text-slate-800">Advance Deposit</h3>
+                <span class="text-xs sm:text-sm font-extrabold text-brand-dark">₹11,000</span>
+              </div>
+              <p class="text-[9.5px] text-slate-500 leading-normal">
+                50% developer advance [₹7,500] + 100% Hostinger setup charges [₹3,500]. Cleared 13 August 2026.
+              </p>
+            </div>
+          </div>
+
+          <!-- Milestone 2 -->
+          <div class="flex items-stretch border border-slate-200 rounded-lg overflow-hidden shadow-sm bg-white">
+            <div class="w-10 bg-brand-green text-white flex flex-col justify-center items-center font-bold text-sm flex-shrink-0">
+              02
+            </div>
+            <div class="p-3 flex-grow">
+              <div class="flex justify-between items-start gap-4 mb-0.5">
+                <h3 class="text-xs font-bold text-slate-800">Final Balance</h3>
+                <span class="text-xs sm:text-sm font-extrabold text-brand-green">₹7,500</span>
+              </div>
+              <p class="text-[9.5px] text-slate-500 leading-normal">
+                Due upon project completion and website handover. Standard Net 15 terms.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terms & Conditions (Strictly Formatted with citations as per the unified skill) -->
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-6 h-6 rounded-full bg-[#133054] flex items-center justify-center text-white">
+            <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+          </div>
+          <h2 class="text-xs font-bold text-brand-dark uppercase tracking-wider">Terms & Conditions</h2>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <!-- Card 1: Timeline -->
+          <div class="border border-slate-200 rounded-lg p-3 flex flex-col justify-between bg-white shadow-sm h-full">
+            <div class="flex flex-col items-center text-center">
+              <div class="w-6 h-6 rounded-full bg-[#133054]/10 text-brand-dark flex items-center justify-center mb-1">
+                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+              </div>
+              <h3 class="text-[9px] font-bold text-brand-dark uppercase tracking-wider mb-1">Timeline</h3>
+            </div>
+            <div class="mt-1 font-mono text-[8px] bg-slate-50 p-1.5 rounded border border-slate-100 text-left">
+              <code>10-15 business days from receipt of advance and content.</code>
+            </div>
+            <div class="text-[8px] text-slate-400 mt-1.5 text-center font-medium">[gk-terms (2026/08), Section 1.1]</div>
+          </div>
+
+          <!-- Card 2: Credentials -->
+          <div class="border border-slate-200 rounded-lg p-3 flex flex-col justify-between bg-white shadow-sm h-full">
+            <div class="flex flex-col items-center text-center">
+              <div class="w-6 h-6 rounded-full bg-[#133054]/10 text-brand-dark flex items-center justify-center mb-1">
+                <i data-lucide="key" class="w-3.5 h-3.5"></i>
+              </div>
+              <h3 class="text-[9px] font-bold text-brand-dark uppercase tracking-wider mb-1">Credentials</h3>
+            </div>
+            <div class="mt-1 font-mono text-[8px] bg-slate-50 p-1.5 rounded border border-slate-100 text-left">
+              <code>Credentials transferred to client upon final payment clearance.</code>
+            </div>
+            <div class="text-[8px] text-slate-400 mt-1.5 text-center font-medium">[gk-terms (2026/08), Section 2.3]</div>
+          </div>
+
+          <!-- Card 3: Support -->
+          <div class="border border-slate-200 rounded-lg p-3 flex flex-col justify-between bg-white shadow-sm h-full">
+            <div class="flex flex-col items-center text-center">
+              <div class="w-6 h-6 rounded-full bg-[#133054]/10 text-brand-dark flex items-center justify-center mb-1">
+                <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+              </div>
+              <h3 class="text-[9px] font-bold text-brand-dark uppercase tracking-wider mb-1">Support</h3>
+            </div>
+            <div class="mt-1 font-mono text-[8px] bg-slate-50 p-1.5 rounded border border-slate-100 text-left">
+              <code>15 days of free post-launch support for bug fixes.</code>
+            </div>
+            <div class="text-[8px] text-slate-400 mt-1.5 text-center font-medium">[gk-terms (2026/08), Section 3.2]</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer Bar (Locked to 110px height - Pushed naturally by margin-top: auto) -->
+    <div class="print-footer h-[110px] bg-brand-dark text-white py-4 px-8 print:px-10 flex flex-row justify-between items-center gap-4 mt-auto">
+      <!-- Left: Designed By -->
+      <div class="flex items-center gap-3">
+        <svg class="w-9 h-9" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="50,5 90,28 90,72 50,95 10,72 10,28" stroke="#22c55e" stroke-width="4.5" fill="#081d38" />
+          <polygon points="50,11 85,31 85,69 50,89 15,69 15,31" stroke="#ffffff" stroke-width="1.5" fill="none" />
+          <text x="50" y="58" fill="white" font-family="'Inter', sans-serif" font-weight="900" font-size="28" text-anchor="middle">GK</text>
+        </svg>
+        <div>
+          <p class="text-[8px] text-slate-400 font-semibold uppercase tracking-wider leading-none">Designed By</p>
+          <p class="text-[10px] font-bold leading-tight mt-0.5">Gk nexergey</p>
+          <p class="text-[8px] text-slate-400 leading-none mt-0.5">Web Development & Digital Services</p>
+        </div>
+      </div>
+
+      <!-- Middle: Prepared For -->
+      <div class="border-l border-slate-700/60 pl-6 py-0.5 text-left">
+        <p class="text-[8px] text-slate-400 font-semibold uppercase tracking-wider leading-none">Prepared For</p>
+        <p class="text-[10px] font-bold leading-tight mt-0.5">Ayu ss. pharmacy</p>
+        <p class="text-[8px] text-slate-400 mt-1 leading-none">13 August 2026</p>
+      </div>
+
+      <!-- Right: Total Cost Box (With Banking Transfer instructions inside) -->
+      <div class="flex items-center gap-3">
+        <!-- Banking Instruction Box -->
+        <div class="text-[7.5px] text-slate-400 leading-none text-right hidden sm:block">
+          <p class="font-bold text-white mb-0.5">BANK HDFC / HDFC0000123</p>
+          <p class="mb-0.5">A/C: 50100012345678</p>
+          <p>UPI: gknexergey@oksbi</p>
+        </div>
+        <div class="border border-brand-green/30 rounded-md py-1 px-4 bg-[#0a2343] flex flex-col items-end flex-shrink-0">
+          <span class="text-[8px] text-brand-green font-bold tracking-widest uppercase leading-none mb-0.5">Total Amount</span>
+          <span class="text-base font-extrabold text-brand-green leading-tight">₹18,500</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Small Designer Strip at bottom -->
+  <div class="max-w-4xl mx-auto mt-2 text-center no-print">
+    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-[0.2em] relative flex items-center justify-center gap-2">
+      <span class="h-px bg-slate-300 w-16 sm:w-24"></span>
+      Designed by <span class="text-slate-600">Gk nexergey</span>
+      <span class="h-px bg-slate-300 w-16 sm:w-24"></span>
+    </p>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>

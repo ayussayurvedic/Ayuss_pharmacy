@@ -40,7 +40,7 @@ export default function AdminSettingsClient() {
     default_gst_rate: 12.00,
     delivery_gst_rate: 18.00,
     invoice_terms: 'Goods once sold are subject to S.S. PHARMACY terms.',
-    support_email: 'support@sspharmacy.in',
+    support_email: 'ayuss.ayurvedic@gmail.com',
     support_phone: ''
   });
 

@@ -47,8 +47,8 @@ export default function AdminLoginPage() {
 
         {/* Support links */}
         <div className="mt-8 flex justify-center gap-6">
-          <a href="mailto:support@sspharmacy.in?subject=Admin%20Password%20Reset%20Request" className="text-[11px] font-bold text-slate-500 hover:text-[#1A5C5E] uppercase tracking-wider transition-colors">Forgot Password?</a>
-          <a href="mailto:support@sspharmacy.in?subject=Admin%20Portal%20Support" className="text-[11px] font-bold text-slate-500 hover:text-[#1A5C5E] uppercase tracking-wider transition-colors">Support</a>
+          <a href="mailto:ayuss.ayurvedic@gmail.com?subject=Admin%20Password%20Reset%20Request" className="text-[11px] font-bold text-slate-500 hover:text-[#1A5C5E] uppercase tracking-wider transition-colors">Forgot Password?</a>
+          <a href="mailto:ayuss.ayurvedic@gmail.com?subject=Admin%20Portal%20Support" className="text-[11px] font-bold text-slate-500 hover:text-[#1A5C5E] uppercase tracking-wider transition-colors">Support</a>
         </div>
       </div>
     </div>

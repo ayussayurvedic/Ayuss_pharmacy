@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       if (dbErr || !record) {
         // Admin does not exist: Run mock credentials verification to match timing
         await supabaseAdmin.auth.signInWithPassword({
-          email: 'nonexistent-admin-trigger-dummy@sspharmacy.in',
+          email: 'nonexistent-admin-trigger-dummy@gmail.com',
           password: 'dummy-password-that-will-fail-and-simulate-supabase-latency',
         }).catch(() => null);
 

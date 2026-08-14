@@ -17,7 +17,7 @@ export default async function AdminProfilePage() {
   // Admin user data comes from the session/JWT
   const admin = {
     name: session.name || 'Administrator',
-    email: session.email || 'admin@sspharmacy.in',
+    email: session.email || 'ayuss.ayurvedic@gmail.com',
     role: session.role
   };
 

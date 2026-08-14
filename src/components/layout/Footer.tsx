@@ -91,7 +91,7 @@ export default function Footer() {
             </div>
             <div className="flex items-center gap-2">
               <Mail className="w-4 h-4 text-[#C9943E] shrink-0" />
-              <a href="mailto:info@sspharmacy.co.in" className="hover:text-[#E8C87A] transition-colors">info@sspharmacy.co.in</a>
+              <a href="mailto:ayuss.ayurvedic@gmail.com" className="hover:text-[#E8C87A] transition-colors">ayuss.ayurvedic@gmail.com</a>
             </div>
             <div className="flex items-start gap-2">
               <MapPin className="w-4 h-4 text-[#C9943E] shrink-0 mt-0.5" />

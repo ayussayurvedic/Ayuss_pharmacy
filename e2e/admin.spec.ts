@@ -51,7 +51,7 @@ test.describe('S.S. Pharmacy Admin Portal Smoke Tests', () => {
 
     // Generate a valid JWT token matching the middleware's expectation
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'placeholder-secret');
-    const token = await new SignJWT({ id: 'admin-id', role: 'admin', email: 'admin@sspharmacy.in', name: 'Mock Admin' })
+    const token = await new SignJWT({ id: 'admin-id', role: 'admin', email: 'ayuss.ayurvedic@gmail.com', name: 'Mock Admin' })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
       .setExpirationTime('8h')
