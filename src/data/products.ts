@@ -32,8 +32,6 @@ export const products: Product[] = [
     shelfLife: "3 Years",
     safetyNote: "Ayurvedic cream for external use only",
     packSize: "100g Jar",
-    mrp: 249,
-    sellingPrice: 199,
     image: "",
     transparentImage: "",
     galleryImages: []
@@ -53,8 +51,6 @@ export const products: Product[] = [
     shelfLife: "2 Years",
     safetyNote: "Use only as directed. Consult a qualified healthcare professional for individual conditions.",
     packSize: "60 Pills Container",
-    mrp: 299,
-    sellingPrice: 249,
     image: "",
     transparentImage: "",
     galleryImages: []
@@ -74,8 +70,6 @@ export const products: Product[] = [
     shelfLife: "3 Years",
     safetyNote: "Ayurvedic cream for external use only",
     packSize: "100g Jar",
-    mrp: 349,
-    sellingPrice: 299,
     image: "",
     transparentImage: "",
     galleryImages: []
