@@ -210,8 +210,37 @@ export default function CheckoutPage() {
         }
       }
 
+      // 2. Open WhatsApp with complete order details
+      const itemsList = cartItems
+        .map((item) => `• ${item.product.name} (Qty: ${item.quantity}) - ₹${((item.product.sellingPrice || item.product.mrp || 0) * item.quantity).toFixed(2)}`)
+        .join('\n');
+
+      const message = `Hello S.S. Pharmacy, I would like to place an order:
+
+*Order Details:*
+Order Number: #${orderNumber}
+Total Amount: ₹${total.toFixed(2)}
+
+*Items:*
+${itemsList}
+
+*Customer Details:*
+Name: ${form.name}
+Phone: ${form.phone}
+Email: ${form.email || 'N/A'}
+Shipping Address: ${form.address}, ${form.city}, ${form.state} - ${form.pincode}
+
+Please confirm my order. Thank you!`;
+
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/919848523295?text=${encodedMessage}`;
+
+      if (typeof window !== 'undefined') {
+        window.open(whatsappUrl, '_blank');
+      }
+
       handleClearCart();
-      toast.success('Order placed successfully.');
+      toast.success('Order placed successfully. Redirecting to WhatsApp...');
       router.push(`/order-success/${orderNumber}`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order.');
@@ -385,13 +414,15 @@ export default function CheckoutPage() {
                     className="accent-[#1A5C5E]"
                   />
                   <div>
-                    <span className="font-bold block text-xs">Cash on Delivery (COD)</span>
-                    <span className="text-[10px] text-slate-500 block">Pay in cash upon doorstep delivery</span>
+                    <span className="font-bold block text-xs">Cash on Delivery (COD) / WhatsApp Order</span>
+                    <span className="text-[10px] text-slate-500 block">Confirm your order details instantly via WhatsApp</span>
                   </div>
                 </div>
                 <CheckCircle className={`w-4 h-4 ${paymentMethod === 'cod' ? 'text-[#1A5C5E]' : 'opacity-0'}`} />
               </label>
 
+              {/* Hiding Online Payment option for now - to be restored when Razorpay credentials are ready */}
+              {/* 
               <label 
                 className={`flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
                   paymentMethod === 'online_razorpay' ? 'border-[#1A5C5E] bg-[#1A5C5E]/5 shadow-xs' : 'border-slate-200 bg-white'
@@ -412,6 +443,7 @@ export default function CheckoutPage() {
                 </div>
                 <CreditCard className={`w-4 h-4 ${paymentMethod === 'online_razorpay' ? 'text-[#1A5C5E]' : 'text-slate-400'}`} />
               </label>
+              */}
             </div>
 
             <button 
@@ -419,7 +451,7 @@ export default function CheckoutPage() {
               disabled={loading} 
               className="w-full bg-[#1A5C5E] hover:bg-[#134547] text-white py-3.5 rounded-full font-bold block text-center transition-colors min-h-[44px] shadow-md uppercase tracking-wider text-xs cursor-pointer"
             >
-              {loading ? 'Processing Order...' : `Place Order (₹${total})`}
+              {loading ? 'Processing Order...' : `Place Order via WhatsApp (₹${total})`}
             </button>
           </form>
 
