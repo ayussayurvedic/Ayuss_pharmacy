@@ -188,7 +188,7 @@ export default function LoginForm() {
             id="login-email"
             type="email"
             autoComplete="email"
-            placeholder="ayuss.ayurvedic@gmail.com"
+            placeholder="Enter your admin email"
             disabled={lockout}
             {...register('email')}
             className={cn(
