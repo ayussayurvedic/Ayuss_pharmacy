@@ -24,7 +24,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const [selectedImg, setSelectedImg] = useState(product.image || '');
   const [activeTab, setActiveTab] = useState<'description' | 'ingredients' | 'specifications' | 'directions'>('description');
 
-  const gallery = product.galleryImages || [product.image || ''];
+  const gallery = Array.from(new Set([
+    product.image,
+    ...(product.galleryImages || [])
+  ])).filter((img): img is string => typeof img === 'string' && img.trim() !== '');
 
   const ingredients = product.composition
     .split(',')
