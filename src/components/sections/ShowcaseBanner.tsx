@@ -18,7 +18,7 @@ export default function ShowcaseBanner() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0 w-full h-full overflow-hidden group-hover:scale-105 transition-transform duration-700">
           <Image 
-            src="/products/hero-section/hero_section_mobile_image's/madebynature-mobile.webp" 
+            src="https://smfeccjfhvcablqfpokn.supabase.co/storage/v1/object/public/products/hero-section/mobile/madebynature-mobile.webp" 
             alt="Ayurveda Herbal Showcase" 
             fill
             className="object-cover object-center md:hidden"
@@ -26,11 +26,11 @@ export default function ShowcaseBanner() {
             priority
           />
           <Image 
-            src="/products/hero-section/hero_section_desktop_image's/madebynature.webp" 
+            src="https://smfeccjfhvcablqfpokn.supabase.co/storage/v1/object/public/products/hero-section/desktop/madebynature.webp" 
             alt="Ayurveda Herbal Showcase" 
             fill
             className="object-cover object-center hidden md:block"
-            sizes="100vw"
+            sizes="(max-width: 1280px) 100vw, 1280px"
             priority
           />
         </div>
