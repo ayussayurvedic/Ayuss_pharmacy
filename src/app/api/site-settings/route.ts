@@ -24,8 +24,8 @@ export async function GET() {
       data: {
         supportPhone: rawPhone,
         supportEmail: data?.support_email || 'ayuss.ayurvedic@gmail.com',
-        tradeName: data?.trade_name || 'S.S. PHARMACY',
-        legalBusinessName: data?.legal_business_name || 'S.S. PHARMACY',
+        tradeName: data?.trade_name || 'Ayu S.S. Pharmacy',
+        legalBusinessName: data?.legal_business_name || 'Ayu S.S. Pharmacy',
         address: addressParts.length > 0 ? addressParts.join(', ') : 'Prakash Nagar, Yerraguntla, YSR Kadapa Dist., A.P. - 516309'
       }
     });

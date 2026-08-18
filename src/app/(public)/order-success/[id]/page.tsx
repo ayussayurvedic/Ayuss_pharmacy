@@ -97,7 +97,7 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
         if (searchParams.get('openWhatsapp') === '1') {
           const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
           const defaultMsg = encodeURIComponent(
-            `🌿 *S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
+            `🌿 *AYU S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on Ayu S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
           );
           const targetUrl = storedUrl || (resolvedPhone ? `https://wa.me/${resolvedPhone}?text=${defaultMsg}` : '');
           
@@ -115,7 +115,7 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
   }, [cleanId, activeOrderNum, order]);
 
   const fallbackWhatsappMsg = encodeURIComponent(
-    `🌿 *S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
+    `🌿 *AYU S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on Ayu S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
   );
 
   const activeWhatsappUrl = cachedWhatsappUrl || (supportPhone ? `https://wa.me/${supportPhone}?text=${fallbackWhatsappMsg}` : '#');

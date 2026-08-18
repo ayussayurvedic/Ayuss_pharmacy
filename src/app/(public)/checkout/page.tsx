@@ -254,10 +254,10 @@ export default function CheckoutPage() {
         .map((item) => `  ▫️ *${item.product.name}*\n     Qty: ${item.quantity} × ₹${((item.product.sellingPrice || item.product.mrp || 0)).toFixed(2)} = *₹${(((item.product.sellingPrice || item.product.mrp || 0) * item.quantity)).toFixed(2)}*`)
         .join('\n\n');
 
-      const message = `🌿 *S.S. PHARMACY — NEW ORDER* 🌿
+      const message = `🌿 *AYU S.S. PHARMACY — NEW ORDER* 🌿
 ━━━━━━━━━━━━━━━━━━━━
 
-Hello! I have placed an order on the S.S. Pharmacy portal.
+Hello Ayu S.S. Pharmacy! I have placed an order on your store.
 
 🧾 *ORDER SUMMARY:*
 🆔 *Order ID:* #${orderNumber}

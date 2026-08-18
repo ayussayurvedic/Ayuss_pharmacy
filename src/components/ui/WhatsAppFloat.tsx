@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { fetchSiteSettings, formatWhatsAppNumber } from '@/lib/site-settings';
 
-const WHATSAPP_MESSAGE = '🌿 Hello S.S. Pharmacy! I would like to inquire about your Ayurvedic products & formulations. 🙏✨';
+const WHATSAPP_MESSAGE = '🌿 Hello Ayu S.S. Pharmacy! I would like to inquire about your Ayurvedic products & formulations. 🙏✨';
 
 export default function WhatsAppFloat() {
   const [whatsappPhone, setWhatsappPhone] = useState<string>('');

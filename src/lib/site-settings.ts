@@ -12,8 +12,8 @@ export interface SiteSettings {
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   supportPhone: '',
   supportEmail: 'ayuss.ayurvedic@gmail.com',
-  tradeName: 'S.S. PHARMACY',
-  legalBusinessName: 'S.S. PHARMACY',
+  tradeName: 'Ayu S.S. Pharmacy',
+  legalBusinessName: 'Ayu S.S. Pharmacy',
   address: 'Prakash Nagar, Yerraguntla, YSR Kadapa Dist., A.P. - 516309',
   rawPhone: '',
 };
