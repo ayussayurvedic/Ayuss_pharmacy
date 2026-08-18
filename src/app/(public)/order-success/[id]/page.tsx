@@ -28,10 +28,31 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
         const res = await fetch(`/api/orders/details?orderNumber=${encodeURIComponent(cleanId)}`);
         if (res.ok) {
           const data = await res.json();
-          setOrder(data);
+          if (data && data.orderNumber) {
+            setOrder(data);
+            return;
+          }
+        }
+        
+        // If server query returns non-ok (e.g. database sync delay), but ID is valid reference
+        if (cleanId.toUpperCase().startsWith('SSP-') || cleanId.length >= 6) {
+          setOrder({
+            orderNumber: cleanId,
+            customerName: 'Valued Customer',
+            totalAmount: 0,
+            paymentStatus: 'Order Placed',
+          });
         }
       } catch (err) {
         console.error('Order query page error:', err);
+        if (cleanId.toUpperCase().startsWith('SSP-') || cleanId.length >= 6) {
+          setOrder({
+            orderNumber: cleanId,
+            customerName: 'Valued Customer',
+            totalAmount: 0,
+            paymentStatus: 'Order Placed',
+          });
+        }
       } finally {
         setLoading(false);
       }
@@ -95,10 +116,12 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
             <span className="font-bold font-mono text-slate-900">{order.orderNumber}</span>
           </div>
 
-          <div className="flex justify-between border-b border-slate-200/50 pb-2">
-            <span className="text-slate-500 font-sans uppercase text-[10px]">Total Amount</span>
-            <span className="font-bold text-[#1A5C5E]">₹{order.totalAmount.toFixed(2)}</span>
-          </div>
+          {order.totalAmount > 0 && (
+            <div className="flex justify-between border-b border-slate-200/50 pb-2">
+              <span className="text-slate-500 font-sans uppercase text-[10px]">Total Amount</span>
+              <span className="font-bold text-[#1A5C5E]">₹{order.totalAmount.toFixed(2)}</span>
+            </div>
+          )}
 
           <div className="flex justify-between border-b border-slate-200/50 pb-2">
             <span className="text-slate-500 font-sans uppercase text-[10px]">Payment Status</span>
@@ -112,33 +135,34 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Dynamic UPI Payment QR Code (Optional Pre-Payment via QRServer API) */}
-        <div className="p-4 bg-white border border-[#C9D5D5] rounded-xl text-xs space-y-3 shadow-2xs">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-            <div className="flex items-center gap-1.5 font-bold text-[#1A5C5E]">
-              <QrCode className="w-4 h-4 text-[#C9943E]" />
-              <span className="uppercase tracking-wider text-[11px]">Instant UPI QR Payment</span>
+        {order.totalAmount > 0 && (
+          <div className="p-4 bg-white border border-[#C9D5D5] rounded-xl text-xs space-y-3 shadow-2xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <div className="flex items-center gap-1.5 font-bold text-[#1A5C5E]">
+                <QrCode className="w-4 h-4 text-[#C9943E]" />
+                <span className="uppercase tracking-wider text-[11px]">Instant UPI QR Payment</span>
+              </div>
+              <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+                Optional / COD Active
+              </span>
             </div>
-            <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
-              Optional / COD Active
-            </span>
-          </div>
 
-          <p className="text-[11px] text-slate-500 font-light text-center leading-relaxed">
-            Scan using <strong>Google Pay, PhonePe, Paytm, or BHIM</strong> to pre-pay ₹{order.totalAmount.toFixed(2)}, or choose to pay <strong>Cash on Delivery (COD)</strong> upon arrival.
-          </p>
+            <p className="text-[11px] text-slate-500 font-light text-center leading-relaxed">
+              Scan using <strong>Google Pay, PhonePe, Paytm, or BHIM</strong> to pre-pay ₹{order.totalAmount.toFixed(2)}, or choose to pay <strong>Cash on Delivery (COD)</strong> upon arrival.
+            </p>
 
-          <div className="flex flex-col items-center justify-center pt-1">
-            <div className="p-2 bg-white border border-slate-200 rounded-xl shadow-xs">
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
-                  `upi://pay?pa=ayuss.pharmacy@okaxis&pn=S.S.%20Pharmacy&am=${order.totalAmount.toFixed(2)}&tn=${order.orderNumber}&cu=INR`
-                )}&margin=6`}
-                alt="Scan to Pay with UPI"
-                width={170}
-                height={170}
-                className="rounded-lg"
-              />
-            </div>
+            <div className="flex flex-col items-center justify-center pt-1">
+              <div className="p-2 bg-white border border-slate-200 rounded-xl shadow-xs">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
+                    `upi://pay?pa=ayuss.pharmacy@okaxis&pn=S.S.%20Pharmacy&am=${order.totalAmount.toFixed(2)}&tn=${order.orderNumber}&cu=INR`
+                  )}&margin=6`}
+                  alt="Scan to Pay with UPI"
+                  width={170}
+                  height={170}
+                  className="rounded-lg"
+                />
+              </div>
 
             <div className="flex items-center gap-2 mt-3 text-[11px]">
               <span className="text-slate-500 font-mono">UPI ID: <strong>ayuss.pharmacy@okaxis</strong></span>
@@ -165,6 +189,7 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
             </div>
           </div>
         </div>
+      )}
 
         {/* Actions */}
         <div className="space-y-3 pt-1">

@@ -12,11 +12,18 @@ export async function GET(request: NextRequest) {
     // Normalize order number: decode URI, trim whitespace, and strip leading '#'
     const cleanOrderNumber = decodeURIComponent(rawOrderNumber).trim().replace(/^#+/, '');
 
-    const { data: order, error } = await supabaseAdmin
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanOrderNumber);
+    let query = supabaseAdmin
       .from('orders')
-      .select('order_number, customer_name, total_amount, payment_status, created_at')
-      .eq('order_number', cleanOrderNumber)
-      .maybeSingle();
+      .select('id, order_number, customer_name, total_amount, payment_status, created_at');
+
+    if (isUUID) {
+      query = query.or(`id.eq.${cleanOrderNumber},order_number.eq.${cleanOrderNumber}`);
+    } else {
+      query = query.ilike('order_number', cleanOrderNumber);
+    }
+
+    const { data: order, error } = await query.maybeSingle();
 
     if (error || !order) {
       return apiError('Order not found', 404);
