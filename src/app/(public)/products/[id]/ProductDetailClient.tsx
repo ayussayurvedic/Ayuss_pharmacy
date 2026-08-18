@@ -305,7 +305,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                         { label: 'Product Name', value: product.name, icon: Package },
                         { label: 'Category', value: product.category, icon: FileCheck },
                         { label: 'Pack Size / Net Content', value: product.packSize || 'N/A', icon: Package },
-                        { label: 'MRP', value: `₹${product.mrp}/-`, icon: Package },
+                        { label: 'MRP', value: product.mrp ? `₹${product.mrp}/-` : '—', icon: Package },
                         { label: 'Shelf Life', value: product.shelfLife, icon: Clock },
                         { label: 'Manufacturing License', value: 'R-1970/Ayur', icon: ShieldCheck },
                         { label: 'Licensing Authority', value: 'AYUSH Dept., Govt. of Andhra Pradesh', icon: Award },
