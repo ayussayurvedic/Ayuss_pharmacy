@@ -117,6 +117,18 @@ export const apiRateLimiter = new DbRateLimiter({
   keyPrefix: 'api',
 });
 
+/**
+ * Order Placement Rate Limiter
+ * - Max 5 order placements per 15-minute window per IP / Phone
+ * - Blocks excessive spam and bot order flood
+ */
+export const orderRateLimiter = new DbRateLimiter({
+  points: 5,
+  duration: 15 * 60,
+  blockDuration: 15 * 60,
+  keyPrefix: 'order',
+});
+
 // CAPTCHA trigger flag at 3 attempts
 export const CAPTCHA_THRESHOLD = 3;
 

@@ -28,6 +28,19 @@ export const metadata: Metadata = {
   },
 };
 
+import SchemaMarkup from '@/components/layout/SchemaMarkup';
+import { generateWebSiteSchema, generateFAQSchema } from '@/lib/seo';
+import { faqs } from '@/lib/faq-data';
+
 export default function HomePage() {
-  return <HomeClient />;
+  const websiteSchema = generateWebSiteSchema();
+  const faqSchema = generateFAQSchema(faqs);
+
+  return (
+    <>
+      <SchemaMarkup schema={websiteSchema} />
+      <SchemaMarkup schema={faqSchema} />
+      <HomeClient />
+    </>
+  );
 }

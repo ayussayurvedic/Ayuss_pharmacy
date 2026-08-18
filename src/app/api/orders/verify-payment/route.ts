@@ -1,17 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { apiSuccess, apiError } from '@/lib/api-response';
 import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+      return apiError('Invalid request body', 400);
     }
 
     const { orderId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = body;
     if (!orderId || !razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-      return NextResponse.json({ error: 'Missing verification fields' }, { status: 400 });
+      return apiError('Missing verification fields', 400);
     }
 
     // Fetch order total to log transaction securely
@@ -22,12 +23,22 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (queryErr || !order) {
-      return NextResponse.json({ error: 'Order reference not found' }, { status: 400 });
+      return apiError('Order reference not found', 400);
     }
 
+    const isProd = process.env.NODE_ENV === 'production';
     const secret = process.env.RAZORPAY_KEY_SECRET;
-    if (!secret || razorpayOrderId === 'sandbox_order') {
-      console.warn('⚠️ Warning: RAZORPAY_KEY_SECRET is not configured or using sandbox. Falling back to sandbox validation.');
+
+    if (isProd) {
+      if (!secret) {
+        console.error('CRITICAL: RAZORPAY_KEY_SECRET is not configured in production.');
+        return apiError('Payment gateway configuration error.', 500);
+      }
+      if (razorpayOrderId === 'sandbox_order' || String(razorpayPaymentId).startsWith('sandbox_')) {
+        return apiError('Sandbox payments are not allowed in production.', 403);
+      }
+    } else if (!secret || razorpayOrderId === 'sandbox_order') {
+      console.warn('⚠️ Warning: Running in development/test mode with sandbox payment verification.');
       
       // Update database status to paid using supabaseAdmin
       const { error: dbErr } = await supabaseAdmin
@@ -49,18 +60,21 @@ export async function POST(request: NextRequest) {
         console.error('Failed to log sandbox transaction:', txErr);
       }
 
-      return NextResponse.json({ success: true, sandbox: true });
+      return apiSuccess({ verified: true, sandbox: true });
     }
 
-    // Verify Razorpay Payment Signature cryptographically
+    // Verify Razorpay Payment Signature cryptographically (Constant-Time)
     const text = `${razorpayOrderId}|${razorpayPaymentId}`;
     const generatedSignature = crypto
       .createHmac('sha256', secret)
       .update(text)
       .digest('hex');
 
-    if (generatedSignature !== razorpaySignature) {
-      return NextResponse.json({ error: 'Invalid payment signature verification failed.' }, { status: 400 });
+    const genBuf = Buffer.from(generatedSignature, 'utf8');
+    const sigBuf = Buffer.from(razorpaySignature, 'utf8');
+
+    if (genBuf.length !== sigBuf.length || !crypto.timingSafeEqual(genBuf, sigBuf)) {
+      return apiError('Invalid payment signature verification failed.', 400);
     }
 
     // Update database status to paid using supabaseAdmin
@@ -84,9 +98,9 @@ export async function POST(request: NextRequest) {
       console.error('Failed to log live transaction:', txErr);
     }
 
-    return NextResponse.json({ success: true });
+    return apiSuccess({ verified: true });
   } catch (err: any) {
     console.error('Payment verification crash:', err);
-    return NextResponse.json({ error: err.message || 'Payment verification failed' }, { status: 500 });
+    return apiError(err.message || 'Payment verification failed', 500);
   }
 }

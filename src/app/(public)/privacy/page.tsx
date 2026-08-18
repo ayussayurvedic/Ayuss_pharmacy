@@ -4,7 +4,7 @@ import { CANONICAL_DOMAIN } from '@/lib/seo';
 const path = '/privacy';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Ayu S.S. Pharmacy',
+  title: 'Privacy Policy',
   description: 'Privacy Policy for Ayu S.S. Pharmacy. Learn how we collect, use, and protect your information.',
   alternates: {
     canonical: `${CANONICAL_DOMAIN}${path}`,

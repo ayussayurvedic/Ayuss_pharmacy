@@ -103,11 +103,14 @@ export async function proxy(request: NextRequest) {
 
     // Define public routes that don't need auth
     const isPublicApiRoute = 
+      pathname === '/api/pincode' ||
       pathname === '/api/auth/mfa-login' ||
       pathname === '/api/auth/unified-login' ||
       pathname === '/api/extension/auth' ||
       pathname === '/api/orders/place' ||
       pathname === '/api/orders/track' ||
+      pathname === '/api/orders/details' ||
+      pathname === '/api/orders/history' ||
       pathname === '/api/orders/verify-payment' ||
       (pathname === '/api/inquiries' && request.method === 'POST') ||
       (pathname === '/api/applications' && request.method === 'POST');

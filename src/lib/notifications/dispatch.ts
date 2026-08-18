@@ -56,7 +56,9 @@ interface DispatchNotificationOptions {
 export async function dispatchNotification(options: DispatchNotificationOptions) {
   const { title, message, type, adminId, clickActionUrl, senderName = 'System', skipInApp = false } = options;
 
-  console.log(`[Dispatch] Initiating notification "${title}": "${message}" (Type: ${type})`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[Dispatch] Initiating notification "${title}": "${message}" (Type: ${type})`);
+  }
 
   // 1. In-App Notification insertion
   let inAppNotificationId: string | null = null;
@@ -107,7 +109,9 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
         const preferences = adminUser.notification_preferences || {};
         const isEnabled = preferences[type] !== false; // Default to true if not explicitly false
         if (!isEnabled) {
-          console.log(`[Dispatch] Admin ${adminId} has disabled notifications of type "${type}". Aborting push.`);
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(`[Dispatch] Admin ${adminId} has disabled notifications of type "${type}". Aborting push.`);
+          }
           return { success: true, reason: 'Disabled by user preferences' };
         }
       }
@@ -136,7 +140,9 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
   }
 
   if (subscriptions.length === 0) {
-    console.log('[Dispatch] No active push subscriptions found for targets.');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[Dispatch] No active push subscriptions found for targets.');
+    }
     return { success: true, inAppNotificationId, pushSentCount: 0 };
   }
 
@@ -155,7 +161,9 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
   for (const sub of subscriptions) {
     if (!hasVapid) {
       // Mock mode
-      console.log(`[Push Notification Mock] Endpoint: ${sub.endpoint}, Payload: ${pushPayload}`);
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[Push Notification Mock] Endpoint: ${sub.endpoint}, Payload: ${pushPayload}`);
+      }
       pushSentCount++;
       continue;
     }
@@ -184,7 +192,9 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
             .delete()
             .eq('id', sub.id);
           pruneCount++;
-          console.log(`[Prune] Deleted expired subscription endpoint: ${sub.id}`);
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(`[Prune] Deleted expired subscription endpoint: ${sub.id}`);
+          }
         } catch (dbErr) {
           console.error(`Failed to prune expired subscription ${sub.id}:`, dbErr);
         }
@@ -192,6 +202,8 @@ export async function dispatchNotification(options: DispatchNotificationOptions)
     }
   }
 
-  console.log(`[Dispatch Complete] Sent: ${pushSentCount}, Pruned: ${pruneCount}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[Dispatch Complete] Sent: ${pushSentCount}, Pruned: ${pruneCount}`);
+  }
   return { success: true, inAppNotificationId, pushSentCount, prunedCount: pruneCount };
 }

@@ -116,8 +116,10 @@ function ToastItem({ toast, onClose }: { toast: ToastMessage; onClose: () => voi
         {message}
       </div>
       <button
+        type="button"
         onClick={onClose}
-        className="flex-shrink-0 text-zinc-400 hover:text-zinc-650 transition-colors p-0.5 rounded-lg hover:bg-zinc-100 border-0 cursor-pointer bg-transparent"
+        aria-label="Dismiss notification"
+        className="flex-shrink-0 text-zinc-400 hover:text-zinc-650 transition-colors p-1.5 rounded-lg hover:bg-zinc-100 border-0 cursor-pointer bg-transparent min-w-[32px] min-h-[32px] flex items-center justify-center"
       >
         <X className="w-4 h-4" />
       </button>

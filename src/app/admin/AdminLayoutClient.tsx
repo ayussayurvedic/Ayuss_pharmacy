@@ -178,7 +178,7 @@ export default function AdminLayoutClient({
             }
           });
         })
-        .catch((err) => console.log('SW registration failed:', err));
+        .catch((err) => console.warn('SW registration failed:', err));
     }
 
     const checkAuth = async () => {

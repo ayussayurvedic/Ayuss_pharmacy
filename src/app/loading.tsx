@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function GlobalLoading() {
   return (
-    <div className="fixed inset-0 bg-[#FDF8F0] z-[9999] flex flex-col items-center justify-center p-6 text-center font-sans">
+    <div className="fixed inset-0 bg-[#FDF8F0] z-[130] flex flex-col items-center justify-center p-6 text-center font-sans">
       <div className="relative flex flex-col items-center space-y-6 max-w-sm animate-in fade-in duration-300">
         
         {/* Glowing Logo Container */}

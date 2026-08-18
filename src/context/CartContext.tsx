@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { type Product } from '@/data/products';
+import { type Product, getDefaultProductImage } from '@/data/products';
 import { useToast } from '@/components/ui/Toast';
 
 export interface CartItem {
@@ -29,15 +29,67 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const hasHydrated = useRef(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('ss_cart');
-      if (saved) {
-        setCartItems(JSON.parse(saved));
+    async function hydrateAndSyncCart() {
+      let initialCart: CartItem[] = [];
+      try {
+        const saved = localStorage.getItem('ss_cart');
+        if (saved) {
+          initialCart = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.warn('Error reading cart from localStorage:', e);
       }
-    } catch (e) {
-      console.warn(e);
+
+      // Ensure every initial item has a valid image fallback
+      initialCart = initialCart.map(item => ({
+        ...item,
+        product: {
+          ...item.product,
+          image: item.product.image || getDefaultProductImage(item.product.id)
+        }
+      }));
+
+      if (initialCart.length > 0) {
+        try {
+          const { createClient } = await import('@/lib/supabase/client');
+          const supabase = createClient();
+          const productIds = initialCart.map(item => item.product.id);
+          const { data: dbProducts, error } = await supabase
+            .from('products')
+            .select('id, name, mrp, selling_price, pack_size, image, is_active')
+            .in('id', productIds);
+
+          if (!error && dbProducts && dbProducts.length > 0) {
+            const dbProductMap = new Map(dbProducts.map(p => [p.id, p]));
+            initialCart = initialCart.map(item => {
+              const live = dbProductMap.get(item.product.id);
+              if (live) {
+                return {
+                  ...item,
+                  product: {
+                    ...item.product,
+                    name: live.name || item.product.name,
+                    mrp: Number(live.mrp || item.product.mrp || 0),
+                    sellingPrice: Number(live.selling_price || item.product.sellingPrice || 0),
+                    packSize: live.pack_size || item.product.packSize,
+                    image: live.image || item.product.image || getDefaultProductImage(item.product.id),
+                    isActive: live.is_active ?? true,
+                  }
+                };
+              }
+              return item;
+            });
+          }
+        } catch (syncErr) {
+          console.warn('Could not sync cart prices with database, using loaded state:', syncErr);
+        }
+      }
+
+      setCartItems(initialCart);
+      hasHydrated.current = true;
     }
-    hasHydrated.current = true;
+
+    hydrateAndSyncCart();
   }, []);
 
   useEffect(() => {
@@ -50,16 +102,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cartItems]);
 
   const handleAddToCart = (product: Product, quantity = 1) => {
+    const productWithImg: Product = {
+      ...product,
+      image: product.image || getDefaultProductImage(product.id)
+    };
     setCartItems((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
         return prev.map((item) =>
           item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { 
+                ...item, 
+                product: { ...item.product, image: item.product.image || productWithImg.image }, 
+                quantity: item.quantity + quantity 
+              }
             : item
         );
       }
-      return [...prev, { product, quantity }];
+      return [...prev, { product: productWithImg, quantity }];
     });
     toast.success(`${product.name} added to cart.`);
   };

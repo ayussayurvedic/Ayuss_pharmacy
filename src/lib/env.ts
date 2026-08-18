@@ -116,8 +116,9 @@ export const env = createLazyEnv();
 export function validateEnv() {
   try {
     // Access a property to trigger lazy validation
-    void env.NEXT_PUBLIC_SUPABASE_URL;
-    console.log('✅ Environment variables validated');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('✅ Environment variables validated');
+    }
   } catch (err) {
     if (err instanceof Error) {
       console.error(err.message);

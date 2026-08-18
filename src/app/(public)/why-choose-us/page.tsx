@@ -70,10 +70,18 @@ const faqSchema = {
   ]
 };
 
+import { generateBreadcrumbSchema } from '@/lib/seo';
+
 export default function WhyChooseUsPage() {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Why Choose Us', path: '/why-choose-us' },
+  ]);
+
   return (
     <>
       <SchemaMarkup schema={faqSchema} />
+      <SchemaMarkup schema={breadcrumbSchema} />
       <WhyChooseUsClient />
     </>
   );

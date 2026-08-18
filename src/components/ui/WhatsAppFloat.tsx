@@ -1,7 +1,5 @@
 'use client';
 
-import { MessageCircle } from 'lucide-react';
-
 const WHATSAPP_NUMBER = '919848523295';
 const WHATSAPP_MESSAGE = 'Hi S.S. Pharmacy, I would like to inquire about your Ayurvedic products.';
 

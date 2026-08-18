@@ -4,7 +4,7 @@ import { CANONICAL_DOMAIN } from '@/lib/seo';
 const path = '/terms';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Ayu S.S. Pharmacy',
+  title: 'Terms of Service',
   description: 'Terms of Service for Ayu S.S. Pharmacy. Governing law: Andhra Pradesh, India.',
   alternates: {
     canonical: `${CANONICAL_DOMAIN}${path}`,

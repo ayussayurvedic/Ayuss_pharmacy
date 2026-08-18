@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { apiRateLimiter, consumeRateLimit } from '@/lib/rate-limit';
+import { apiSuccess, apiError } from '@/lib/api-response';
 
 const unsubscribeSchema = z.object({
   endpoint: z.string().url()
@@ -15,16 +16,13 @@ export async function POST(request: NextRequest) {
     const rateResult = await consumeRateLimit(apiRateLimiter, ip);
     if (!rateResult.allowed) {
       const retryAfterSec = Math.ceil(rateResult.retryAfterMs / 1000);
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.', retryAfter: retryAfterSec },
-        { status: 429, headers: { 'Retry-After': String(retryAfterSec) } }
-      );
+      return apiError('Too many requests. Please try again later.', 429, 'RATE_LIMITED', { 'Retry-After': String(retryAfterSec) });
     }
 
     // 2. Authentication
     const session = await getSession();
     if (!session || !session.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiError('Unauthorized', 401);
     }
 
     // 3. Request Validation
@@ -45,19 +43,19 @@ export async function POST(request: NextRequest) {
       deleteQuery = deleteQuery.eq('employee_id', session.id);
     }
 
-    const { error: deleteError, count } = await deleteQuery.select();
+    const { error: deleteError } = await deleteQuery.select();
 
     if (deleteError) {
       console.error('Failed to unregister push subscription:', deleteError);
       throw deleteError;
     }
 
-    return NextResponse.json({ success: true, message: 'Push subscription unregistered successfully' });
+    return apiSuccess({ message: 'Push subscription unregistered successfully' });
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ success: false, errors: err.issues }, { status: 400 });
+      return apiError(err.issues[0]?.message || 'Validation error', 400);
     }
     console.error('Push unsubscribe error:', err);
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    return apiError('Internal server error', 500);
   }
 }

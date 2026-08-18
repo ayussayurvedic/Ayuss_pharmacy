@@ -121,25 +121,29 @@ export default function OrderTrackingClient() {
         <form onSubmit={handleTrack} className="bg-white border border-[#C9D5D5] p-5 rounded-2xl shadow-sm space-y-4 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-500 mb-1 font-bold uppercase tracking-wider text-[10px]">Order Number *</label>
+              <label htmlFor="track-order-number" className="block text-slate-500 mb-1 font-bold uppercase tracking-wider text-[10px]">Order Number *</label>
               <input 
+                id="track-order-number"
                 type="text" 
                 placeholder="E.g., SSP-123456" 
                 required 
+                autoComplete="off"
                 value={orderNumber} 
                 onChange={e => setOrderNumber(e.target.value)} 
-                className="w-full border border-[#C9D5D5] p-2.5 rounded-lg outline-none focus:border-[#1A5C5E] text-slate-700 bg-white" 
+                className="w-full border border-[#C9D5D5] p-2.5 rounded-lg outline-none focus:border-[#1A5C5E] text-slate-700 bg-white min-h-[44px]" 
               />
             </div>
             <div>
-              <label className="block text-slate-500 mb-1 font-bold uppercase tracking-wider text-[10px]">Registered Phone *</label>
+              <label htmlFor="track-phone" className="block text-slate-500 mb-1 font-bold uppercase tracking-wider text-[10px]">Registered Phone *</label>
               <input 
+                id="track-phone"
                 type="tel" 
                 placeholder="10-digit mobile number" 
                 required 
+                autoComplete="tel"
                 value={phone} 
                 onChange={e => setPhone(e.target.value)} 
-                className="w-full border border-[#C9D5D5] p-2.5 rounded-lg outline-none focus:border-[#1A5C5E] text-slate-700 bg-white" 
+                className="w-full border border-[#C9D5D5] p-2.5 rounded-lg outline-none focus:border-[#1A5C5E] text-slate-700 bg-white min-h-[44px]" 
               />
             </div>
           </div>

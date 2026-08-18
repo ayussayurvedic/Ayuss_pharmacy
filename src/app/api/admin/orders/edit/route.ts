@@ -1,24 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { verifyActiveAdmin, getSession } from '@/lib/auth';
+import { apiSuccess, apiError } from '@/lib/api-response';
 
 export async function POST(request: NextRequest) {
   try {
     // 1. Authenticate Admin session
     const session = await getSession();
     if (!session || session.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiError('Unauthorized', 401);
     }
     await verifyActiveAdmin(session.id);
 
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+      return apiError('Invalid request body', 400);
     }
 
     const { orderId, customerName, customerPhone, shippingAddress, giftMessage } = body;
     if (!orderId || !customerName || !customerPhone || !shippingAddress) {
-      return NextResponse.json({ error: 'Missing required update fields' }, { status: 400 });
+      return apiError('Missing required update fields', 400);
     }
 
     // 2. Perform DB update
@@ -35,9 +36,9 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ success: true });
+    return apiSuccess({ updated: true });
   } catch (err: any) {
     console.error('Admin edit order crash:', err);
-    return NextResponse.json({ error: err.message || 'Failed to update order' }, { status: 500 });
+    return apiError(err.message || 'Failed to update order', 500);
   }
 }

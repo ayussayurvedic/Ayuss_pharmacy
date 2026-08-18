@@ -21,6 +21,19 @@ export const metadata: Metadata = {
   },
 };
 
+import SchemaMarkup from '@/components/layout/SchemaMarkup';
+import { generateBreadcrumbSchema } from '@/lib/seo';
+
 export default function ContactPage() {
-  return <ContactClient />;
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Contact Us', path: '/contact' },
+  ]);
+
+  return (
+    <>
+      <SchemaMarkup schema={breadcrumbSchema} />
+      <ContactClient />
+    </>
+  );
 }

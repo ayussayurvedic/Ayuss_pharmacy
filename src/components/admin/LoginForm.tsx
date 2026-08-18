@@ -81,9 +81,10 @@ export default function LoginForm() {
         } catch {
           // Ignore quota errors
         }
-      }
 
-      window.location.href = '/admin/dashboard';
+        router.push('/admin/dashboard');
+        router.refresh();
+      }
     } catch {
       setError('Network error. Please try again.');
     }

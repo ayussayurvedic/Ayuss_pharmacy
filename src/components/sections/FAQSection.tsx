@@ -24,6 +24,7 @@ export default function FAQSection() {
                 className="border-b border-border last:border-b-0"
               >
                 <button
+                  type="button"
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   className="w-full flex items-center justify-between py-5 text-left group"
                   aria-expanded={isOpen}

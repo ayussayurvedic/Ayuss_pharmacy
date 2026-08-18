@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'S.S. Pharmacy — US-Based IT Staffing & Consulting';
+export const alt = 'S.S. Pharmacy — Authentic Ayurvedic Quality';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -10,7 +10,7 @@ export default async function Image() {
     (
       <div
         style={{
-          background: 'linear-gradient(135deg, #020617 0%, #0f172a 40%, #1e293b 100%)',
+          background: 'linear-gradient(135deg, #134547 0%, #1A5C5E 50%, #0F3335 100%)',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -18,27 +18,46 @@ export default async function Image() {
           justifyContent: 'center',
           alignItems: 'center',
           padding: '60px 80px',
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: 'sans-serif',
           position: 'relative',
         }}
       >
-        {/* Top accent line */}
+        {/* Top Gold Accent Line */}
         <div
           style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
-            height: '6px',
-            background: 'linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6)',
+            height: '8px',
+            background: 'linear-gradient(90deg, #C9943E, #E5C378, #C9943E)',
             display: 'flex',
           }}
         />
 
-        {/* Company Name */}
+        {/* License Badge */}
         <div
           style={{
-            fontSize: 56,
+            padding: '6px 18px',
+            borderRadius: '16px',
+            background: 'rgba(201, 148, 62, 0.2)',
+            border: '1px solid #C9943E',
+            color: '#E5C378',
+            fontSize: 16,
+            fontWeight: 700,
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            display: 'flex',
+            marginBottom: '24px',
+          }}
+        >
+          Govt. Lic. No: R-1970/Ayur • GMP Certified
+        </div>
+
+        {/* Company Title */}
+        <div
+          style={{
+            fontSize: 64,
             fontWeight: 800,
             color: '#ffffff',
             letterSpacing: '-1px',
@@ -47,70 +66,72 @@ export default async function Image() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            marginBottom: '20px',
+            marginBottom: '16px',
           }}
         >
-          <span>S.S. Pharmacy</span>
-          <span style={{ color: '#60a5fa' }}>Solutions</span>
+          <span>S.S. PHARMACY</span>
         </div>
 
-        {/* Tagline */}
+        {/* Subtitle */}
         <div
           style={{
-            fontSize: 24,
-            color: '#94a3b8',
+            fontSize: 26,
+            color: '#FDF8F0',
             textAlign: 'center',
-            maxWidth: '700px',
-            lineHeight: 1.5,
+            maxWidth: '800px',
+            lineHeight: 1.4,
             display: 'flex',
-            marginBottom: '40px',
+            marginBottom: '36px',
+            fontWeight: 300,
           }}
         >
-          US-Based IT Staffing & Consulting
+          Authentic Ayurvedic Formulations & Herbal Wellness
         </div>
 
-        {/* Service Pills */}
+        {/* Key Pills */}
         <div
           style={{
             display: 'flex',
-            gap: '12px',
+            gap: '14px',
             flexWrap: 'wrap',
             justifyContent: 'center',
           }}
         >
-          {['IT Staffing', 'Healthcare', 'Finance', 'Manufacturing', 'C2C Placements'].map(
-            (service) => (
+          {['100% Herbal Ingredients', 'Pain Relief Creams', 'Traditional Science', 'Fast Delivery Across India'].map(
+            (pill) => (
               <div
-                key={service}
+                key={pill}
                 style={{
-                  padding: '8px 20px',
-                  borderRadius: '20px',
-                  background: 'rgba(59, 130, 246, 0.15)',
-                  border: '1px solid rgba(59, 130, 246, 0.3)',
-                  color: '#93c5fd',
-                  fontSize: 16,
+                  padding: '10px 22px',
+                  borderRadius: '24px',
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  color: '#ffffff',
+                  fontSize: 18,
+                  fontWeight: 600,
                   display: 'flex',
                 }}
               >
-                {service}
+                {pill}
               </div>
             )
           )}
         </div>
 
-        {/* Location */}
+        {/* Footer Location */}
         <div
           style={{
             position: 'absolute',
-            bottom: '40px',
+            bottom: '36px',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            color: '#64748b',
+            color: '#C9D5D5',
             fontSize: 16,
+            letterSpacing: '0.5px',
           }}
         >
-          📍 Birmingham, Alabama, USA • sspharmacy.in
+          Kadapa District, Andhra Pradesh, India • sspharmacy.com
         </div>
       </div>
     ),

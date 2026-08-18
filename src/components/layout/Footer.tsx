@@ -7,7 +7,6 @@ import {
   Mail, 
   MapPin, 
   ShieldCheck, 
-  ExternalLink,
   PackageCheck
 } from 'lucide-react';
 

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 
+const SUPABASE_STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL || ''}/storage/v1/object/public/products`;
+
 export default function ShowcaseBanner() {
   return (
     <section className="max-w-[1280px] mx-auto px-6 py-6 font-sans">
@@ -18,7 +20,7 @@ export default function ShowcaseBanner() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0 w-full h-full overflow-hidden group-hover:scale-105 transition-transform duration-700">
           <Image 
-            src="https://smfeccjfhvcablqfpokn.supabase.co/storage/v1/object/public/products/hero-section/mobile/madebynature-mobile.webp" 
+            src={`${SUPABASE_STORAGE_BASE}/hero-section/mobile/madebynature-mobile.webp`}
             alt="Ayurveda Herbal Showcase" 
             fill
             className="object-cover object-center md:hidden"
@@ -26,7 +28,7 @@ export default function ShowcaseBanner() {
             priority
           />
           <Image 
-            src="https://smfeccjfhvcablqfpokn.supabase.co/storage/v1/object/public/products/hero-section/desktop/madebynature.webp" 
+            src={`${SUPABASE_STORAGE_BASE}/hero-section/desktop/madebynature.webp`}
             alt="Ayurveda Herbal Showcase" 
             fill
             className="object-cover object-center hidden md:block"

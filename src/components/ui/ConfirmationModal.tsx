@@ -39,7 +39,7 @@ export default function ConfirmationModal({
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 z-[999] flex items-center justify-center p-6 bg-navy-900/60 backdrop-blur-md animate-in fade-in duration-200 cursor-pointer text-navy-900"
+          className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-navy-900/60 backdrop-blur-md animate-in fade-in duration-200 cursor-pointer text-navy-900"
         >
           <motion.div
             ref={modalRef}

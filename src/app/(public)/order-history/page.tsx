@@ -58,11 +58,13 @@ export default function OrderHistoryPage() {
         <div className="border border-[#C9D5D5]/80 p-6 rounded-2xl bg-white shadow-sm">
           <form onSubmit={handleLookup} className="space-y-4">
             <div>
-              <label className="block text-slate-700 mb-1 font-semibold text-xs">Mobile Number</label>
+              <label htmlFor="history-phone" className="block text-slate-700 mb-1 font-semibold text-xs">Mobile Number</label>
               <div className="relative">
                 <input
+                  id="history-phone"
                   type="tel"
                   required
+                  autoComplete="tel"
                   placeholder="e.g. 9848523295"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Leaf, ShieldCheck, Star, ShoppingBag, CheckCircle2, ArrowRight } from 'lucide-react';
-import { products, type Product } from '@/data/products';
+import { products, type Product, getDefaultProductImage } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { createClient } from '@/lib/supabase/client';
 
@@ -62,14 +62,21 @@ export default function ProductsPortfolio() {
             packSize: dbP.pack_size || '',
             mrp: Number(dbP.mrp || 0),
             sellingPrice: Number(dbP.selling_price || 0),
-            image: dbP.image || '',
-            transparentImage: dbP.transparent_image || '',
-            galleryImages: dbP.gallery_images || []
+            image: dbP.image || getDefaultProductImage(dbP.id),
+            transparentImage: dbP.transparent_image || dbP.image || getDefaultProductImage(dbP.id),
+            galleryImages: (dbP.gallery_images && dbP.gallery_images.length > 0) ? dbP.gallery_images : [dbP.image || getDefaultProductImage(dbP.id)]
           }));
           setProductList(mapped);
         }
       } catch (err) {
         console.error('Failed to fetch homepage portfolio products from Supabase:', err);
+        const localProducts = products.map(p => ({
+          ...p,
+          image: p.image || getDefaultProductImage(p.id),
+          transparentImage: p.transparentImage || getDefaultProductImage(p.id),
+          galleryImages: (p.galleryImages && p.galleryImages.length > 0) ? p.galleryImages : [getDefaultProductImage(p.id)]
+        }));
+        setProductList(localProducts);
       }
     }
     loadProducts();
@@ -126,7 +133,7 @@ export default function ProductsPortfolio() {
                   {/* Product Image */}
                   <div className="relative w-full h-[175px] transition-transform duration-500 group-hover:scale-[1.08]">
                     <Image 
-                      src={product.transparentImage || product.image || "data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 1 1'%2F%3E"} 
+                      src={product.transparentImage || product.image || getDefaultProductImage(product.id)} 
                       alt={product.name}
                       fill
                       className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.08)]"
@@ -146,7 +153,7 @@ export default function ProductsPortfolio() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-[17px] font-serif font-bold text-[#1A5C5E] leading-tight mb-0.5">{product.name}</h3>
+                  <h3 className="text-[17px] font-serif font-bold text-[#1A5C5E] leading-tight mb-0.5 min-h-[2.5rem] line-clamp-2">{product.name}</h3>
 
                   {/* Key Active Herbs */}
                   {actives.length > 0 && (

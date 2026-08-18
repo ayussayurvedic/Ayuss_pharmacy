@@ -8,8 +8,11 @@ import PWAInstallPrompt from '@/components/pwa/PWAInstallPrompt';
 import PushPermissionPrompt from '@/components/pwa/PushPermissionPrompt';
 import { ToastProvider } from '@/components/ui/Toast';
 import { CartProvider } from '@/context/CartContext';
+import { CurrencyProvider } from '@/context/CurrencyContext';
 import SchemaMarkup from '@/components/layout/SchemaMarkup';
 
+
+import CookieConsent from '@/components/layout/CookieConsent';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -92,31 +95,9 @@ export const metadata: Metadata = {
   },
 };
 
-const orgSchema = {
-  "@context": "https://schema.org",
-  "@type": "MedicalBusiness",
-  "@id": "https://sspharmacy.com/#organization",
-  "name": "Ayu S.S. Pharmacy",
-  "url": "https://sspharmacy.com",
-  "logo": "https://sspharmacy.com/products/logo/logo.webp",
-  "image": "https://sspharmacy.com/products/logo/logo.webp",
-  "sameAs": [
-    "https://www.linkedin.com/company/ss-pharmacy",
-    "https://twitter.com/ss_pharmacy"
-  ],
-  "telephone": "+919494323211",
-  "priceRange": "$$",
-  "knowsAbout": ["Ayurveda", "Ayurvedic proprietary medicine", "Pain relief cream"],
-  "license": "R-1970/Ayur",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "D. No. 1-2-211 & 1-2-212, Prakash Nagar, Yerraguntla Panchayati",
-    "addressLocality": "YSR Kadapa District",
-    "addressRegion": "Andhra Pradesh",
-    "postalCode": "516309",
-    "addressCountry": "IN"
-  }
-};
+import { generateOrganizationSchema } from '@/lib/seo';
+
+const orgSchema = generateOrganizationSchema();
 
 export default async function RootLayout({
   children,
@@ -176,12 +157,15 @@ export default async function RootLayout({
 
         <SchemaMarkup schema={orgSchema} />
         <ToastProvider>
-          <CartProvider>
-            {children}
+          <CurrencyProvider>
+            <CartProvider>
+              {children}
 
-            <PWAInstallPrompt />
-            <PushPermissionPrompt />
-          </CartProvider>
+              <PWAInstallPrompt />
+              <PushPermissionPrompt />
+              <CookieConsent />
+            </CartProvider>
+          </CurrencyProvider>
         </ToastProvider>
       </body>
     </html>

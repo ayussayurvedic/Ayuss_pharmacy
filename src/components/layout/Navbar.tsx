@@ -114,7 +114,7 @@ export default function Navbar() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsCartOpen(!isCartOpen)}
-            className="relative p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#1A5C5E] rounded-lg"
+            className="relative p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#1A5C5E] rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label={`Shopping bag containing ${cartCount} items`}
           >
             <ShoppingBag className="w-5 h-5 lg:w-6 lg:h-6" />
@@ -138,7 +138,7 @@ export default function Navbar() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#1A5C5E] rounded-lg"
+            className="lg:hidden p-2 text-[#134547] hover:text-[#C9943E] transition-colors bg-transparent border-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#1A5C5E] rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

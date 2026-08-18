@@ -4,8 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Product } from '@/data/products';
+import { Product, getDefaultProductImage } from '@/data/products';
 import { useCart } from '@/context/CartContext';
+import { useCurrency } from '@/context/CurrencyContext';
 import { 
   ShoppingBag, 
   ShieldCheck, 
@@ -14,17 +15,23 @@ import {
   Clock, 
   Package, 
   AlertTriangle, 
-  Leaf,
-  FileCheck
+  Leaf, 
+  FileCheck,
+  ArrowRight,
+  Truck,
+  MapPin
 } from 'lucide-react';
 
 export default function ProductDetailClient({ product }: { product: Product }) {
   const { handleAddToCart } = useCart();
+  const { formatPrice } = useCurrency();
   const router = useRouter();
-  const [selectedImg, setSelectedImg] = useState(product.image || '');
+  const defaultImg = product.image || getDefaultProductImage(product.id);
+  const [selectedImg, setSelectedImg] = useState(defaultImg);
   const [activeTab, setActiveTab] = useState<'description' | 'ingredients' | 'specifications' | 'directions'>('description');
 
   const gallery = Array.from(new Set([
+    defaultImg,
     product.image,
     ...(product.galleryImages || [])
   ])).filter((img): img is string => typeof img === 'string' && img.trim() !== '');
@@ -63,7 +70,15 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           {/* Gallery */}
           <div className="lg:col-span-5 space-y-4">
             <div className="bg-white border border-[#C9D5D5] rounded-2xl flex items-center justify-center aspect-square shadow-sm overflow-hidden relative">
-              <Image src={selectedImg || ''} alt={product.name} fill className="object-contain p-6" sizes="(max-width: 768px) 100vw, 40vw" priority />
+              <Image 
+                src={selectedImg || defaultImg} 
+                alt={product.name} 
+                fill 
+                className="object-contain p-6" 
+                sizes="(max-width: 768px) 100vw, 40vw" 
+                priority 
+                onError={() => setSelectedImg(getDefaultProductImage(product.id))}
+              />
             </div>
             <div className="flex gap-2.5 overflow-x-auto pb-1">
               {gallery.map((img, idx) => (
@@ -77,7 +92,13 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                       : 'border-slate-200 hover:border-[#C9943E]'
                   }`}
                 >
-                  <Image src={img || ''} alt={`View ${idx + 1}`} fill className="object-contain p-1.5" sizes="64px" />
+                  <Image 
+                    src={img || defaultImg} 
+                    alt={`View ${idx + 1}`} 
+                    fill 
+                    className="object-contain p-1.5" 
+                    sizes="64px" 
+                  />
                 </button>
               ))}
             </div>
@@ -85,10 +106,14 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
           {/* Product Details */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Category badge */}
-            <div className="flex items-center gap-2">
+            {/* Category badge & Availability */}
+            <div className="flex flex-wrap items-center gap-2.5">
               <span className="text-[9px] font-bold text-[#C9943E] bg-[#C9943E]/10 px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#C9943E]/20">
                 {product.category}
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                In Stock (Ready for Dispatch)
               </span>
             </div>
 
@@ -121,9 +146,9 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                 <div>
                   <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold block mb-1">Price</span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold text-[#1A5C5E]">₹{product.sellingPrice || product.mrp}</span>
+                    <span className="text-3xl font-bold text-[#1A5C5E]">{formatPrice(product.sellingPrice || product.mrp)}</span>
                     {product.sellingPrice && product.mrp && product.sellingPrice < product.mrp && (
-                      <span className="text-sm text-slate-400 line-through">₹{product.mrp}</span>
+                      <span className="text-sm text-slate-400 line-through">{formatPrice(product.mrp)}</span>
                     )}
                   </div>
                   <span className="text-[10px] text-slate-400 block mt-0.5">{product.packSize} • Inclusive of all taxes</span>
@@ -133,7 +158,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                   <button
                     type="button"
                     onClick={() => handleAddToCart(product, 1)}
-                    className="border border-[#1A5C5E] text-[#1A5C5E] hover:bg-[#1A5C5E]/5 px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer uppercase tracking-wider transition-all"
+                    className="border border-[#1A5C5E] text-[#1A5C5E] hover:bg-[#1A5C5E]/5 px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer uppercase tracking-wider transition-all min-h-[44px]"
                   >
                     <ShoppingBag className="w-4 h-4" />
                     <span>Add to Bag</span>
@@ -141,11 +166,17 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                   <button
                     type="button"
                     onClick={handleBuyNow}
-                    className="bg-[#1A5C5E] hover:bg-[#134547] text-white px-6 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer border-0 uppercase tracking-wider shadow-sm transition-all"
+                    className="bg-[#1A5C5E] hover:bg-[#134547] text-white px-6 py-3 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer border-0 uppercase tracking-wider shadow-sm transition-all min-h-[44px]"
                   >
                     <span>Buy Now</span>
                   </button>
                 </div>
+              </div>
+
+              {/* Regional Transit ETA (IP & Logistics) */}
+              <div className="flex items-center gap-2 text-[11px] text-slate-600 bg-[#FDFBF7] p-2.5 rounded-xl border border-[#C9D5D5]/60">
+                <Truck className="w-4 h-4 text-[#C9943E] shrink-0" />
+                <span><strong>Fast Dispatch:</strong> 24–48 Hrs across AP &amp; Telangana • 2–4 Days All-India Insured Transit</span>
               </div>
             </div>
 
@@ -347,6 +378,32 @@ export default function ProductDetailClient({ product }: { product: Product }) {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Sticky Mobile Bottom CTA Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#C9D5D5] p-3 px-4 sm:hidden shadow-lg flex items-center justify-between gap-3">
+        <div>
+          <span className="text-[10px] text-slate-400 font-bold block uppercase">Price</span>
+          <span className="text-lg font-bold text-[#1A5C5E]">{formatPrice(product.sellingPrice || product.mrp)}</span>
+        </div>
+        <div className="flex items-center gap-2 flex-1 justify-end max-w-[240px]">
+          <button
+            type="button"
+            onClick={() => handleAddToCart(product, 1)}
+            className="border border-[#1A5C5E] text-[#1A5C5E] active:bg-[#1A5C5E]/10 p-2.5 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer min-h-[44px] min-w-[44px]"
+            aria-label="Add to cart"
+          >
+            <ShoppingBag className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            className="flex-1 bg-[#1A5C5E] active:bg-[#134547] text-white py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer border-0 uppercase tracking-wider shadow-sm min-h-[44px]"
+          >
+            <span>Buy Now</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </div>

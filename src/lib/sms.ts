@@ -15,23 +15,31 @@ export async function sendSMSNotification(to: string, message: string) {
     const formattedTo = cleanTo.length === 10 ? `+91${cleanTo}` : (cleanTo.startsWith('91') && cleanTo.length === 12 ? `+${cleanTo}` : to);
 
     if (!sid || !token || !from) {
-      console.log(`[SMS Mock] To: ${to}, Message: ${message}`);
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[SMS Mock] To: ${to}, Message: ${message}`);
+      }
       return { success: true, mocked: true };
     }
 
     const auth = Buffer.from(`${sid}:${token}`).toString('base64');
-    const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        To: formattedTo,
-        From: from,
-        Body: message
-      })
-    });
+    let res: Response;
+    try {
+      res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          To: formattedTo,
+          From: from,
+          Body: message
+        })
+      });
+    } catch (networkErr) {
+      console.error('Twilio network request error:', networkErr);
+      return { success: false, error: networkErr };
+    }
 
     if (!res.ok) {
       const errText = await res.text();

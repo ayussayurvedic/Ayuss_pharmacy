@@ -1,3 +1,8 @@
+/**
+ * Product Catalog Data Structure
+ * Note: Pricing (mrp, sellingPrice), stock, and active status are dynamically
+ * managed from the Supabase database and updated via the Admin Portal (/admin/products).
+ */
 export interface Product {
   id: string;
   name: string;
@@ -16,6 +21,19 @@ export interface Product {
   galleryImages?: string[]; // Multiple gallery images for thumbnail row
 }
 
+export function getDefaultProductImage(id?: string): string {
+  switch (id) {
+    case 'dr-lion-pain-cream':
+      return '/products/dr-lion-pain-cream/pain-cream-front-view.webp';
+    case 'dr-lion-pain-pills':
+      return '/products/dr-lion-pain-pills/pain-pills.webp';
+    case 'moon-light-cream':
+      return '/products/Moon-light/moon-cream-front-view.webp';
+    default:
+      return '/products/logo/logo.webp';
+  }
+}
+
 export const products: Product[] = [
   {
     id: "dr-lion-pain-cream",
@@ -32,9 +50,10 @@ export const products: Product[] = [
     shelfLife: "3 Years",
     safetyNote: "Ayurvedic cream for external use only",
     packSize: "100g Jar",
-    image: "",
-    transparentImage: "",
-    galleryImages: []
+    isActive: true,
+    image: "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
+    transparentImage: "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
+    galleryImages: ["/products/dr-lion-pain-cream/pain-cream_gallery1.webp"]
   },
   {
     id: "dr-lion-pain-pills",
@@ -51,9 +70,10 @@ export const products: Product[] = [
     shelfLife: "2 Years",
     safetyNote: "Use only as directed. Consult a qualified healthcare professional for individual conditions.",
     packSize: "60 Pills Container",
-    image: "",
-    transparentImage: "",
-    galleryImages: []
+    isActive: true,
+    image: "/products/dr-lion-pain-pills/pain-pills.webp",
+    transparentImage: "/products/dr-lion-pain-pills/pain-pills.webp",
+    galleryImages: ["/products/dr-lion-pain-pills/pain_pills_gallery1.webp"]
   },
   {
     id: "moon-light-cream",
@@ -70,8 +90,14 @@ export const products: Product[] = [
     shelfLife: "3 Years",
     safetyNote: "Ayurvedic cream for external use only",
     packSize: "100g Jar",
-    image: "",
-    transparentImage: "",
-    galleryImages: []
+    isActive: true,
+    image: "/products/Moon-light/moon-cream-front-view.webp",
+    transparentImage: "/products/Moon-light/moon-cream-front-view.webp",
+    galleryImages: [
+      "/products/Moon-light/moon-cream-hero-section.webp",
+      "/products/Moon-light/moon_light_gallery1.webp"
+    ]
   }
 ];
+
+export const PRODUCTS = products;

@@ -786,7 +786,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
                 <a 
                   href={shipment.tracking_url} 
                   target="_blank" 
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="text-teal-400 hover:underline flex items-center gap-1 font-semibold"
                 >
                   <span>Track Order</span>

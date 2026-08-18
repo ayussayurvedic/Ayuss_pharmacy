@@ -15,7 +15,9 @@ export async function sendNotificationEmail(
   attachments?: Array<{ filename: string; content?: Buffer; path?: string }>
 ) {
   if (!resend) {
-    console.log(`[Email Mock] To: ${to}, Subject: ${subject}`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[Email Mock] To: ${to}, Subject: ${subject}`);
+    }
     return { success: true, mocked: true };
   }
 
@@ -105,7 +107,9 @@ export async function notifyAdminsIfEnabled(
       .select('email');
 
     if (adminError || !admins || admins.length === 0) {
-      console.log('No admin users found to notify.');
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('No admin users found to notify.');
+      }
       return { success: false, reason: 'No admin users found' };
     }
 

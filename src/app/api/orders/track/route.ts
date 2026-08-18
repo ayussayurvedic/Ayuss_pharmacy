@@ -3,16 +3,18 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const orderNumber = searchParams.get('order_number')?.trim();
+    const searchParams = request.nextUrl.searchParams;
+    const rawOrderNumber = searchParams.get('order_number') || searchParams.get('orderNumber');
     const phone = searchParams.get('phone')?.trim();
 
-    if (!orderNumber || !phone) {
+    if (!rawOrderNumber || !phone) {
       return NextResponse.json(
         { error: 'Order number and phone number are required.' },
         { status: 400 }
       );
     }
+
+    const cleanOrderNumber = decodeURIComponent(rawOrderNumber).trim().replace(/^#+/, '');
 
     // Query using admin client to bypass RLS since guest users need to query their order
     const { data: order, error } = await supabaseAdmin
@@ -41,7 +43,7 @@ export async function GET(request: NextRequest) {
           pack_size_snapshot
         )
       `)
-      .eq('order_number', orderNumber)
+      .eq('order_number', cleanOrderNumber)
       .maybeSingle();
 
     if (error) {

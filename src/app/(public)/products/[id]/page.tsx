@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { products } from '@/data/products';
+import { products, getDefaultProductImage } from '@/data/products';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import ProductDetailClient from './ProductDetailClient';
 import SchemaMarkup from '@/components/layout/SchemaMarkup';
-import { generateBreadcrumbSchema } from '@/lib/seo';
+import { generateBreadcrumbSchema, generateProductSchema } from '@/lib/seo';
 
 async function fetchProduct(id: string) {
+  const defaultImg = getDefaultProductImage(id);
   try {
     const { data, error } = await supabaseAdmin
       .from('products')
@@ -16,6 +17,11 @@ async function fetchProduct(id: string) {
       .maybeSingle();
 
     if (!error && data) {
+      const primaryImg = data.image || defaultImg;
+      const gallery = (data.gallery_images && data.gallery_images.length > 0)
+        ? data.gallery_images
+        : [primaryImg];
+
       return {
         id: data.id,
         name: data.name || '',
@@ -28,9 +34,9 @@ async function fetchProduct(id: string) {
         packSize: data.pack_size || '',
         mrp: Number(data.mrp || 0),
         sellingPrice: Number(data.selling_price || 0),
-        image: data.image || '',
-        transparentImage: data.transparent_image || '',
-        galleryImages: data.gallery_images || []
+        image: primaryImg,
+        transparentImage: data.transparent_image || primaryImg,
+        galleryImages: gallery
       };
     }
   } catch (err) {
@@ -40,9 +46,9 @@ async function fetchProduct(id: string) {
   if (!fallback) return undefined;
   return {
     ...fallback,
-    image: fallback.image ? (fallback.image.startsWith('http') ? fallback.image : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${fallback.image}`) : '',
-    transparentImage: fallback.transparentImage ? (fallback.transparentImage.startsWith('http') ? fallback.transparentImage : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${fallback.transparentImage}`) : '',
-    galleryImages: (fallback.galleryImages || []).map(img => img.startsWith('http') ? img : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${img}`)
+    image: fallback.image || defaultImg,
+    transparentImage: fallback.transparentImage || defaultImg,
+    galleryImages: (fallback.galleryImages && fallback.galleryImages.length > 0) ? fallback.galleryImages : [defaultImg]
   };
 }
 
@@ -64,6 +70,9 @@ export async function generateMetadata({
   return {
     title: product.name,
     description: `${product.category} - ${product.benefits.join(', ')}. Manufactured under AYUSH License R-1970/Ayur.`,
+    alternates: {
+      canonical: `/products/${product.id}`,
+    },
     keywords: [
       product.name,
       product.category,
@@ -103,31 +112,16 @@ export default async function ProductDetailPage({
     { name: product.name, path: `/products/${product.id}` },
   ];
 
-  const productSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    'name': product.name,
-    'image': product.image ? [product.image] : [],
-    'description': `${product.category} - ${product.benefits.join(', ')}. Manufactured under AYUSH License R-1970/Ayur.`,
-    'sku': product.id,
-    'mpn': product.id,
-    'brand': {
-      '@type': 'Brand',
-      'name': 'S.S. Pharmacy',
-    },
-    'offers': {
-      '@type': 'Offer',
-      'url': `https://sspharmacy.com/products/${product.id}`,
-      'priceCurrency': 'INR',
-      'price': product.sellingPrice || product.mrp,
-      'itemCondition': 'https://schema.org/NewCondition',
-      'availability': 'https://schema.org/InStock',
-      'seller': {
-        '@type': 'MedicalBusiness',
-        'name': 'S.S. Pharmacy',
-      },
-    },
-  };
+  const productSchema = generateProductSchema({
+    id: product.id,
+    name: product.name,
+    category: product.category,
+    composition: product.composition,
+    image: product.image,
+    mrp: product.mrp,
+    sellingPrice: product.sellingPrice,
+    packSize: product.packSize,
+  });
 
   return (
     <>

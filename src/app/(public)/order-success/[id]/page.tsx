@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Truck, MessageCircle, Printer, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Truck, MessageCircle, Printer, ArrowRight, Loader2, AlertCircle, QrCode, Copy, Check } from 'lucide-react';
 
 interface OrderDetails {
   orderNumber: string;
@@ -13,13 +13,19 @@ interface OrderDetails {
 
 export default function OrderSuccessPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const cleanId = decodeURIComponent(id || '').trim().replace(/^#+/, '');
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<OrderDetails | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function loadOrder() {
+      if (!cleanId) {
+        setLoading(false);
+        return;
+      }
       try {
-        const res = await fetch(`/api/orders/details?orderNumber=${id}`);
+        const res = await fetch(`/api/orders/details?orderNumber=${encodeURIComponent(cleanId)}`);
         if (res.ok) {
           const data = await res.json();
           setOrder(data);
@@ -31,14 +37,15 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
       }
     }
     loadOrder();
-  }, [id]);
+  }, [cleanId]);
 
   // Calculate estimated delivery date range (3 to 5 days from today)
   const today = new Date();
   const deliveryStart = new Date(today.setDate(today.getDate() + 3)).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
   const deliveryEnd = new Date(today.setDate(today.getDate() + 2)).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
-  const whatsappMessage = encodeURIComponent(`Hi S.S. Pharmacy, I would like to track my Order #${id}`);
+  const activeOrderNum = order?.orderNumber || cleanId;
+  const whatsappMessage = encodeURIComponent(`Hi S.S. Pharmacy, I would like to track my Order #${activeOrderNum}`);
 
   if (loading) {
     return (
@@ -56,7 +63,7 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
             <AlertCircle className="w-8 h-8" />
           </div>
           <div>
-            <h1 className="text-xl font-serif text-rose-700 font-bold">Invalid Order Reference</h1>
+            <h2 className="text-xl font-serif text-rose-700 font-bold">Invalid Order Reference</h2>
             <p className="text-xs text-slate-600 mt-2">The order reference code in the URL does not match any orders in our records.</p>
           </div>
           <Link href="/" className="inline-block bg-[#1A5C5E] text-white px-6 py-2 rounded-full text-xs font-bold uppercase">
@@ -101,6 +108,61 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
           <div className="pt-2.5 flex items-center justify-center gap-2 text-[#1A5C5E] font-semibold">
             <Truck className="w-4 h-4 text-[#C9943E] shrink-0" />
             <span>Estimated Delivery: <strong className="text-slate-900">{deliveryStart} - {deliveryEnd}</strong></span>
+          </div>
+        </div>
+
+        {/* Dynamic UPI Payment QR Code (Optional Pre-Payment via QRServer API) */}
+        <div className="p-4 bg-white border border-[#C9D5D5] rounded-xl text-xs space-y-3 shadow-2xs">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div className="flex items-center gap-1.5 font-bold text-[#1A5C5E]">
+              <QrCode className="w-4 h-4 text-[#C9943E]" />
+              <span className="uppercase tracking-wider text-[11px]">Instant UPI QR Payment</span>
+            </div>
+            <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+              Optional / COD Active
+            </span>
+          </div>
+
+          <p className="text-[11px] text-slate-500 font-light text-center leading-relaxed">
+            Scan using <strong>Google Pay, PhonePe, Paytm, or BHIM</strong> to pre-pay ₹{order.totalAmount.toFixed(2)}, or choose to pay <strong>Cash on Delivery (COD)</strong> upon arrival.
+          </p>
+
+          <div className="flex flex-col items-center justify-center pt-1">
+            <div className="p-2 bg-white border border-slate-200 rounded-xl shadow-xs">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
+                  `upi://pay?pa=ayuss.pharmacy@okaxis&pn=S.S.%20Pharmacy&am=${order.totalAmount.toFixed(2)}&tn=${order.orderNumber}&cu=INR`
+                )}&margin=6`}
+                alt="Scan to Pay with UPI"
+                width={170}
+                height={170}
+                className="rounded-lg"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 mt-3 text-[11px]">
+              <span className="text-slate-500 font-mono">UPI ID: <strong>ayuss.pharmacy@okaxis</strong></span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                    navigator.clipboard.writeText('ayuss.pharmacy@okaxis');
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }
+                }}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer min-h-[30px] border ${
+                  copied 
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
+                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-[#1A5C5E]/10 hover:text-[#1A5C5E]'
+                }`}
+                title="Copy UPI ID"
+                aria-label="Copy UPI ID to clipboard"
+              >
+                {copied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                <span>{copied ? 'Copied!' : 'Copy'}</span>
+              </button>
+            </div>
           </div>
         </div>
 

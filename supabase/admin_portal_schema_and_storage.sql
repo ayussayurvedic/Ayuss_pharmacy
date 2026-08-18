@@ -32,7 +32,7 @@ CREATE POLICY "Allow public read access for page_assets"
 DROP POLICY IF EXISTS "Allow full write access for page_assets" ON page_assets;
 CREATE POLICY "Allow full write access for page_assets" 
   ON page_assets FOR ALL 
-  USING (auth.role() = 'authenticated' OR auth.role() = 'service_role' OR true);
+  USING (auth.role() = 'authenticated' OR auth.role() = 'service_role');
 
 -- ----------------------------------------------------------------------------
 -- 2. PRODUCTS & FORMULATIONS CATALOG TABLE (products)
@@ -68,7 +68,7 @@ CREATE POLICY "Allow public read access for products"
 DROP POLICY IF EXISTS "Allow full write access for products" ON products;
 CREATE POLICY "Allow full write access for products" 
   ON products FOR ALL 
-  USING (auth.role() = 'authenticated' OR auth.role() = 'service_role' OR true);
+  USING (auth.role() = 'authenticated' OR auth.role() = 'service_role');
 
 -- ----------------------------------------------------------------------------
 -- 3. BUSINESS TAX & SYSTEM CONFIGURATION TABLE (business_tax_settings)

@@ -4,13 +4,15 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { products, type Product } from '@/data/products';
+import { products, type Product, getDefaultProductImage } from '@/data/products';
 import { useCart } from '@/context/CartContext';
+import { useCurrency, type SupportedCurrency } from '@/context/CurrencyContext';
 import { createClient } from '@/lib/supabase/client';
-import { ShoppingBag, Search, Loader2 } from 'lucide-react';
+import { ShoppingBag, Search, Loader2, Globe } from 'lucide-react';
 
 export default function ProductsClient() {
   const { handleAddToCart } = useCart();
+  const { currency, setCurrency, formatPrice } = useCurrency();
   const [productList, setProductList] = useState<Product[]>(products);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -42,22 +44,22 @@ export default function ProductsClient() {
               packSize: dbP.pack_size || '',
               mrp: Number(dbP.mrp || 0),
               sellingPrice: Number(dbP.selling_price || 0),
-              image: dbP.image || '',
-              transparentImage: dbP.transparent_image || '',
-              galleryImages: dbP.gallery_images || []
+              image: dbP.image || getDefaultProductImage(dbP.id),
+              transparentImage: dbP.transparent_image || dbP.image || getDefaultProductImage(dbP.id),
+              galleryImages: (dbP.gallery_images && dbP.gallery_images.length > 0) ? dbP.gallery_images : [dbP.image || getDefaultProductImage(dbP.id)]
             };
           });
           setProductList(mapped);
         }
       } catch (err) {
         console.error('Error loading products from Supabase, loading local fallbacks:', err);
-        const githubProducts = products.map(p => ({
+        const localProducts = products.map(p => ({
           ...p,
-          image: p.image ? (p.image.startsWith('http') ? p.image : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${p.image}`) : '',
-          transparentImage: p.transparentImage ? (p.transparentImage.startsWith('http') ? p.transparentImage : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${p.transparentImage}`) : '',
-          galleryImages: (p.galleryImages || []).map(img => img.startsWith('http') ? img : `https://raw.githubusercontent.com/janakirao07/Ss_pharmacy/main/public${img}`)
+          image: p.image || getDefaultProductImage(p.id),
+          transparentImage: p.transparentImage || getDefaultProductImage(p.id),
+          galleryImages: (p.galleryImages && p.galleryImages.length > 0) ? p.galleryImages : [getDefaultProductImage(p.id)]
         }));
-        setProductList(githubProducts);
+        setProductList(localProducts);
       } finally {
         setLoading(false);
       }
@@ -130,6 +132,7 @@ export default function ProductsClient() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
                 type="text"
+                aria-label="Search formulations and ingredients"
                 placeholder="Search formulations, ingredients..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -137,21 +140,42 @@ export default function ProductsClient() {
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              {categories.map(cat => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer border ${
-                    selectedCategory === cat.id
-                      ? 'bg-[#1A5C5E] text-white border-[#1A5C5E] shadow-sm'
-                      : 'bg-white text-slate-600 border-[#C9D5D5] hover:border-[#C9943E]'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center justify-between gap-3 w-full lg:w-auto">
+              <div className="flex flex-wrap items-center gap-2">
+                {categories.map(cat => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer border ${
+                      selectedCategory === cat.id
+                        ? 'bg-[#1A5C5E] text-white border-[#1A5C5E] shadow-sm'
+                        : 'bg-white text-slate-600 border-[#C9D5D5] hover:border-[#C9943E]'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Multi-Currency Switcher (Frankfurter API) */}
+              <div className="flex items-center gap-1.5 bg-white border border-[#C9D5D5] p-1 rounded-xl shadow-2xs">
+                <Globe className="w-3.5 h-3.5 text-[#C9943E] ml-1.5 shrink-0" />
+                {(['INR', 'USD', 'EUR', 'AED'] as SupportedCurrency[]).map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCurrency(c)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer border-0 ${
+                      currency === c
+                        ? 'bg-[#1A5C5E] text-white shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800 bg-transparent'
+                    }`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
             </div>
           </motion.div>
         </div>
@@ -182,7 +206,7 @@ export default function ProductsClient() {
               >
                 <Link href={`/products/${p.id}`} className="block relative aspect-square mb-6 bg-slate-50 rounded-xl overflow-hidden border border-slate-100">
                   <Image 
-                    src={p.image || "data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 1 1'%2F%3E"} 
+                    src={p.image || getDefaultProductImage(p.id)} 
                     alt={p.name} 
                     fill
                     className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
@@ -194,9 +218,15 @@ export default function ProductsClient() {
                 </Link>
 
                 <div className="space-y-2 mb-4">
-                  <span className="text-[9px] font-bold text-[#C9943E] uppercase tracking-wider block">
-                    {p.category}
-                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[9px] font-bold text-[#C9943E] uppercase tracking-wider block">
+                      {p.category}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[8px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wider">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      In Stock
+                    </span>
+                  </div>
                   <Link href={`/products/${p.id}`}>
                     <h3 className="font-serif font-bold text-lg text-[#1A5C5E] hover:text-[#134547] transition-colors uppercase">
                       {p.name}
@@ -227,10 +257,10 @@ export default function ProductsClient() {
                         const discountPct = hasDiscount ? Math.round(((p.mrp! - displayPrice!) / p.mrp!) * 100) : 0;
                         return (
                           <>
-                            <span className="text-lg font-bold text-[#1A5C5E]">₹{displayPrice?.toLocaleString('en-IN')}</span>
+                            <span className="text-lg font-bold text-[#1A5C5E]">{formatPrice(displayPrice)}</span>
                             {hasDiscount && (
                               <>
-                                <span className="line-through text-xs text-slate-400 font-normal">₹{p.mrp?.toLocaleString('en-IN')}</span>
+                                <span className="line-through text-xs text-slate-400 font-normal">{formatPrice(p.mrp)}</span>
                                 <span className="text-[9px] text-[#C9943E] bg-[#C9943E]/5 px-1.5 py-0.5 rounded font-bold">
                                   {discountPct}% OFF
                                 </span>

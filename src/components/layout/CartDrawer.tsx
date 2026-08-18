@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
-import { X, Trash2, Plus, Minus, Truck, ShoppingBag } from 'lucide-react';
+import { PRODUCTS, getDefaultProductImage } from '@/data/products';
+import { X, Trash2, Plus, Minus, Truck, ShoppingBag, ArrowRight } from 'lucide-react';
 
 const backdropVariants = {
   hidden: { opacity: 0 },
@@ -31,7 +32,7 @@ const itemVariants = {
 } as const;
 
 export default function CartDrawer() {
-  const { cartItems, cartCount, isCartOpen, setIsCartOpen, handleRemoveFromCart, handleUpdateCartQuantity } = useCart();
+  const { cartItems, cartCount, isCartOpen, setIsCartOpen, handleAddToCart, handleRemoveFromCart, handleUpdateCartQuantity } = useCart();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Lock body scroll when drawer is open
@@ -141,12 +142,47 @@ export default function CartDrawer() {
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-xs text-slate-500 text-center py-16 flex flex-col items-center gap-3"
+                    className="text-xs text-slate-500 text-center py-10 flex flex-col items-center gap-4"
                   >
-                    <div className="p-4 bg-slate-100 rounded-full text-slate-400">
+                    <div className="p-4 bg-[#1A5C5E]/5 text-[#134547] rounded-full border border-[#1A5C5E]/10">
                       <ShoppingBag className="w-8 h-8" />
                     </div>
-                    <span>Your bag is empty. Start adding some products!</span>
+                    <div>
+                      <h4 className="font-serif font-bold text-slate-900 text-sm">Your Bag is Empty</h4>
+                      <p className="text-[11px] text-slate-500 mt-1 max-w-[220px]">Discover classical Ayurvedic medicines and wellness remedies.</p>
+                    </div>
+
+                    <Link
+                      href="/products"
+                      onClick={() => setIsCartOpen(false)}
+                      className="inline-flex items-center gap-2 bg-[#1A5C5E] hover:bg-[#134547] text-white px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-xs min-h-[44px]"
+                    >
+                      <span>Explore Catalog</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+
+                    {PRODUCTS.length > 0 && (
+                      <div className="w-full pt-4 mt-2 border-t border-slate-200/60 text-left">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2 font-mono">Popular Remedies</span>
+                        <div className="space-y-2">
+                          {PRODUCTS.slice(0, 2).map((p) => (
+                            <div key={p.id} className="flex items-center justify-between p-2.5 bg-white border border-slate-200/70 rounded-xl shadow-2xs">
+                              <div className="min-w-0 pr-2">
+                                <span className="font-bold text-slate-800 text-[11px] block truncate">{p.name}</span>
+                                <span className="text-[#1A5C5E] font-extrabold text-[11px]">₹{p.sellingPrice || p.mrp}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleAddToCart(p, 1)}
+                                className="px-3 py-1 bg-[#1A5C5E]/10 hover:bg-[#1A5C5E] text-[#134547] hover:text-white rounded-lg text-[10px] font-bold transition-all cursor-pointer min-h-[32px]"
+                              >
+                                + Add
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 ) : (
                   cartItems.map((item) => (
@@ -160,7 +196,7 @@ export default function CartDrawer() {
                       className="flex gap-3 items-center bg-white p-3 rounded-2xl border border-slate-200/70 shadow-xs hover:shadow-md transition-shadow duration-200"
                     >
                       <Image 
-                        src={item.product.image || "data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 1 1'%2F%3E"} 
+                        src={item.product.image || getDefaultProductImage(item.product.id)} 
                         alt={item.product.name} 
                         className="object-contain bg-white rounded-lg border p-1 shrink-0" 
                         width={56} 
@@ -177,10 +213,10 @@ export default function CartDrawer() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleUpdateCartQuantity(item.product.id, item.quantity - 1)}
-                            className="w-6.5 h-6.5 rounded-lg bg-slate-50 hover:bg-slate-150 text-slate-700 flex items-center justify-center font-bold text-xs cursor-pointer border border-slate-250/70 focus-visible:outline-2 focus-visible:outline-[#1A5C5E]"
+                            className="w-8 h-8 rounded-lg bg-slate-50 hover:bg-slate-150 text-slate-700 flex items-center justify-center font-bold text-xs cursor-pointer border border-slate-250/70 focus-visible:outline-2 focus-visible:outline-[#1A5C5E] min-w-[32px] min-h-[32px]"
                             aria-label="Decrease quantity"
                           >
-                            <Minus className="w-3 h-3" />
+                            <Minus className="w-3.5 h-3.5" />
                           </motion.button>
                           <span className="w-6 text-center font-bold text-xs">{item.quantity}</span>
                           <motion.button
@@ -188,10 +224,10 @@ export default function CartDrawer() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleUpdateCartQuantity(item.product.id, item.quantity + 1)}
-                            className="w-6.5 h-6.5 rounded-lg bg-slate-50 hover:bg-slate-150 text-slate-700 flex items-center justify-center font-bold text-xs cursor-pointer border border-slate-250/70 focus-visible:outline-2 focus-visible:outline-[#1A5C5E]"
+                            className="w-8 h-8 rounded-lg bg-slate-50 hover:bg-slate-150 text-slate-700 flex items-center justify-center font-bold text-xs cursor-pointer border border-slate-250/70 focus-visible:outline-2 focus-visible:outline-[#1A5C5E] min-w-[32px] min-h-[32px]"
                             aria-label="Increase quantity"
                           >
-                            <Plus className="w-3 h-3" />
+                            <Plus className="w-3.5 h-3.5" />
                           </motion.button>
                         </div>
                       </div>
@@ -201,7 +237,7 @@ export default function CartDrawer() {
                         whileHover={{ scale: 1.1, color: '#DC2626' }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => handleRemoveFromCart(item.product.id)}
-                        className="p-2 text-slate-400 hover:text-red-650 hover:bg-red-50 rounded-full transition-colors cursor-pointer border-0 bg-transparent focus-visible:outline-2 focus-visible:outline-red-500"
+                        className="p-2 text-slate-400 hover:text-red-650 hover:bg-red-50 rounded-full transition-colors cursor-pointer border-0 bg-transparent focus-visible:outline-2 focus-visible:outline-red-500 min-w-[44px] min-h-[44px] flex items-center justify-center"
                         aria-label={`Remove ${item.product.name} from bag`}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -222,7 +258,7 @@ export default function CartDrawer() {
                 <Link 
                   href="/checkout" 
                   onClick={() => setIsCartOpen(false)} 
-                  className="w-full bg-[#1A5C5E] hover:bg-[#134547] text-white text-center py-3 rounded-full text-xs font-bold block transition-colors uppercase tracking-wider shadow-md focus-visible:outline-2 focus-visible:outline-[#134547]"
+                  className="w-full bg-[#1A5C5E] hover:bg-[#134547] text-white text-center py-3 rounded-full text-xs font-bold transition-colors uppercase tracking-wider shadow-md focus-visible:outline-2 focus-visible:outline-[#134547] min-h-[44px] flex items-center justify-center"
                 >
                   Proceed to Checkout
                 </Link>

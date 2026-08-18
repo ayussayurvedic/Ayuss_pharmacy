@@ -12,7 +12,8 @@ import {
   CheckCircle2, 
   AlertCircle,
   Building2,
-  ExternalLink
+  ExternalLink,
+  X
 } from 'lucide-react';
 
 interface Supplier {
@@ -32,6 +33,16 @@ interface Supplier {
 export default function SuppliersClient() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newSupplier, setNewSupplier] = useState({
+    name: '',
+    category: 'Botanicals' as const,
+    contactPerson: '',
+    phone: '',
+    email: '',
+    location: '',
+    licenseNo: ''
+  });
 
   const mockSuppliers: Supplier[] = [
     {
@@ -112,13 +123,143 @@ export default function SuppliersClient() {
           </p>
         </div>
         <button 
-          onClick={() => alert('New Supplier Modal')}
+          type="button"
+          onClick={() => setIsAddModalOpen(true)}
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#C9943E] hover:bg-[#b78332] text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-md transition-all shrink-0 cursor-pointer"
         >
           <Plus size={16} />
           <span>Add New Supplier</span>
         </button>
       </div>
+
+      {/* Add Supplier Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#C9D5D5]/80 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-[#C9D5D5]/60 pb-3">
+              <div className="flex items-center gap-2 text-[#134547]">
+                <Building2 className="w-5 h-5 text-[#C9943E]" />
+                <h3 className="font-serif font-bold text-lg">Add New Vendor / Supplier</h3>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setIsAddModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                setIsAddModalOpen(false);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Company / Supplier Name</label>
+                <input 
+                  type="text" 
+                  required 
+                  placeholder="e.g., Nilgiri Botanicals Co." 
+                  value={newSupplier.name}
+                  onChange={(e) => setNewSupplier({ ...newSupplier, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-[#C9D5D5] rounded-xl focus:outline-none focus:border-[#1A5C5E]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Category</label>
+                  <select 
+                    value={newSupplier.category}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, category: e.target.value as any })}
+                    className="w-full px-3 py-2 border border-[#C9D5D5] rounded-xl focus:outline-none focus:border-[#1A5C5E] bg-white"
+                  >
+                    <option value="Botanicals">Botanicals</option>
+                    <option value="Fixed Oils">Fixed Oils</option>
+                    <option value="Packaging">Packaging</option>
+                    <option value="Extracts">Extracts</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Contact Person</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g., Ramesh Verma" 
+                    value={newSupplier.contactPerson}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, contactPerson: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#C9D5D5] rounded-xl focus:outline-none focus:border-[#1A5C5E]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Phone Number</label>
+                  <input 
+                    type="tel" 
+                    placeholder="+91 98765 43210" 
+                    value={newSupplier.phone}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, phone: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#C9D5D5] rounded-xl focus:outline-none focus:border-[#1A5C5E]"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Email</label>
+                  <input 
+                    type="email" 
+                    placeholder="vendor@example.com" 
+                    value={newSupplier.email}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#C9D5D5] rounded-xl focus:outline-none focus:border-[#1A5C5E]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Location / State</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g., Ooty, Tamil Nadu" 
+                    value={newSupplier.location}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, location: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#C9D5D5] rounded-xl focus:outline-none focus:border-[#1A5C5E]"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">AYUSH / Drug License No.</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g., TN-MED-2023-45" 
+                    value={newSupplier.licenseNo}
+                    onChange={(e) => setNewSupplier({ ...newSupplier, licenseNo: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#C9D5D5] rounded-xl focus:outline-none focus:border-[#1A5C5E]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#C9D5D5]/60">
+                <button 
+                  type="button" 
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-5 py-2 bg-[#134547] hover:bg-[#1A5C5E] text-white rounded-xl font-bold shadow-md transition-all cursor-pointer"
+                >
+                  Save Supplier
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Filter Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-[#C9D5D5]/60 shadow-xs">

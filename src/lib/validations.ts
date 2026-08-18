@@ -27,6 +27,55 @@ export const changePasswordSchema = z.object({
   path: ["confirmPassword"],
 });
 
+const DISPOSABLE_DOMAINS = new Set([
+  'mailinator.com',
+  'tempmail.com',
+  '10minutemail.com',
+  'guerrillamail.com',
+  'throwawaymail.com',
+  'yopmail.com',
+  'sharklasers.com',
+  'trashmail.com',
+  'temp-mail.org',
+  'dispostable.com',
+]);
+
+/**
+ * Validates whether an email is from a temporary / disposable email service.
+ * Uses local blocklist and the free EVA API (public-apis/public-apis).
+ */
+export async function isDisposableEmail(email: string): Promise<boolean> {
+  const cleanEmail = email.toLowerCase().trim();
+  const domain = cleanEmail.split('@')[1];
+  if (!domain) return false;
+
+  if (DISPOSABLE_DOMAINS.has(domain)) {
+    return true;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+    const res = await fetch(`https://api.eva.pingutil.com/email?email=${encodeURIComponent(cleanEmail)}`, {
+      signal: controller.signal,
+      headers: { 'Accept': 'application/json' },
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.data?.disposable === true) {
+        return true;
+      }
+    }
+  } catch {
+    // Soft fallback to local list on network timeout
+  }
+
+  return false;
+}
+
 export type InquiryFormData = z.infer<typeof inquirySchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;

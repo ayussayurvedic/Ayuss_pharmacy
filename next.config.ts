@@ -23,21 +23,28 @@ const initialBuildId = process.env.NEXT_PUBLIC_BUILD_ID || crypto.randomUUID();
 generateServiceWorker(initialBuildId);
 
 const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion', 'clsx', 'tailwind-merge', 'zod'],
+  },
   images: {
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31536000,
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.supabase.co',
-        port: '',
-        pathname: '/storage/v1/object/public/**',
+        hostname: '*.supabase.co',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'maps.geoapify.com',
-        port: '',
-        pathname: '/v1/staticmap/**',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.qrserver.com',
+        pathname: '/**',
       },
     ],
   },

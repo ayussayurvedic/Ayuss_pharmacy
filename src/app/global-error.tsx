@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 export default function GlobalError({
   error,
@@ -10,141 +12,44 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Global Error:', error);
+    console.error('[GlobalError] Root layout error:', error);
   }, [error]);
 
   return (
     <html lang="en">
-      <body
-        style={{
-          margin: 0,
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily:
-            "'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-          background: 'linear-gradient(135deg, #0a1628 0%, #162d49 100%)',
-          color: '#e2e8f0',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 420,
-            width: '100%',
-            padding: '48px 32px',
-            textAlign: 'center',
-            background: 'rgba(255,255,255,0.06)',
-            borderRadius: 24,
-            border: '1px solid rgba(255,255,255,0.1)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-          }}
-        >
-          {/* Icon */}
-          <div
-            style={{
-              width: 72,
-              height: 72,
-              margin: '0 auto 24px',
-              borderRadius: 20,
-              background: 'rgba(239,68,68,0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 32,
-            }}
-          >
-            ⚠️
+      <body className="min-h-screen flex items-center justify-center px-4 py-16 bg-[#FDF8F0] font-sans antialiased">
+        <div className="max-w-md w-full text-center bg-white border border-[#C9D5D5]/80 p-8 rounded-3xl shadow-lg space-y-6">
+          <div className="w-16 h-16 bg-amber-50 border border-amber-200 text-amber-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+            <AlertTriangle className="w-8 h-8" />
           </div>
 
-          <h1
-            style={{
-              fontSize: 22,
-              fontWeight: 800,
-              margin: '0 0 8px',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            Something went wrong
-          </h1>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-serif font-bold text-[#1A5C5E]">
+              System Error
+            </h1>
+            <p className="text-xs text-slate-600 leading-relaxed font-light">
+              An unexpected system error occurred. We apologize for the inconvenience.
+            </p>
+          </div>
 
-          <p
-            style={{
-              fontSize: 14,
-              color: '#94a3b8',
-              lineHeight: 1.6,
-              margin: '0 0 32px',
-            }}
-          >
-            An unexpected error occurred. Our team has been notified. You can try
-            again or return to the homepage.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <button
-              onClick={reset}
-              style={{
-                padding: '12px 24px',
-                borderRadius: 14,
-                border: 'none',
-                background: 'linear-gradient(135deg, #097d95, #1abbda)',
-                color: '#fff',
-                fontWeight: 700,
-                fontSize: 14,
-                cursor: 'pointer',
-                transition: 'transform 0.15s, box-shadow 0.15s',
-                boxShadow: '0 4px 20px rgba(9,125,149,0.3)',
-              }}
-              onMouseOver={(e) => {
-                (e.target as HTMLButtonElement).style.transform = 'translateY(-1px)';
-              }}
-              onMouseOut={(e) => {
-                (e.target as HTMLButtonElement).style.transform = 'translateY(0)';
-              }}
+              type="button"
+              onClick={() => reset()}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1A5C5E] text-white text-xs font-bold rounded-xl hover:bg-[#134446] transition-colors shadow-sm min-h-[44px] cursor-pointer uppercase tracking-wider"
             >
-              Try Again
+              <RefreshCw className="w-4 h-4" />
+              <span>Retry</span>
             </button>
 
-            <a
+            <Link
               href="/"
-              style={{
-                padding: '12px 24px',
-                borderRadius: 14,
-                border: '1px solid rgba(255,255,255,0.15)',
-                background: 'transparent',
-                color: '#e2e8f0',
-                fontWeight: 600,
-                fontSize: 14,
-                textDecoration: 'none',
-                display: 'block',
-                transition: 'background 0.15s',
-              }}
-              onMouseOver={(e) => {
-                (e.target as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.05)';
-              }}
-              onMouseOut={(e) => {
-                (e.target as HTMLAnchorElement).style.background = 'transparent';
-              }}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-[#C9D5D5] text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-colors min-h-[44px] uppercase tracking-wider"
             >
-              Go Home
-            </a>
+              <Home className="w-4 h-4 text-[#C9943E]" />
+              <span>Go Home</span>
+            </Link>
           </div>
-
-          {error.digest && (
-            <p
-              style={{
-                marginTop: 32,
-                fontSize: 10,
-                fontFamily: "'Courier New', monospace",
-                color: 'rgba(148,163,184,0.5)',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-              }}
-            >
-              Error ID: {error.digest}
-            </p>
-          )}
         </div>
       </body>
     </html>

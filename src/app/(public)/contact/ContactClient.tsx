@@ -150,43 +150,50 @@ export default function ContactClient() {
               <form onSubmit={handleSubmit} className="space-y-4 text-xs">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Your Name *</label>
+                    <label htmlFor="contact-name" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Your Name *</label>
                     <input 
+                      id="contact-name"
                       type="text" 
                       required 
+                      autoComplete="name"
                       value={form.name} 
                       onChange={e => setForm({ ...form, name: e.target.value })} 
-                      className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50" 
+                      className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50 min-h-[44px]" 
                       placeholder="e.g. Rajesh Kumar"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Phone Contact *</label>
+                    <label htmlFor="contact-phone" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Phone Contact *</label>
                     <input 
+                      id="contact-phone"
                       type="tel" 
                       required 
+                      autoComplete="tel"
                       value={form.phone} 
                       onChange={e => setForm({ ...form, phone: e.target.value })} 
-                      className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50" 
+                      className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50 min-h-[44px]" 
                       placeholder="e.g. +91 99887 76655"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Email Address (Optional)</label>
+                  <label htmlFor="contact-email" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Email Address (Optional)</label>
                   <input 
+                    id="contact-email"
                     type="email" 
+                    autoComplete="email"
                     value={form.email} 
                     onChange={e => setForm({ ...form, email: e.target.value })} 
-                    className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50" 
+                    className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50 min-h-[44px]" 
                     placeholder="e.g. rajesh@email.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Message Details *</label>
+                  <label htmlFor="contact-message" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Message Details *</label>
                   <textarea 
+                    id="contact-message"
                     required 
                     rows={4} 
                     value={form.note} 

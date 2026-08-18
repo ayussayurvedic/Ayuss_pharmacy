@@ -22,6 +22,19 @@ export const metadata: Metadata = {
   },
 };
 
+import SchemaMarkup from '@/components/layout/SchemaMarkup';
+import { generateBreadcrumbSchema } from '@/lib/seo';
+
 export default function ManufacturingPage() {
-  return <ManufacturingClient />;
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Manufacturing & Quality', path: '/manufacturing' },
+  ]);
+
+  return (
+    <>
+      <SchemaMarkup schema={breadcrumbSchema} />
+      <ManufacturingClient />
+    </>
+  );
 }

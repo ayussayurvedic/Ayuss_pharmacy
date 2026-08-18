@@ -36,7 +36,9 @@ export function useFormDraft<T extends Record<string, any>>(
           const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
           if (age > maxAge) {
             localStorage.removeItem(storageKey);
-            console.log(`[useFormDraft] Pruned expired form draft for key: ${storageKey}`);
+            if (process.env.NODE_ENV !== 'production') {
+              console.log(`[useFormDraft] Pruned expired form draft for key: ${storageKey}`);
+            }
           } else {
             valuesToRestore = parsed.values;
           }

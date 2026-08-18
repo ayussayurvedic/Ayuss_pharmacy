@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { inquirySchema } from '@/lib/validations';
+import { inquirySchema, isDisposableEmail } from '@/lib/validations';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { apiRateLimiter, consumeRateLimit } from '@/lib/rate-limit';
+import { apiSuccess, apiError } from '@/lib/api-response';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,14 +13,16 @@ export async function POST(request: NextRequest) {
     const rateResult = await consumeRateLimit(apiRateLimiter, ip);
     if (!rateResult.allowed) {
       const retryAfterSec = Math.ceil(rateResult.retryAfterMs / 1000);
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.', retryAfter: retryAfterSec },
-        { status: 429, headers: { 'Retry-After': String(retryAfterSec) } }
-      );
+      return apiError('Too many requests. Please try again later.', 429, 'RATE_LIMITED', { 'Retry-After': String(retryAfterSec) });
     }
 
     const body = await request.json();
     const validated = inquirySchema.parse(body);
+
+    // Anti-Disposable Email Check (EVA API + Blocklist)
+    if (await isDisposableEmail(validated.email)) {
+      return apiError('Temporary / disposable email addresses are not permitted. Please use a valid email.', 400);
+    }
 
     const { error } = await supabaseAdmin
       .from('inquiries')
@@ -60,22 +63,13 @@ export async function POST(request: NextRequest) {
       console.error('Failed to send contact inquiry notification:', notifErr);
     }
 
-    return NextResponse.json(
-      { success: true, message: 'Inquiry received successfully' },
-      { status: 201 }
-    );
+    return apiSuccess({ message: 'Inquiry received successfully' }, 201);
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, errors: err.issues },
-        { status: 400 }
-      );
+      return apiError(err.issues[0]?.message || 'Validation error', 400);
     }
     console.error('Inquiry submission error:', err);
-    return NextResponse.json(
-      { success: false, message: 'Internal server error' },
-      { status: 500 }
-    );
+    return apiError('Internal server error', 500);
   }
 }
 
@@ -85,7 +79,7 @@ export async function GET(request: NextRequest) {
     const session = await getSession();
     
     if (!session || session.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiError('Unauthorized', 401);
     }
 
     const { searchParams } = new URL(request.url);
@@ -100,9 +94,9 @@ export async function GET(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ data, total: count });
+    return apiSuccess({ data, total: count });
   } catch (err) {
     console.error('Error fetching inquiries:', err);
-    return NextResponse.json({ error: 'Failed to fetch inquiries' }, { status: 500 });
+    return apiError('Failed to fetch inquiries', 500);
   }
 }
