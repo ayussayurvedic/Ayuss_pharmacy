@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { getDefaultProductImage } from '@/data/products';
 import { useToast } from '@/components/ui/Toast';
-import { ShieldCheck, MapPin, Loader2, Lock, CreditCard, CheckCircle, Navigation } from 'lucide-react';
+import { ShieldCheck, MapPin, Loader2, Lock, CreditCard, CheckCircle, Navigation, ShoppingBag, ArrowRight } from 'lucide-react';
 import { getIndianStates, getDistricts, getCities, findStateByDistrict } from '@/data/india-geo';
 
 export default function CheckoutPage() {
@@ -38,14 +38,15 @@ export default function CheckoutPage() {
   useEffect(() => {
     checkoutAttemptId.current = window.crypto.randomUUID();
     
-    // Auto-load saved shipping details from localStorage
+    // Auto-fill from localStorage if available
     try {
-      const savedForm = localStorage.getItem('ssp_checkout_form');
-      if (savedForm) {
-        setForm(JSON.parse(savedForm));
+      const saved = localStorage.getItem('ssp_checkout_form');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setForm(prev => ({ ...prev, ...parsed }));
       }
     } catch {
-      // Ignore storage errors
+      // Ignore
     }
   }, []);
 
@@ -105,8 +106,8 @@ export default function CheckoutPage() {
   };
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.product.sellingPrice || item.product.mrp || 0) * item.quantity, 0);
-  const delivery = subtotal > 500 ? 0 : 50;
-  const total = subtotal + delivery;
+  const delivery = subtotal === 0 ? 0 : (subtotal > 500 ? 0 : 50);
+  const total = subtotal === 0 ? 0 : subtotal + delivery;
 
   const loadRazorpayScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -247,7 +248,7 @@ export default function CheckoutPage() {
         }
       }
 
-      // 2. Open WhatsApp with complete order details (formatted with universally supported clean WhatsApp markdown)
+      // 2. Open WhatsApp with complete order details (formatted with safe, universal emojis)
       const paymentModeLabel = paymentMethod === 'online_razorpay' ? '💳 Online Paid (Razorpay)' : '💵 Cash on Delivery (COD)';
 
       const itemsList = cartItems
@@ -274,7 +275,7 @@ ${itemsList}
 • *Email:* ${form.email || 'N/A'}
 • *Shipping Address:*
 ${form.address}, ${form.city}${form.district && form.district !== form.city ? `, ${form.district}` : ''}, ${form.state} - ${form.pincode}
-${giftMessage ? `• *Gift Note:* ${giftMessage}\n` : ''}• *Estimated Delivery:* 3 to 5 Business Days
+${giftMessage ? `• *Gift Note:* ${giftMessage}\n` : ''}🚚 *Estimated Delivery:* 3 to 5 Business Days
 
 Please confirm my order. Thank you! 🙏`;
 
@@ -352,6 +353,31 @@ Please confirm my order. Thank you! 🙏`;
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   };
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-[100dvh] font-sans flex items-center justify-center">
+        <div className="max-w-[460px] w-full mx-auto px-4 text-center space-y-6 border border-[#C9D5D5]/80 p-8 rounded-2xl bg-white shadow-md">
+          <div className="w-16 h-16 bg-[#1A5C5E]/10 text-[#1A5C5E] rounded-full flex items-center justify-center mx-auto">
+            <ShoppingBag className="w-8 h-8 text-[#C9943E]" />
+          </div>
+          <div>
+            <h1 className="text-xl font-serif text-[#1A5C5E] font-bold uppercase tracking-wide">Your Cart is Empty</h1>
+            <p className="text-xs text-slate-600 mt-2 font-light leading-relaxed">
+              You do not have any items in your cart. Add authentic Ayurvedic remedies to proceed with checkout.
+            </p>
+          </div>
+          <Link
+            href="/products"
+            className="inline-flex items-center justify-center gap-2 bg-[#1A5C5E] hover:bg-[#134547] text-white px-7 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-sm"
+          >
+            <span>Explore Products</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-[100dvh] font-sans">
