@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
@@ -12,12 +12,25 @@ import {
   MapPin, 
   Send 
 } from 'lucide-react';
+import { fetchSiteSettings, formatDisplayPhone, type SiteSettings, DEFAULT_SITE_SETTINGS } from '@/lib/site-settings';
 
 export default function ContactClient() {
   const { toast } = useToast();
   const supabase = createClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', phone: '', note: '' });
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+
+  useEffect(() => {
+    async function loadSettings() {
+      const data = await fetchSiteSettings();
+      setSettings(data);
+    }
+    loadSettings();
+  }, []);
+
+  const displayPhone = formatDisplayPhone(settings.supportPhone);
+  const telHref = settings.supportPhone ? `tel:+${settings.supportPhone.replace(/\D/g, '')}` : undefined;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,55 +51,47 @@ export default function ContactClient() {
         }]);
 
       if (error) {
-        // Fallback to distributor_applications if inquiries schema differs
         await supabase
           .from('distributor_applications')
           .insert([{
             company_name: `Contact Inquiry: ${form.name}`,
             contact_person: form.name,
             phone: form.phone,
-            email: form.email || 'no-email@contact.in',
-            city: 'Contact Page',
-            state: 'Andhra Pradesh',
+            email: form.email || null,
             notes: form.note,
-            status: 'new'
+            status: 'pending'
           }]);
       }
 
-      toast.success('Thank you. Your message has been sent successfully.');
+      toast.success('Your message has been received! Our team will respond shortly.');
       setForm({ name: '', email: '', phone: '', note: '' });
-    } catch (err) {
-      toast.error('Unable to send inquiry.');
+    } catch (err: any) {
+      console.error('Contact submission error:', err);
+      toast.error('Failed to submit message. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-[100dvh] font-sans">
-      {/* Page Header */}
-      <section className="border-b border-[#C9D5D5]/60 pb-6 pt-2 mb-8">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="flex items-center gap-2 text-[11px] text-[#2A7B7E] font-medium mb-4 uppercase tracking-wider">
-            <Link href="/" className="hover:text-[#1A5C5E] transition-colors">Home</Link>
-            <span>•</span>
-            <span className="text-slate-400">Contact</span>
+    <div className="bg-[#FDF8F0] text-slate-800 pt-20 md:pt-24 pb-16 min-h-[100dvh] font-sans">
+      <div className="max-w-[1200px] mx-auto px-6 space-y-12">
+        
+        {/* Header */}
+        <div className="text-center max-w-xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1A5C5E]/10 border border-[#1A5C5E]/20 text-[#1A5C5E] text-[11px] font-bold uppercase tracking-wider">
+            <Mail className="w-3.5 h-3.5 text-[#C9943E]" />
+            <span>Connect with AYU S.S. Pharmacy</span>
           </div>
-
-          <div className="max-w-3xl">
-            <span className="text-[11px] font-bold text-[#C9943E] uppercase tracking-wider block mb-2">Get In Touch</span>
-            <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-serif text-[#1A5C5E] font-semibold leading-snug uppercase mb-4">
-              Contact Ayu S.S. Pharmacy
-            </h1>
-            <p className="text-sm text-slate-600 leading-relaxed max-w-2xl font-light">
-              Reach out directly for general queries, retail purchase assistance, wholesale distribution partnerships, or clinical inquiries.
-            </p>
-          </div>
+          <h1 className="font-serif text-3xl md:text-4xl text-[#1A5C5E] font-bold uppercase tracking-tight">
+            Contact & Operations
+          </h1>
+          <p className="text-xs md:text-sm text-slate-600 font-light leading-relaxed">
+            Have questions about our classical Ayurvedic formulations, bulk procurement, or state licensing? Reach out to our operational team.
+          </p>
         </div>
-      </section>
 
-      {/* Main Grid */}
-      <section className="max-w-[1200px] mx-auto px-6 mb-16">
+        {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Contact Cards */}
           <div className="lg:col-span-5 space-y-6">
@@ -94,7 +99,7 @@ export default function ContactClient() {
               Direct Channels
             </h2>
             <p className="text-xs text-slate-500 font-light leading-relaxed">
-              Connect directly with our administrative team or visit our licensed manufacturing headquarters in Kadapa district.
+              Connect directly with our administrative team or visit our licensed manufacturing headquarters.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 pt-2">
@@ -105,7 +110,11 @@ export default function ContactClient() {
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Call Details</span>
-                  <a href="tel:+919848523295" className="text-xs font-bold text-[#1A5C5E] hover:underline mt-0.5 block">+91 98485 23295</a>
+                  {displayPhone && telHref ? (
+                    <a href={telHref} className="text-xs font-bold text-[#1A5C5E] hover:underline mt-0.5 block">{displayPhone}</a>
+                  ) : (
+                    <span className="text-xs font-bold text-[#1A5C5E] mt-0.5 block">Customer Support Active</span>
+                  )}
                   <span className="text-[9px] text-slate-400 block font-light mt-0.5">Mon–Sat, 9:00 AM–6:00 PM</span>
                 </div>
               </div>
@@ -117,7 +126,7 @@ export default function ContactClient() {
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Email Inquiries</span>
-                  <a href="mailto:ayuss.ayurvedic@gmail.com" className="text-xs font-bold text-[#1A5C5E] hover:underline mt-0.5 block">ayuss.ayurvedic@gmail.com</a>
+                  <a href={`mailto:${settings.supportEmail}`} className="text-xs font-bold text-[#1A5C5E] hover:underline mt-0.5 block">{settings.supportEmail}</a>
                   <span className="text-[9px] text-slate-400 block font-light mt-0.5">Response within 24 hours</span>
                 </div>
               </div>
@@ -130,9 +139,7 @@ export default function ContactClient() {
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Headquarters</span>
                   <address className="not-italic text-xs font-medium text-slate-650 leading-relaxed mt-1">
-                    D. No. 1-2-211 & 1-2-212, Prakash Nagar,<br />
-                    Yerraguntla, YSR Kadapa District,<br />
-                    Andhra Pradesh - 516309
+                    {settings.address}
                   </address>
                 </div>
               </div>
@@ -141,29 +148,47 @@ export default function ContactClient() {
 
           {/* Right Column: Contact Form */}
           <div className="lg:col-span-7">
-            <div className="bg-white border border-[#C9D5D5] p-6 md:p-8 rounded-2xl shadow-sm space-y-6">
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#C9D5D5]/60 shadow-sm space-y-6">
               <div>
-                <h3 className="font-serif text-xl text-[#1A5C5E] font-bold uppercase tracking-wider">Send an Inquiry</h3>
-                <p className="text-[11px] text-slate-400 font-light mt-0.5">Complete this form and our compliance officer will contact you shortly.</p>
+                <h2 className="font-serif text-2xl text-[#1A5C5E] font-semibold uppercase tracking-wide">
+                  Send a Message
+                </h2>
+                <p className="text-xs text-slate-500 font-light mt-1">
+                  Fill out the form below and our operations coordinator will get in touch.
+                </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="contact-name" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Your Name *</label>
+                  <input 
+                    id="contact-name"
+                    type="text" 
+                    required 
+                    autoComplete="name"
+                    value={form.name} 
+                    onChange={e => setForm({ ...form, name: e.target.value })} 
+                    className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] text-xs bg-slate-50/50" 
+                    placeholder="e.g. Ramesh Kumar"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="contact-name" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Your Name *</label>
+                    <label htmlFor="contact-email" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Email Address</label>
                     <input 
-                      id="contact-name"
-                      type="text" 
-                      required 
-                      autoComplete="name"
-                      value={form.name} 
-                      onChange={e => setForm({ ...form, name: e.target.value })} 
-                      className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50 min-h-[44px]" 
-                      placeholder="e.g. Rajesh Kumar"
+                      id="contact-email"
+                      type="email" 
+                      autoComplete="email"
+                      value={form.email} 
+                      onChange={e => setForm({ ...form, email: e.target.value })} 
+                      className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] text-xs bg-slate-50/50" 
+                      placeholder="ramesh@example.com"
                     />
                   </div>
+
                   <div>
-                    <label htmlFor="contact-phone" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Phone Contact *</label>
+                    <label htmlFor="contact-phone" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Mobile Phone *</label>
                     <input 
                       id="contact-phone"
                       type="tel" 
@@ -171,23 +196,10 @@ export default function ContactClient() {
                       autoComplete="tel"
                       value={form.phone} 
                       onChange={e => setForm({ ...form, phone: e.target.value })} 
-                      className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50 min-h-[44px]" 
-                      placeholder="e.g. +91 99887 76655"
+                      className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] text-xs bg-slate-50/50" 
+                      placeholder="e.g. 9876543210"
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label htmlFor="contact-email" className="block text-slate-600 mb-1 font-bold uppercase tracking-wider text-[9px]">Email Address (Optional)</label>
-                  <input 
-                    id="contact-email"
-                    type="email" 
-                    autoComplete="email"
-                    value={form.email} 
-                    onChange={e => setForm({ ...form, email: e.target.value })} 
-                    className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50 min-h-[44px]" 
-                    placeholder="e.g. rajesh@email.com"
-                  />
                 </div>
 
                 <div>
@@ -198,7 +210,7 @@ export default function ContactClient() {
                     rows={4} 
                     value={form.note} 
                     onChange={e => setForm({ ...form, note: e.target.value })} 
-                    className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50 leading-relaxed" 
+                    className="w-full border border-slate-200 p-2.5 rounded-lg focus:outline-none focus:border-[#1A5C5E] focus:ring-1 focus:ring-[#1A5C5E] bg-slate-50/50 leading-relaxed text-xs" 
                     placeholder="Describe your inquiry (retail, wholesale purchase, or partnership specs)..."
                   />
                 </div>
@@ -215,10 +227,8 @@ export default function ContactClient() {
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Embedded Map Section */}
-      <section className="max-w-[1200px] mx-auto px-6">
+        {/* Embedded Map Section */}
         <div className="w-full rounded-2xl overflow-hidden border border-[#C9D5D5] shadow-sm bg-white flex flex-col">
           <div className="relative w-full h-[260px] md:h-[340px] overflow-hidden bg-slate-100">
             <Image
@@ -248,7 +258,8 @@ export default function ContactClient() {
             </a>
           </div>
         </div>
-      </section>
+
+      </div>
     </div>
   );
 }

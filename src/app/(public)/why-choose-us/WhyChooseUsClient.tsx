@@ -56,7 +56,7 @@ export default function WhyChooseUsClient() {
     },
     {
       question: "Can I become a wholesale distributor for Ayu S.S. Pharmacy?",
-      answer: "Yes! We partner with medical shops, clinics, hospitals, and regional wholesale buyers. Contact us through our Contact page or call +91 98485 23295 to apply for regional distribution rights."
+      answer: "Yes! We partner with medical shops, clinics, hospitals, and regional wholesale buyers. Reach out through our Contact page or WhatsApp support to apply for regional distribution rights."
     },
   ];
 

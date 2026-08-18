@@ -93,8 +93,8 @@ export function generateProductSchema(product: ProductSchemaItem) {
 /**
  * Generates an Organization & MedicalBusiness JSON-LD structure
  */
-export function generateOrganizationSchema() {
-  return {
+export function generateOrganizationSchema(telephone?: string) {
+  const schema: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "MedicalBusiness",
     "@id": `${CANONICAL_DOMAIN}/#organization`,
@@ -102,7 +102,6 @@ export function generateOrganizationSchema() {
     "url": CANONICAL_DOMAIN,
     "logo": `${CANONICAL_DOMAIN}/products/logo/logo.webp`,
     "image": `${CANONICAL_DOMAIN}/products/logo/logo.webp`,
-    "telephone": "+919848523295",
     "email": "ayuss.ayurvedic@gmail.com",
     "priceRange": "$$",
     "knowsAbout": [
@@ -121,6 +120,12 @@ export function generateOrganizationSchema() {
       "addressCountry": "IN"
     }
   };
+
+  if (telephone) {
+    schema["telephone"] = telephone;
+  }
+
+  return schema;
 }
 
 /**

@@ -89,11 +89,11 @@ describe('SEO Schema Utilities (seo.ts)', () => {
   });
 
   it('should generate valid Organization and MedicalBusiness schema', () => {
-    const org = generateOrganizationSchema();
+    const org = generateOrganizationSchema('+91 99669 64340');
     expect(org['@context']).toBe('https://schema.org');
     expect(org['@type']).toBe('MedicalBusiness');
     expect(org.license).toBe('R-1970/Ayur');
-    expect(org.telephone).toBe('+919848523295');
+    expect(org.telephone).toBe('+91 99669 64340');
     expect(org.address.postalCode).toBe('516309');
   });
 

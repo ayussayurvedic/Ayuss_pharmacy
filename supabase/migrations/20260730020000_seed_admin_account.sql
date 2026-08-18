@@ -1,5 +1,0 @@
--- Admin Rights Helper Script
--- To make any Supabase authenticated user an Admin, run:
--- 
--- INSERT INTO public.admin_users (id, email)
--- VALUES ('<USER_UUID_FROM_SUPABASE_AUTH>', '<USER_EMAIL>');

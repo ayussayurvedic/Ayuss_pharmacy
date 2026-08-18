@@ -1,10 +1,27 @@
 'use client';
 
-const WHATSAPP_NUMBER = '919848523295';
+import { useEffect, useState } from 'react';
+import { fetchSiteSettings, formatWhatsAppNumber } from '@/lib/site-settings';
+
 const WHATSAPP_MESSAGE = '🌿 Hello S.S. Pharmacy! I would like to inquire about your Ayurvedic products & formulations. 🙏✨';
 
 export default function WhatsAppFloat() {
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+  const [whatsappPhone, setWhatsappPhone] = useState<string>('');
+
+  useEffect(() => {
+    async function loadPhone() {
+      const settings = await fetchSiteSettings();
+      if (settings.supportPhone) {
+        setWhatsappPhone(formatWhatsAppNumber(settings.supportPhone));
+      }
+    }
+    loadPhone();
+  }, []);
+
+  const cleanNumber = whatsappPhone;
+  const whatsappUrl = cleanNumber
+    ? `https://wa.me/${cleanNumber}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
+    : '#';
 
   return (
     <a

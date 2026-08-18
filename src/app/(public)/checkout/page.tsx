@@ -281,13 +281,23 @@ ${giftMessage ? `\n🎁 *Gift Note:* ${giftMessage}` : ''}
 Please confirm my order. Thank you! 🙏✨`;
 
       const encodedMessage = encodeURIComponent(message);
-      const whatsappUrl = `https://wa.me/919848523295?text=${encodedMessage}`;
+      
+      // Fetch dynamic WhatsApp phone from DB
+      const { fetchSiteSettings, formatWhatsAppNumber } = await import('@/lib/site-settings');
+      const siteSettings = await fetchSiteSettings();
+      const targetPhone = formatWhatsAppNumber(siteSettings.supportPhone);
+      const whatsappUrl = targetPhone ? `https://wa.me/${targetPhone}?text=${encodedMessage}` : '#';
 
       // Save order message in sessionStorage for reliable fallback & direct opening
       if (typeof window !== 'undefined') {
         try {
           sessionStorage.setItem(`ssp_order_msg_${orderNumber}`, message);
-          sessionStorage.setItem(`ssp_order_whatsapp_${orderNumber}`, whatsappUrl);
+          if (whatsappUrl !== '#') {
+            sessionStorage.setItem(`ssp_order_whatsapp_${orderNumber}`, whatsappUrl);
+          }
+          if (targetPhone) {
+            sessionStorage.setItem(`ssp_order_phone_${orderNumber}`, targetPhone);
+          }
         } catch (storageErr) {
           console.warn('Could not cache WhatsApp order message in sessionStorage:', storageErr);
         }
@@ -385,7 +395,7 @@ Please confirm my order. Thank you! 🙏✨`;
                   type="tel" 
                   required 
                   autoComplete="tel"
-                  placeholder="e.g. 9848523295"
+                  placeholder="e.g. 9876543210"
                   value={form.phone} 
                   onChange={e => updateForm({ phone: e.target.value })} 
                   className="w-full border border-[#C9D5D5] p-3 rounded-xl min-h-[46px] text-xs sm:text-[13px] font-sans outline-none focus:border-[#1A5C5E]" 

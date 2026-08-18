@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -9,8 +10,22 @@ import {
   ShieldCheck, 
   PackageCheck
 } from 'lucide-react';
+import { fetchSiteSettings, formatDisplayPhone, type SiteSettings, DEFAULT_SITE_SETTINGS } from '@/lib/site-settings';
 
 export default function Footer() {
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+
+  useEffect(() => {
+    async function loadSettings() {
+      const data = await fetchSiteSettings();
+      setSettings(data);
+    }
+    loadSettings();
+  }, []);
+
+  const displayPhone = formatDisplayPhone(settings.supportPhone);
+  const telHref = settings.supportPhone ? `tel:+${settings.supportPhone.replace(/\D/g, '')}` : undefined;
+
   return (
     <footer className="bg-[#134547] text-[#FDF8F0] border-t-2 border-[#C9943E] font-sans pt-12 pb-6">
       <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 text-xs">
@@ -38,40 +53,44 @@ export default function Footer() {
         {/* Formulations & Navigation */}
         <div className="space-y-4">
           <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Navigation & Quick Links</h4>
-          <div className="flex flex-col gap-2.5">
-            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
-              All Products
-            </Link>
-            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
-              Pain Relief & Healing
-            </Link>
-            <Link href="/products" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
-              Skin Care & Radiance
-            </Link>
-            <Link href="/why-choose-us" className="text-[#FDF8F0]/80 hover:text-[#E8C87A] transition-colors">
-              Quality Assurance
-            </Link>
-            
-            {/* Stylish Track Your Order Button at bottom of column */}
-            <Link 
-              href="/order-tracking" 
-              className="mt-2 text-[#E8C87A] font-bold text-[11px] uppercase tracking-wider hover:bg-[#1A5C5E] transition-all flex items-center justify-center gap-2 bg-[#1A5C5E]/60 px-3.5 py-2.5 rounded-xl border border-[#C9943E]/40 shadow-xs hover:shadow-md hover:scale-[1.02] w-full text-center group"
-            >
-              <PackageCheck className="w-4 h-4 text-[#C9943E] group-hover:scale-110 transition-transform" />
-              <span>Track Your Order</span>
-            </Link>
-          </div>
+          <ul className="space-y-2">
+            <li>
+              <Link href="/" className="hover:text-[#E8C87A] transition-colors">Home Page</Link>
+            </li>
+            <li>
+              <Link href="/products" className="hover:text-[#E8C87A] transition-colors">Ayurvedic Formulations</Link>
+            </li>
+            <li>
+              <Link href="/why-choose-us" className="hover:text-[#E8C87A] transition-colors">Why Choose Us</Link>
+            </li>
+            <li>
+              <Link href="/manufacturing" className="hover:text-[#E8C87A] transition-colors">Manufacturing & Quality</Link>
+            </li>
+            <li>
+              <Link href="/about" className="hover:text-[#E8C87A] transition-colors">About S.S. Pharmacy</Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-[#E8C87A] transition-colors">Contact Us</Link>
+            </li>
+          </ul>
         </div>
 
-        {/* Compliance Registry */}
+        {/* Quality & Licensing */}
         <div className="space-y-4">
-          <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Compliance Registry</h4>
+          <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Licensing & Quality</h4>
           <div className="space-y-3 text-[#FDF8F0]/80 font-light">
             <div className="flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 text-[#C9943E] shrink-0 mt-0.5" />
-              <p>
-                Mfg Lic No: <strong className="text-white font-semibold">R-1970/Ayur</strong><br />
-                <span className="text-[10px] text-[#FDF8F0]/60">AYUSH Dept. Govt of Andhra Pradesh</span>
+              <p className="leading-relaxed">
+                <strong>AYUSH License:</strong><br />
+                R-1970/Ayur (Govt. of A.P.)
+              </p>
+            </div>
+            <div className="flex items-start gap-2">
+              <PackageCheck className="w-4 h-4 text-[#C9943E] shrink-0 mt-0.5" />
+              <p className="leading-relaxed">
+                <strong>Standard Quality:</strong><br />
+                GMP Certified Ayurvedic Facility
               </p>
             </div>
             <p className="leading-relaxed">
@@ -84,19 +103,22 @@ export default function Footer() {
         <div className="space-y-4">
           <h4 className="font-bold text-white uppercase tracking-wider text-[10px] border-b border-[#1A5C5E] pb-2">Direct Connect</h4>
           <div className="space-y-3 text-[#FDF8F0]/80 font-light">
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-[#C9943E] shrink-0" />
-              <a href="tel:+919848523295" className="hover:text-[#E8C87A] transition-colors">+91 98485 23295</a>
-            </div>
-            <div className="flex items-center gap-2">
-              <Mail className="w-4 h-4 text-[#C9943E] shrink-0" />
-              <a href="mailto:ayuss.ayurvedic@gmail.com" className="hover:text-[#E8C87A] transition-colors">ayuss.ayurvedic@gmail.com</a>
-            </div>
+            {displayPhone && telHref && (
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-[#C9943E] shrink-0" />
+                <a href={telHref} className="hover:text-[#E8C87A] transition-colors">{displayPhone}</a>
+              </div>
+            )}
+            {settings.supportEmail && (
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-[#C9943E] shrink-0" />
+                <a href={`mailto:${settings.supportEmail}`} className="hover:text-[#E8C87A] transition-colors">{settings.supportEmail}</a>
+              </div>
+            )}
             <div className="flex items-start gap-2">
               <MapPin className="w-4 h-4 text-[#C9943E] shrink-0 mt-0.5" />
               <address className="not-italic leading-relaxed">
-                Prakash Nagar, Yerraguntla,<br />
-                YSR Kadapa Dist., A.P. - 516309
+                {settings.address || 'Prakash Nagar, Yerraguntla, YSR Kadapa Dist., A.P. - 516309'}
               </address>
             </div>
           </div>

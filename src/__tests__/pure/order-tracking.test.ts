@@ -42,8 +42,8 @@ describe('Order Tracking Security & Masking', () => {
   });
 
   it('should clean and validate phone suffixes accurately', () => {
-    expect(validatePhone('+91 9848523295', '9848523295')).toBe(true);
-    expect(validatePhone('09848523295', '98485 23295')).toBe(true);
-    expect(validatePhone('+91 9848523295', '9848523296')).toBe(false);
+    expect(validatePhone('+91 9876543210', '9876543210')).toBe(true);
+    expect(validatePhone('09876543210', '98765 43210')).toBe(true);
+    expect(validatePhone('+91 9876543210', '9876543211')).toBe(false);
   });
 });

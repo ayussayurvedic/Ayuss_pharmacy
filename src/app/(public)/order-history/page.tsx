@@ -65,7 +65,7 @@ export default function OrderHistoryPage() {
                   type="tel"
                   required
                   autoComplete="tel"
-                  placeholder="e.g. 9848523295"
+                  placeholder="e.g. 9876543210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="w-full border border-[#C9D5D5] pl-10 pr-4 py-3 rounded-xl text-xs font-sans outline-none focus:border-[#1A5C5E] min-h-[44px]"

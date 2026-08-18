@@ -67,40 +67,58 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
 
   const activeOrderNum = order?.orderNumber || cleanId;
   const [cachedWhatsappUrl, setCachedWhatsappUrl] = useState<string>('');
+  const [supportPhone, setSupportPhone] = useState<string>('');
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
-        if (storedUrl) {
-          setCachedWhatsappUrl(storedUrl);
+    async function loadPhoneAndSettings() {
+      if (typeof window !== 'undefined') {
+        try {
+          const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
+          if (storedUrl) {
+            setCachedWhatsappUrl(storedUrl);
+          }
+          const storedPhone = sessionStorage.getItem(`ssp_order_phone_${cleanId}`);
+          if (storedPhone) {
+            setSupportPhone(storedPhone);
+          }
+        } catch (e) {
+          console.warn('Session storage read error:', e);
         }
-      } catch (e) {
-        console.warn('Session storage read error:', e);
-      }
 
-      // Auto-open WhatsApp if redirected from checkout
-      const searchParams = new URLSearchParams(window.location.search);
-      if (searchParams.get('openWhatsapp') === '1') {
-        const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
-        const defaultMsg = encodeURIComponent(
-          `🌿 *S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
-        );
-        const targetUrl = storedUrl || `https://wa.me/919848523295?text=${defaultMsg}`;
-        
-        const timer = setTimeout(() => {
-          window.location.href = targetUrl;
-        }, 800);
-        return () => clearTimeout(timer);
+        const { fetchSiteSettings, formatWhatsAppNumber } = await import('@/lib/site-settings');
+        const settings = await fetchSiteSettings();
+        const resolvedPhone = formatWhatsAppNumber(settings.supportPhone);
+        if (resolvedPhone) {
+          setSupportPhone(resolvedPhone);
+        }
+
+        // Auto-open WhatsApp if redirected from checkout
+        const searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.get('openWhatsapp') === '1') {
+          const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
+          const defaultMsg = encodeURIComponent(
+            `🌿 *S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
+          );
+          const targetUrl = storedUrl || (resolvedPhone ? `https://wa.me/${resolvedPhone}?text=${defaultMsg}` : '');
+          
+          if (targetUrl) {
+            const timer = setTimeout(() => {
+              window.location.href = targetUrl;
+            }, 800);
+            return () => clearTimeout(timer);
+          }
+        }
       }
     }
+
+    loadPhoneAndSettings();
   }, [cleanId, activeOrderNum, order]);
 
   const fallbackWhatsappMsg = encodeURIComponent(
     `🌿 *S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
   );
 
-  const activeWhatsappUrl = cachedWhatsappUrl || `https://wa.me/919848523295?text=${fallbackWhatsappMsg}`;
+  const activeWhatsappUrl = cachedWhatsappUrl || (supportPhone ? `https://wa.me/${supportPhone}?text=${fallbackWhatsappMsg}` : '#');
 
   if (loading) {
     return (

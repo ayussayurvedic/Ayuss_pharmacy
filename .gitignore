@@ -57,6 +57,7 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /scratch/
-/audits/
+# Supabase local SQL queries, migrations, and temp files (prevent pushing DB queries to GitHub)
+/supabase/
+*.sql
 
-.vercel

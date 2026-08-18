@@ -27,15 +27,15 @@ describe('Rate Limiter Configurations (rate-limit.ts)', () => {
   });
 
   it('should sanitize phone numbers and compound keys correctly for order placement', () => {
-    const rawPhone = '+91 98485-23295';
+    const rawPhone = '+91 98765-43210';
     const cleanPhone = rawPhone.replace(/\D/g, '');
     const ip = '103.21.244.2';
 
     const rateLimitIpKey = `ip:${ip}`;
     const rateLimitPhoneKey = `phone:${cleanPhone}`;
 
-    expect(cleanPhone).toBe('919848523295');
+    expect(cleanPhone).toBe('919876543210');
     expect(rateLimitIpKey).toBe('ip:103.21.244.2');
-    expect(rateLimitPhoneKey).toBe('phone:919848523295');
+    expect(rateLimitPhoneKey).toBe('phone:919876543210');
   });
 });
