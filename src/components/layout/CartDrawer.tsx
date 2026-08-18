@@ -163,23 +163,53 @@ export default function CartDrawer() {
 
                     {PRODUCTS.length > 0 && (
                       <div className="w-full pt-4 mt-2 border-t border-slate-200/60 text-left">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2 font-mono">Popular Remedies</span>
+                        <div className="flex items-center justify-between mb-2.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">Popular Remedies</span>
+                          <Link 
+                            href="/products" 
+                            onClick={() => setIsCartOpen(false)}
+                            className="text-[10px] font-bold text-[#1A5C5E] hover:underline"
+                          >
+                            Explore All &rarr;
+                          </Link>
+                        </div>
                         <div className="space-y-2">
-                          {PRODUCTS.slice(0, 2).map((p) => (
-                            <div key={p.id} className="flex items-center justify-between p-2.5 bg-white border border-slate-200/70 rounded-xl shadow-2xs">
-                              <div className="min-w-0 pr-2">
-                                <span className="font-bold text-slate-800 text-[11px] block truncate">{p.name}</span>
-                                <span className="text-[#1A5C5E] font-extrabold text-[11px]">₹{p.sellingPrice || p.mrp}</span>
+                          {PRODUCTS.map((p) => {
+                            const price = p.sellingPrice || p.mrp || 199;
+                            const mrp = p.mrp || price;
+                            const hasDiscount = mrp > price;
+                            return (
+                              <div key={p.id} className="flex items-center justify-between p-2 bg-slate-50/70 border border-slate-200/70 rounded-xl hover:bg-white hover:border-[#1A5C5E]/30 transition-all shadow-2xs">
+                                <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                                  <div className="w-10 h-10 rounded-lg bg-white border border-slate-200/80 p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
+                                    <Image
+                                      src={p.image || getDefaultProductImage(p.id)}
+                                      alt={p.name}
+                                      width={36}
+                                      height={36}
+                                      className="object-contain w-full h-full"
+                                    />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <span className="font-bold text-slate-800 text-[11px] block truncate leading-tight">{p.name}</span>
+                                    <div className="flex items-baseline gap-1.5 mt-0.5">
+                                      <span className="text-[#1A5C5E] font-extrabold text-[11px]">₹{price}</span>
+                                      {hasDiscount && (
+                                        <span className="line-through text-[9px] text-slate-400 font-normal">₹{mrp}</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleAddToCart(p, 1)}
+                                  className="px-3 py-1.5 bg-[#1A5C5E] hover:bg-[#134547] text-white rounded-lg text-[10px] font-bold transition-all cursor-pointer shrink-0 shadow-2xs min-h-[32px] flex items-center gap-1"
+                                >
+                                  <span>+ Add</span>
+                                </button>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => handleAddToCart(p, 1)}
-                                className="px-3 py-1 bg-[#1A5C5E]/10 hover:bg-[#1A5C5E] text-[#134547] hover:text-white rounded-lg text-[10px] font-bold transition-all cursor-pointer min-h-[32px]"
-                              >
-                                + Add
-                              </button>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     )}

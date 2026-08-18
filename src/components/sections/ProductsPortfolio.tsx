@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Leaf, ShieldCheck, Star, ShoppingBag, CheckCircle2, ArrowRight } from 'lucide-react';
-import { products, type Product, getDefaultProductImage } from '@/data/products';
+import { products, type Product, getDefaultProductImage, getDefaultProductPrice } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { createClient } from '@/lib/supabase/client';
 
@@ -50,22 +50,27 @@ export default function ProductsPortfolio() {
         if (error) throw error;
 
         if (data && data.length > 0) {
-          const mapped: Product[] = data.map((dbP: any) => ({
-            id: dbP.id,
-            name: dbP.name || '',
-            category: dbP.category || '',
-            composition: dbP.composition || '',
-            benefits: dbP.benefits || [],
-            usage: dbP.usage || '',
-            shelfLife: dbP.shelf_life || '3 Years',
-            safetyNote: dbP.safety_note || 'Ayurvedic formulation',
-            packSize: dbP.pack_size || '',
-            mrp: Number(dbP.mrp || 0),
-            sellingPrice: Number(dbP.selling_price || 0),
-            image: dbP.image || getDefaultProductImage(dbP.id),
-            transparentImage: dbP.transparent_image || dbP.image || getDefaultProductImage(dbP.id),
-            galleryImages: (dbP.gallery_images && dbP.gallery_images.length > 0) ? dbP.gallery_images : [dbP.image || getDefaultProductImage(dbP.id)]
-          }));
+          const mapped: Product[] = data.map((dbP: any) => {
+            const fallbackPrice = getDefaultProductPrice(dbP.id);
+            const mrp = Number(dbP.mrp) > 0 ? Number(dbP.mrp) : fallbackPrice.mrp;
+            const sellingPrice = Number(dbP.selling_price) > 0 ? Number(dbP.selling_price) : fallbackPrice.sellingPrice;
+            return {
+              id: dbP.id,
+              name: dbP.name || '',
+              category: dbP.category || '',
+              composition: dbP.composition || '',
+              benefits: dbP.benefits || [],
+              usage: dbP.usage || '',
+              shelfLife: dbP.shelf_life || '3 Years',
+              safetyNote: dbP.safety_note || 'Ayurvedic formulation',
+              packSize: dbP.pack_size || '',
+              mrp,
+              sellingPrice,
+              image: dbP.image || getDefaultProductImage(dbP.id),
+              transparentImage: dbP.transparent_image || dbP.image || getDefaultProductImage(dbP.id),
+              galleryImages: (dbP.gallery_images && dbP.gallery_images.length > 0) ? dbP.gallery_images : [dbP.image || getDefaultProductImage(dbP.id)]
+            };
+          });
           setProductList(mapped);
         }
       } catch (err) {
