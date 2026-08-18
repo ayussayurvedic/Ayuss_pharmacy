@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sspharmacy-app-088dee8f-6137-4559-a800-1b0df72841ad';
+const CACHE_NAME = 'sspharmacy-app-077eb9dc-a9c2-4811-a98f-297507f05eb0';
 const SCOPES = ['/'];
 
 // Utility to bound dynamic caches to prevent storage exhaustion

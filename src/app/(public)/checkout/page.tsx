@@ -283,13 +283,19 @@ Please confirm my order. Thank you! 🙏✨`;
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/919848523295?text=${encodedMessage}`;
 
+      // Save order message in sessionStorage for reliable fallback & direct opening
       if (typeof window !== 'undefined') {
-        window.open(whatsappUrl, '_blank');
+        try {
+          sessionStorage.setItem(`ssp_order_msg_${orderNumber}`, message);
+          sessionStorage.setItem(`ssp_order_whatsapp_${orderNumber}`, whatsappUrl);
+        } catch (storageErr) {
+          console.warn('Could not cache WhatsApp order message in sessionStorage:', storageErr);
+        }
       }
 
       handleClearCart();
-      toast.success('Order placed successfully. Redirecting to WhatsApp...');
-      router.push(`/order-success/${orderNumber}`);
+      toast.success('Order placed successfully! Opening WhatsApp...');
+      router.push(`/order-success/${orderNumber}?openWhatsapp=1`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order.');
     } finally {

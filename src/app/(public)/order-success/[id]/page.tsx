@@ -66,9 +66,41 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
   const deliveryEnd = new Date(today.setDate(today.getDate() + 2)).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
   const activeOrderNum = order?.orderNumber || cleanId;
-  const whatsappMessage = encodeURIComponent(
-    `🌿 *S.S. PHARMACY — ORDER TRACKING* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I would like to check the tracking status of my order.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Valued Customer'}\n🚚 Please share the latest courier/shipping updates. Thank you! 🙏✨`
+  const [cachedWhatsappUrl, setCachedWhatsappUrl] = useState<string>('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
+        if (storedUrl) {
+          setCachedWhatsappUrl(storedUrl);
+        }
+      } catch (e) {
+        console.warn('Session storage read error:', e);
+      }
+
+      // Auto-open WhatsApp if redirected from checkout
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('openWhatsapp') === '1') {
+        const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
+        const defaultMsg = encodeURIComponent(
+          `🌿 *S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
+        );
+        const targetUrl = storedUrl || `https://wa.me/919848523295?text=${defaultMsg}`;
+        
+        const timer = setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 800);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [cleanId, activeOrderNum, order]);
+
+  const fallbackWhatsappMsg = encodeURIComponent(
+    `🌿 *S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
   );
+
+  const activeWhatsappUrl = cachedWhatsappUrl || `https://wa.me/919848523295?text=${fallbackWhatsappMsg}`;
 
   if (loading) {
     return (
@@ -99,7 +131,7 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="bg-[#FDF8F0] text-slate-800 pt-24 pb-16 min-h-[100dvh] font-sans flex items-center justify-center">
-      <div className="max-w-[480px] w-full mx-auto px-4 text-center space-y-6 border border-[#C9D5D5]/80 p-8 rounded-2xl bg-white shadow-md">
+      <div className="max-w-[480px] w-full mx-auto px-4 text-center space-y-5 border border-[#C9D5D5]/80 p-6 sm:p-8 rounded-2xl bg-white shadow-md">
         
         {/* Success Badge */}
         <div className="w-16 h-16 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full flex items-center justify-center mx-auto shadow-xs">
@@ -107,8 +139,28 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
         </div>
 
         <div>
-          <h1 className="text-2xl font-serif text-[#1A5C5E] font-bold uppercase tracking-wide">Order Confirmed!</h1>
-          <p className="text-xs text-slate-600 mt-1 font-light">Thank you, {order.customerName}. We have received your order.</p>
+          <h1 className="text-2xl font-serif text-[#1A5C5E] font-bold uppercase tracking-wide">Order Placed!</h1>
+          <p className="text-xs text-slate-600 mt-1 font-light">Thank you, {order.customerName}. Your order is recorded in our system.</p>
+        </div>
+
+        {/* WhatsApp Order Action Banner */}
+        <div className="p-4 bg-emerald-50/90 border border-emerald-300 rounded-2xl text-center space-y-2.5 shadow-2xs">
+          <div className="flex items-center justify-center gap-1.5 text-emerald-800 font-bold text-xs">
+            <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Send Order Details via WhatsApp</span>
+          </div>
+          <p className="text-[11px] text-slate-600 leading-relaxed">
+            Click below to send your order reference <strong>#{activeOrderNum}</strong> directly to our WhatsApp support for instant confirmation and dispatch updates.
+          </p>
+          <a
+            href={activeWhatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md uppercase tracking-wider cursor-pointer min-h-[44px]"
+          >
+            <MessageCircle className="w-4 h-4 fill-white" />
+            <span>Open WhatsApp to Confirm</span>
+          </a>
         </div>
 
         {/* Order Details Summary */}
@@ -193,36 +245,24 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
         </div>
       )}
 
-        {/* Actions */}
-        <div className="space-y-3 pt-1">
-          <a
-            href={`https://wa.me/919848523295?text=${whatsappMessage}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white py-3 rounded-full text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md uppercase tracking-wider cursor-pointer"
+        {/* Secondary Actions */}
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 py-2.5 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer min-h-[40px]"
           >
-            <MessageCircle className="w-4 h-4" />
-            <span>Track Order on WhatsApp</span>
-          </a>
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print Receipt</span>
+          </button>
 
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 py-2.5 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>Print Receipt</span>
-            </button>
-
-            <Link 
-              href="/products" 
-              className="w-full bg-[#1A5C5E] hover:bg-[#134547] text-white py-2.5 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-colors uppercase tracking-wider cursor-pointer shadow-xs"
-            >
-              <span>Shop More</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+          <Link 
+            href="/products" 
+            className="w-full bg-[#1A5C5E] hover:bg-[#134547] text-white py-2.5 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-colors uppercase tracking-wider cursor-pointer shadow-xs min-h-[40px]"
+          >
+            <span>Shop More</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
       </div>
