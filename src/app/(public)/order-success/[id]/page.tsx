@@ -1,8 +1,21 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Truck, MessageCircle, Printer, ArrowRight, Loader2, AlertCircle, QrCode, Copy, Check } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  Truck, 
+  MessageCircle, 
+  Printer, 
+  ArrowRight, 
+  Loader2, 
+  AlertCircle, 
+  QrCode, 
+  Copy, 
+  Check,
+  CheckCircle2,
+  ExternalLink
+} from 'lucide-react';
 
 interface OrderDetails {
   orderNumber: string;
@@ -17,6 +30,10 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [copied, setCopied] = useState(false);
+  const [whatsappTriggered, setWhatsappTriggered] = useState(false);
+  const [cachedWhatsappUrl, setCachedWhatsappUrl] = useState<string>('');
+  const [supportPhone, setSupportPhone] = useState<string>('');
+  const autoTriggerExecuted = useRef(false);
 
   useEffect(() => {
     async function loadOrder() {
@@ -66,47 +83,62 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
   const deliveryEnd = new Date(today.setDate(today.getDate() + 2)).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
   const activeOrderNum = order?.orderNumber || cleanId;
-  const [cachedWhatsappUrl, setCachedWhatsappUrl] = useState<string>('');
-  const [supportPhone, setSupportPhone] = useState<string>('');
 
   useEffect(() => {
     async function loadPhoneAndSettings() {
-      if (typeof window !== 'undefined') {
+      if (typeof window === 'undefined') return;
+
+      try {
+        const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
+        if (storedUrl) {
+          setCachedWhatsappUrl(storedUrl);
+        }
+        const storedPhone = sessionStorage.getItem(`ssp_order_phone_${cleanId}`);
+        if (storedPhone) {
+          setSupportPhone(storedPhone);
+        }
+        const wasAlreadySent = sessionStorage.getItem(`ssp_wa_sent_${cleanId}`) === 'true';
+        if (wasAlreadySent) {
+          setWhatsappTriggered(true);
+        }
+      } catch (e) {
+        console.warn('Session storage read error:', e);
+      }
+
+      const { fetchSiteSettings, formatWhatsAppNumber } = await import('@/lib/site-settings');
+      const settings = await fetchSiteSettings();
+      const resolvedPhone = formatWhatsAppNumber(settings.supportPhone);
+      if (resolvedPhone) {
+        setSupportPhone(resolvedPhone);
+      }
+
+      // Check if auto-launch requested via query param
+      const searchParams = new URLSearchParams(window.location.search);
+      const shouldOpen = searchParams.get('openWhatsapp') === '1';
+
+      if (shouldOpen && !autoTriggerExecuted.current) {
+        autoTriggerExecuted.current = true;
+        setWhatsappTriggered(true);
+
         try {
-          const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
-          if (storedUrl) {
-            setCachedWhatsappUrl(storedUrl);
-          }
-          const storedPhone = sessionStorage.getItem(`ssp_order_phone_${cleanId}`);
-          if (storedPhone) {
-            setSupportPhone(storedPhone);
-          }
+          sessionStorage.setItem(`ssp_wa_sent_${cleanId}`, 'true');
+          // Clean the URL so returning to this tab or refreshing NEVER re-triggers WhatsApp
+          window.history.replaceState({}, '', `/order-success/${cleanId}`);
         } catch (e) {
-          console.warn('Session storage read error:', e);
+          // ignore
         }
 
-        const { fetchSiteSettings, formatWhatsAppNumber } = await import('@/lib/site-settings');
-        const settings = await fetchSiteSettings();
-        const resolvedPhone = formatWhatsAppNumber(settings.supportPhone);
-        if (resolvedPhone) {
-          setSupportPhone(resolvedPhone);
-        }
+        const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
+        const defaultMsg = encodeURIComponent(
+          `🌿 *AYU S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n----------------------------------------\n\nHello! I have placed an order on Ayu S.S. Pharmacy.\n\n• *Order Number:* #${activeOrderNum}\n• *Customer:* ${order?.customerName || 'Customer'}\n• *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏`
+        );
+        const targetUrl = storedUrl || (resolvedPhone ? `https://wa.me/${resolvedPhone}?text=${defaultMsg}` : '');
 
-        // Auto-open WhatsApp if redirected from checkout
-        const searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.get('openWhatsapp') === '1') {
-          const storedUrl = sessionStorage.getItem(`ssp_order_whatsapp_${cleanId}`);
-          const defaultMsg = encodeURIComponent(
-            `🌿 *AYU S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on Ayu S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
-          );
-          const targetUrl = storedUrl || (resolvedPhone ? `https://wa.me/${resolvedPhone}?text=${defaultMsg}` : '');
-          
-          if (targetUrl) {
-            const timer = setTimeout(() => {
-              window.location.href = targetUrl;
-            }, 800);
-            return () => clearTimeout(timer);
-          }
+        if (targetUrl) {
+          const timer = setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 600);
+          return () => clearTimeout(timer);
         }
       }
     }
@@ -115,7 +147,7 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
   }, [cleanId, activeOrderNum, order]);
 
   const fallbackWhatsappMsg = encodeURIComponent(
-    `🌿 *AYU S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I have placed an order on Ayu S.S. Pharmacy.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Customer'}\n💰 *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏✨`
+    `🌿 *AYU S.S. PHARMACY — ORDER CONFIRMATION* 🌿\n----------------------------------------\n\nHello! I have placed an order on Ayu S.S. Pharmacy.\n\n• *Order Number:* #${activeOrderNum}\n• *Customer:* ${order?.customerName || 'Customer'}\n• *Total Amount:* ₹${order?.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}\n\nPlease confirm my order. Thank you! 🙏`
   );
 
   const activeWhatsappUrl = cachedWhatsappUrl || (supportPhone ? `https://wa.me/${supportPhone}?text=${fallbackWhatsappMsg}` : '#');
@@ -161,25 +193,49 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
           <p className="text-xs text-slate-600 mt-1 font-light">Thank you, {order.customerName}. Your order is recorded in our system.</p>
         </div>
 
-        {/* WhatsApp Order Action Banner */}
-        <div className="p-4 bg-emerald-50/90 border border-emerald-300 rounded-2xl text-center space-y-2.5 shadow-2xs">
-          <div className="flex items-center justify-center gap-1.5 text-emerald-800 font-bold text-xs">
-            <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Send Order Details via WhatsApp</span>
+        {/* WhatsApp Order Action / Status Banner */}
+        {whatsappTriggered ? (
+          <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl text-center space-y-2 shadow-2xs">
+            <div className="flex items-center justify-center gap-1.5 text-emerald-800 font-bold text-xs">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>WhatsApp Order Details Prepared</span>
+            </div>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Your order confirmation for <strong>#{activeOrderNum}</strong> has been prepared for WhatsApp support.
+            </p>
+            <div className="pt-1">
+              <a
+                href={activeWhatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 text-emerald-700 hover:text-emerald-900 text-[11px] font-bold underline transition-colors"
+              >
+                <span>Need to open or resend in WhatsApp? Click here</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
-          <p className="text-[11px] text-slate-600 leading-relaxed">
-            Click below to send your order reference <strong>#{activeOrderNum}</strong> directly to our WhatsApp support for instant confirmation and dispatch updates.
-          </p>
-          <a
-            href={activeWhatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md uppercase tracking-wider cursor-pointer min-h-[44px]"
-          >
-            <MessageCircle className="w-4 h-4 fill-white" />
-            <span>Open WhatsApp to Confirm</span>
-          </a>
-        </div>
+        ) : (
+          <div className="p-4 bg-emerald-50/90 border border-emerald-300 rounded-2xl text-center space-y-2.5 shadow-2xs">
+            <div className="flex items-center justify-center gap-1.5 text-emerald-800 font-bold text-xs">
+              <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>Send Order Details via WhatsApp</span>
+            </div>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Click below to send your order reference <strong>#{activeOrderNum}</strong> directly to our WhatsApp support for instant confirmation and dispatch updates.
+            </p>
+            <a
+              href={activeWhatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setWhatsappTriggered(true)}
+              className="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md uppercase tracking-wider cursor-pointer min-h-[44px]"
+            >
+              <MessageCircle className="w-4 h-4 fill-white" />
+              <span>Open WhatsApp to Confirm</span>
+            </a>
+          </div>
+        )}
 
         {/* Order Details Summary */}
         <div className="p-4 bg-[#FDFBF7] border border-[#C9D5D5]/60 rounded-xl text-xs space-y-3">
@@ -206,7 +262,7 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
 
-        {/* Dynamic UPI Payment QR Code (Optional Pre-Payment via QRServer API) */}
+        {/* Dynamic UPI Payment QR Code */}
         {order.totalAmount > 0 && (
           <div className="p-4 bg-white border border-[#C9D5D5] rounded-xl text-xs space-y-3 shadow-2xs">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -227,7 +283,7 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
               <div className="p-2 bg-white border border-slate-200 rounded-xl shadow-xs">
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
-                    `upi://pay?pa=ayuss.pharmacy@okaxis&pn=S.S.%20Pharmacy&am=${order.totalAmount.toFixed(2)}&tn=${order.orderNumber}&cu=INR`
+                    `upi://pay?pa=ayuss.pharmacy@okaxis&pn=Ayu%20S.S.%20Pharmacy&am=${order.totalAmount.toFixed(2)}&tn=${order.orderNumber}&cu=INR`
                   )}&margin=6`}
                   alt="Scan to Pay with UPI"
                   width={170}

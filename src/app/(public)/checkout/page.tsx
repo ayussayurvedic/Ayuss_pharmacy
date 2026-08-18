@@ -247,38 +247,36 @@ export default function CheckoutPage() {
         }
       }
 
-      // 2. Open WhatsApp with complete order details (formatted with rich emojis & card layout)
+      // 2. Open WhatsApp with complete order details (formatted with universally supported clean WhatsApp markdown)
       const paymentModeLabel = paymentMethod === 'online_razorpay' ? '💳 Online Paid (Razorpay)' : '💵 Cash on Delivery (COD)';
 
       const itemsList = cartItems
-        .map((item) => `  ▫️ *${item.product.name}*\n     Qty: ${item.quantity} × ₹${((item.product.sellingPrice || item.product.mrp || 0)).toFixed(2)} = *₹${(((item.product.sellingPrice || item.product.mrp || 0) * item.quantity)).toFixed(2)}*`)
+        .map((item) => `• *${item.product.name}*\n  Qty: ${item.quantity} × ₹${((item.product.sellingPrice || item.product.mrp || 0)).toFixed(2)} = *₹${(((item.product.sellingPrice || item.product.mrp || 0) * item.quantity)).toFixed(2)}*`)
         .join('\n\n');
 
       const message = `🌿 *AYU S.S. PHARMACY — NEW ORDER* 🌿
-━━━━━━━━━━━━━━━━━━━━
+----------------------------------------
+Hello Ayu S.S. Pharmacy! I have placed a new order.
 
-Hello Ayu S.S. Pharmacy! I have placed an order on your store.
-
-🧾 *ORDER SUMMARY:*
-🆔 *Order ID:* #${orderNumber}
-💰 *Total Amount:* ₹${finalTotal.toFixed(2)}
-💳 *Payment Mode:* ${paymentModeLabel}
+📋 *ORDER SUMMARY:*
+• *Order ID:* #${orderNumber}
+• *Total Amount:* ₹${finalTotal.toFixed(2)}
+• *Payment Mode:* ${paymentModeLabel}
 
 📦 *ITEMS ORDERED:*
-━━━━━━━━━━━━━━━━━━━━
+----------------------------------------
 ${itemsList}
 
 📍 *DELIVERY DETAILS:*
-━━━━━━━━━━━━━━━━━━━━
-👤 *Name:* ${form.name}
-📞 *Phone:* ${form.phone}
-✉️ *Email:* ${form.email || 'N/A'}
-🏠 *Shipping Address:*
+----------------------------------------
+• *Name:* ${form.name}
+• *Phone:* ${form.phone}
+• *Email:* ${form.email || 'N/A'}
+• *Shipping Address:*
 ${form.address}, ${form.city}${form.district && form.district !== form.city ? `, ${form.district}` : ''}, ${form.state} - ${form.pincode}
-${giftMessage ? `\n🎁 *Gift Note:* ${giftMessage}` : ''}
-🚚 *Estimated Delivery:* 3 to 5 Business Days
+${giftMessage ? `• *Gift Note:* ${giftMessage}\n` : ''}• *Estimated Delivery:* 3 to 5 Business Days
 
-Please confirm my order. Thank you! 🙏✨`;
+Please confirm my order. Thank you! 🙏`;
 
       const encodedMessage = encodeURIComponent(message);
       
