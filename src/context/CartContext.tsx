@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { type Product, getDefaultProductImage, getDefaultProductPrice } from '@/data/products';
+import { type Product, getDefaultProductImage } from '@/data/products';
 import { useToast } from '@/components/ui/Toast';
 
 export interface CartItem {
@@ -40,22 +40,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         console.warn('Error reading cart from localStorage:', e);
       }
 
-      // Ensure every initial item has a valid image fallback and valid price
-      initialCart = initialCart.map(item => {
-        const fallback = getDefaultProductPrice(item.product.id);
-        const selling = Number(item.product.sellingPrice) > 0 ? Number(item.product.sellingPrice) : fallback.sellingPrice;
-        const mrp = Number(item.product.mrp) > 0 ? Number(item.product.mrp) : fallback.mrp;
-        return {
-          ...item,
-          product: {
-            ...item.product,
-            sellingPrice: selling,
-            mrp: mrp,
-            image: item.product.image || getDefaultProductImage(item.product.id)
-          }
-        };
-      });
+      // Ensure every initial item has a valid image fallback
+      initialCart = initialCart.map(item => ({
+        ...item,
+        product: {
+          ...item.product,
+          image: item.product.image || getDefaultProductImage(item.product.id)
+        }
+      }));
 
+      // Synchronize authoritative prices strictly from Supabase database
       if (initialCart.length > 0) {
         try {
           const { createClient } = await import('@/lib/supabase/client');
@@ -70,17 +64,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             const dbProductMap = new Map(dbProducts.map(p => [p.id, p]));
             initialCart = initialCart.map(item => {
               const live = dbProductMap.get(item.product.id);
-              const fallback = getDefaultProductPrice(item.product.id);
               if (live) {
-                const dbSelling = Number(live.selling_price) > 0 ? Number(live.selling_price) : fallback.sellingPrice;
-                const dbMrp = Number(live.mrp) > 0 ? Number(live.mrp) : fallback.mrp;
                 return {
                   ...item,
                   product: {
                     ...item.product,
                     name: live.name || item.product.name,
-                    mrp: dbMrp,
-                    sellingPrice: dbSelling,
+                    mrp: Number(live.mrp || 0),
+                    sellingPrice: Number(live.selling_price || 0),
                     packSize: live.pack_size || item.product.packSize,
                     image: live.image || item.product.image || getDefaultProductImage(item.product.id),
                     isActive: live.is_active ?? true,
@@ -112,14 +103,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cartItems]);
 
   const handleAddToCart = (product: Product, quantity = 1) => {
-    const fallback = getDefaultProductPrice(product.id);
-    const selling = Number(product.sellingPrice) > 0 ? Number(product.sellingPrice) : fallback.sellingPrice;
-    const mrp = Number(product.mrp) > 0 ? Number(product.mrp) : fallback.mrp;
-
     const productWithImg: Product = {
       ...product,
-      sellingPrice: selling,
-      mrp: mrp,
+      mrp: Number(product.mrp || 0),
+      sellingPrice: Number(product.sellingPrice || 0),
       image: product.image || getDefaultProductImage(product.id)
     };
     setCartItems((prev) => {

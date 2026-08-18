@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
-import { PRODUCTS, getDefaultProductImage } from '@/data/products';
+import { type Product, getDefaultProductImage } from '@/data/products';
 import { X, Trash2, Plus, Minus, Truck, ShoppingBag, ArrowRight } from 'lucide-react';
 
 const backdropVariants = {
@@ -34,6 +34,46 @@ const itemVariants = {
 export default function CartDrawer() {
   const { cartItems, cartCount, isCartOpen, setIsCartOpen, handleAddToCart, handleRemoveFromCart, handleUpdateCartQuantity } = useCart();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
+
+  // Fetch popular remedies dynamically from Supabase database
+  useEffect(() => {
+    async function loadDbProducts() {
+      try {
+        const { createClient } = await import('@/lib/supabase/client');
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('products')
+          .select('id, name, mrp, selling_price, pack_size, image, is_active')
+          .eq('is_active', true)
+          .order('name', { ascending: true })
+          .limit(3);
+
+        if (!error && data && data.length > 0) {
+          setPopularProducts(data.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            mrp: Number(p.mrp || 0),
+            sellingPrice: Number(p.selling_price || 0),
+            packSize: p.pack_size || '',
+            image: p.image || getDefaultProductImage(p.id),
+            isActive: p.is_active ?? true,
+            category: '',
+            composition: '',
+            benefits: [],
+            usage: '',
+            shelfLife: '',
+            safetyNote: '',
+          })));
+        }
+      } catch (err) {
+        console.warn('Could not load popular products from database:', err);
+      }
+    }
+    if (isCartOpen) {
+      loadDbProducts();
+    }
+  }, [isCartOpen]);
 
   // Lock body scroll when drawer is open
   useEffect(() => {
@@ -161,7 +201,7 @@ export default function CartDrawer() {
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
 
-                    {PRODUCTS.length > 0 && (
+                    {popularProducts.length > 0 && (
                       <div className="w-full pt-4 mt-2 border-t border-slate-200/60 text-left">
                         <div className="flex items-center justify-between mb-2.5">
                           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">Popular Remedies</span>
@@ -174,10 +214,10 @@ export default function CartDrawer() {
                           </Link>
                         </div>
                         <div className="space-y-2">
-                          {PRODUCTS.map((p) => {
-                            const price = p.sellingPrice || p.mrp || 199;
-                            const mrp = p.mrp || price;
-                            const hasDiscount = mrp > price;
+                          {popularProducts.map((p) => {
+                            const price = Number(p.sellingPrice || p.mrp || 0);
+                            const mrp = Number(p.mrp || 0);
+                            const hasDiscount = mrp > price && price > 0;
                             return (
                               <div key={p.id} className="flex items-center justify-between p-2 bg-slate-50/70 border border-slate-200/70 rounded-xl hover:bg-white hover:border-[#1A5C5E]/30 transition-all shadow-2xs">
                                 <div className="flex items-center gap-2.5 min-w-0 pr-2">
@@ -193,7 +233,9 @@ export default function CartDrawer() {
                                   <div className="min-w-0">
                                     <span className="font-bold text-slate-800 text-[11px] block truncate leading-tight">{p.name}</span>
                                     <div className="flex items-baseline gap-1.5 mt-0.5">
-                                      <span className="text-[#1A5C5E] font-extrabold text-[11px]">₹{price}</span>
+                                      {price > 0 && (
+                                        <span className="text-[#1A5C5E] font-extrabold text-[11px]">₹{price}</span>
+                                      )}
                                       {hasDiscount && (
                                         <span className="line-through text-[9px] text-slate-400 font-normal">₹{mrp}</span>
                                       )}

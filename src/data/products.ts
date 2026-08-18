@@ -1,7 +1,7 @@
 /**
  * Product Catalog Data Structure
- * Note: Pricing (mrp, sellingPrice), stock, and active status are dynamically
- * managed from the Supabase database and updated via the Admin Portal (/admin/products).
+ * Note: Pricing (mrp, sellingPrice), stock, and active status are strictly
+ * managed and fetched dynamically from the Supabase database (/admin/products).
  */
 export interface Product {
   id: string;
@@ -34,19 +34,6 @@ export function getDefaultProductImage(id?: string): string {
   }
 }
 
-export function getDefaultProductPrice(id?: string): { mrp: number; sellingPrice: number } {
-  switch (id) {
-    case 'dr-lion-pain-cream':
-      return { mrp: 249, sellingPrice: 199 };
-    case 'dr-lion-pain-pills':
-      return { mrp: 299, sellingPrice: 249 };
-    case 'moon-light-cream':
-      return { mrp: 349, sellingPrice: 299 };
-    default:
-      return { mrp: 249, sellingPrice: 199 };
-  }
-}
-
 export const products: Product[] = [
   {
     id: "dr-lion-pain-cream",
@@ -62,9 +49,7 @@ export const products: Product[] = [
     usage: "Apply an adequate amount to the affected area and gently massage until absorbed. Use as directed on label or by a qualified healthcare professional.",
     shelfLife: "3 Years",
     safetyNote: "Ayurvedic cream for external use only",
-    packSize: "100g Jar",
-    mrp: 249,
-    sellingPrice: 199,
+    packSize: "500g Jar",
     isActive: true,
     image: "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
     transparentImage: "/products/dr-lion-pain-cream/pain-cream-front-view.webp",
@@ -85,8 +70,6 @@ export const products: Product[] = [
     shelfLife: "2 Years",
     safetyNote: "Use only as directed. Consult a qualified healthcare professional for individual conditions.",
     packSize: "60 Pills Container",
-    mrp: 299,
-    sellingPrice: 249,
     isActive: true,
     image: "/products/dr-lion-pain-pills/pain-pills.webp",
     transparentImage: "/products/dr-lion-pain-pills/pain-pills.webp",
@@ -107,8 +90,6 @@ export const products: Product[] = [
     shelfLife: "3 Years",
     safetyNote: "Ayurvedic cream for external use only",
     packSize: "100g Jar",
-    mrp: 349,
-    sellingPrice: 299,
     isActive: true,
     image: "/products/Moon-light/moon-cream-front-view.webp",
     transparentImage: "/products/Moon-light/moon-cream-front-view.webp",

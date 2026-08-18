@@ -41,15 +41,8 @@ const productListSchema = {
         "name": "Dr. Lion Pain Cream",
         "description": "Ayurvedic External Pain Relief Cream with Sarsapa Thila, Thymol, Menthol, and Camphor. Supports joint comfort and helps soothe muscle discomfort.",
         "url": "https://sspharmacy.com/products/dr-lion-pain-cream",
-        "image": "https://sspharmacy.com/products/Dr%20lion%20pain%20cream/Pain%20cream%20front%20view.webp",
-        "brand": { "@type": "Brand", "name": "Dr. Lion" },
-        "offers": {
-          "@type": "Offer",
-          "price": "199",
-          "priceCurrency": "INR",
-          "availability": "https://schema.org/InStock",
-          "seller": { "@type": "Organization", "name": "S.S. Pharmacy" }
-        }
+        "image": "https://sspharmacy.com/products/dr-lion-pain-cream/pain-cream-front-view.webp",
+        "brand": { "@type": "Brand", "name": "Dr. Lion" }
       }
     },
     {
@@ -60,15 +53,8 @@ const productListSchema = {
         "name": "Dr. Lion Pain Pills",
         "description": "Ayurvedic Proprietary Medicine with Hingula, Triphala, and Amalaki. Supports joint comfort and musculoskeletal wellness.",
         "url": "https://sspharmacy.com/products/dr-lion-pain-pills",
-        "image": "https://sspharmacy.com/products/Dr%20lion%20Pain%20pills/Pain_pills.webp",
-        "brand": { "@type": "Brand", "name": "Dr. Lion" },
-        "offers": {
-          "@type": "Offer",
-          "price": "249",
-          "priceCurrency": "INR",
-          "availability": "https://schema.org/InStock",
-          "seller": { "@type": "Organization", "name": "S.S. Pharmacy" }
-        }
+        "image": "https://sspharmacy.com/products/dr-lion-pain-pills/pain-pills.webp",
+        "brand": { "@type": "Brand", "name": "Dr. Lion" }
       }
     },
     {
@@ -79,15 +65,8 @@ const productListSchema = {
         "name": "Moon Light Cream",
         "description": "Ayurvedic Skin Care Cream with Manjishta, Chandana, and Bahlika Flower. Supports healthy-looking skin and even-looking tone.",
         "url": "https://sspharmacy.com/products/moon-light-cream",
-        "image": "https://sspharmacy.com/products/moon-light/moon-cream-front-view.webp",
-        "brand": { "@type": "Brand", "name": "Moon Light" },
-        "offers": {
-          "@type": "Offer",
-          "price": "299",
-          "priceCurrency": "INR",
-          "availability": "https://schema.org/InStock",
-          "seller": { "@type": "Organization", "name": "S.S. Pharmacy" }
-        }
+        "image": "https://sspharmacy.com/products/Moon-light/moon-cream-front-view.webp",
+        "brand": { "@type": "Brand", "name": "Moon Light" }
       }
     }
   ]

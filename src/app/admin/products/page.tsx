@@ -157,8 +157,8 @@ export default function AdminProducts() {
             id: uniqueId,
             name: newName,
             category: target.category,
-            mrp: target.mrp || 249,
-            selling_price: target.sellingPrice || 199,
+            mrp: target.mrp || 0,
+            selling_price: target.sellingPrice || 0,
             pack_size: target.packSize || '100g Jar',
             is_active: true
           });
@@ -224,7 +224,7 @@ export default function AdminProducts() {
       header: 'Selling Price', 
       render: (p: Product) => (
         <span className="font-mono font-bold text-[#1A5C5E]">
-          {p.sellingPrice ? `₹${p.sellingPrice.toLocaleString('en-IN')}` : p.mrp ? `₹${p.mrp.toLocaleString('en-IN')}` : '₹199'}
+          {p.sellingPrice ? `₹${p.sellingPrice.toLocaleString('en-IN')}` : p.mrp ? `₹${p.mrp.toLocaleString('en-IN')}` : '—'}
         </span>
       ) 
     },

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { products, getDefaultProductImage, getDefaultProductPrice } from '@/data/products';
+import { products, getDefaultProductImage } from '@/data/products';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import ProductDetailClient from './ProductDetailClient';
 import SchemaMarkup from '@/components/layout/SchemaMarkup';
@@ -8,7 +8,6 @@ import { generateBreadcrumbSchema, generateProductSchema } from '@/lib/seo';
 
 async function fetchProduct(id: string) {
   const defaultImg = getDefaultProductImage(id);
-  const fallbackPrice = getDefaultProductPrice(id);
   try {
     const { data, error } = await supabaseAdmin
       .from('products')
@@ -23,9 +22,6 @@ async function fetchProduct(id: string) {
         ? data.gallery_images
         : [primaryImg];
 
-      const mrp = Number(data.mrp) > 0 ? Number(data.mrp) : fallbackPrice.mrp;
-      const sellingPrice = Number(data.selling_price) > 0 ? Number(data.selling_price) : fallbackPrice.sellingPrice;
-
       return {
         id: data.id,
         name: data.name || '',
@@ -36,8 +32,8 @@ async function fetchProduct(id: string) {
         shelfLife: data.shelf_life || '3 Years',
         safetyNote: data.safety_note || 'Ayurvedic formulation',
         packSize: data.pack_size || '',
-        mrp,
-        sellingPrice,
+        mrp: Number(data.mrp || 0),
+        sellingPrice: Number(data.selling_price || 0),
         image: primaryImg,
         transparentImage: data.transparent_image || primaryImg,
         galleryImages: gallery
