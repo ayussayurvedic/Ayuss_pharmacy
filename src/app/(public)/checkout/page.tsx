@@ -247,27 +247,38 @@ export default function CheckoutPage() {
         }
       }
 
-      // 2. Open WhatsApp with complete order details
+      // 2. Open WhatsApp with complete order details (formatted with rich emojis & card layout)
+      const paymentModeLabel = paymentMethod === 'online_razorpay' ? '💳 Online Paid (Razorpay)' : '💵 Cash on Delivery (COD)';
+
       const itemsList = cartItems
-        .map((item) => `• ${item.product.name} (Qty: ${item.quantity}) - ₹${((item.product.sellingPrice || item.product.mrp || 0) * item.quantity).toFixed(2)}`)
-        .join('\n');
+        .map((item) => `  ▫️ *${item.product.name}*\n     Qty: ${item.quantity} × ₹${((item.product.sellingPrice || item.product.mrp || 0)).toFixed(2)} = *₹${(((item.product.sellingPrice || item.product.mrp || 0) * item.quantity)).toFixed(2)}*`)
+        .join('\n\n');
 
-      const message = `Hello S.S. Pharmacy, I would like to place an order:
+      const message = `🌿 *S.S. PHARMACY — NEW ORDER* 🌿
+━━━━━━━━━━━━━━━━━━━━
 
-*Order Details:*
-Order Number: #${orderNumber}
-Total Amount: ₹${finalTotal.toFixed(2)}
+Hello! I have placed an order on the S.S. Pharmacy portal.
 
-*Items:*
+🧾 *ORDER SUMMARY:*
+🆔 *Order ID:* #${orderNumber}
+💰 *Total Amount:* ₹${finalTotal.toFixed(2)}
+💳 *Payment Mode:* ${paymentModeLabel}
+
+📦 *ITEMS ORDERED:*
+━━━━━━━━━━━━━━━━━━━━
 ${itemsList}
 
-*Customer Details:*
-Name: ${form.name}
-Phone: ${form.phone}
-Email: ${form.email || 'N/A'}
-Shipping Address: ${form.address}, ${form.city}${form.district && form.district !== form.city ? `, ${form.district}` : ''}, ${form.state} - ${form.pincode}
+📍 *DELIVERY DETAILS:*
+━━━━━━━━━━━━━━━━━━━━
+👤 *Name:* ${form.name}
+📞 *Phone:* ${form.phone}
+✉️ *Email:* ${form.email || 'N/A'}
+🏠 *Shipping Address:*
+${form.address}, ${form.city}${form.district && form.district !== form.city ? `, ${form.district}` : ''}, ${form.state} - ${form.pincode}
+${giftMessage ? `\n🎁 *Gift Note:* ${giftMessage}` : ''}
+🚚 *Estimated Delivery:* 3 to 5 Business Days
 
-Please confirm my order. Thank you!`;
+Please confirm my order. Thank you! 🙏✨`;
 
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/919848523295?text=${encodedMessage}`;

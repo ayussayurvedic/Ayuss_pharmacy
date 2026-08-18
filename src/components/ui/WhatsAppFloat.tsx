@@ -1,7 +1,7 @@
 'use client';
 
 const WHATSAPP_NUMBER = '919848523295';
-const WHATSAPP_MESSAGE = 'Hi S.S. Pharmacy, I would like to inquire about your Ayurvedic products.';
+const WHATSAPP_MESSAGE = '🌿 Hello S.S. Pharmacy! I would like to inquire about your Ayurvedic products & formulations. 🙏✨';
 
 export default function WhatsAppFloat() {
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;

@@ -66,7 +66,9 @@ export default function OrderSuccessPage({ params }: { params: Promise<{ id: str
   const deliveryEnd = new Date(today.setDate(today.getDate() + 2)).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
   const activeOrderNum = order?.orderNumber || cleanId;
-  const whatsappMessage = encodeURIComponent(`Hi S.S. Pharmacy, I would like to track my Order #${activeOrderNum}`);
+  const whatsappMessage = encodeURIComponent(
+    `🌿 *S.S. PHARMACY — ORDER TRACKING* 🌿\n━━━━━━━━━━━━━━━━━━━━\n\nHello! I would like to check the tracking status of my order.\n\n🆔 *Order Number:* #${activeOrderNum}\n👤 *Customer:* ${order?.customerName || 'Valued Customer'}\n🚚 Please share the latest courier/shipping updates. Thank you! 🙏✨`
+  );
 
   if (loading) {
     return (
